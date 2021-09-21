@@ -1,4 +1,4 @@
-function write_full_report(write_path,scanDateStr,HealthyData,VentBins,RBCBins,BarBins,RBC2BarBins,VentBinMontage,VentHistFig,RBCBinMontage,RBCHistFig,BarrierBinMontage,BarHistFig,RBCBarBinMontage,RBCBarHistFig,k0fig,DissolvedNMR,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage)
+function write_full_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,RBCBins,BarBins,RBC2BarBins,VentBinMontage,VentHistFig,RBCBinMontage,RBCHistFig,BarrierBinMontage,BarHistFig,RBCBarBinMontage,RBCBarHistFig,k0fig,DissolvedNMR,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage)
 
 idcs = strfind(write_path,filesep);%determine location of file separators
 try
@@ -21,7 +21,13 @@ end
 %% Write out Reports - Technical
 %Technical Report looks great.
 % Begin "Technical Report"
+idcs = strfind(write_path,filesep);%determine location of file separators
+path = write_path(1:idcs(end)-1);
+if ~exist(fullfile(path,'Analysis_Reports_allinone'))
+    mkdir(fullfile(path,'Analysis_Reports_allinone'));
+end
 num = str2num(write_path(end)); %The number of the gas exchange scan should be the last character in the write path
+Seq_Name = 'All_in_One_Gas_Exchange_';
 Rpttitle = [Seq_Name num2str(num) 'Technical_Report_Subject_' Subject];
 import mlreportgen.report.*
 import mlreportgen.dom.*
@@ -46,7 +52,7 @@ try
         HAlign('center'), VAlign('bottom'), Width('6in'), Height('6in')};
 
     dataHeader = {[],'Defect', 'Low', 'Healthy', 'Healthy','High','High'};
-    dataBody = {Subject,[num2str(VentBin1Percent,'%1.2f') '%'], [num2str(VentBins.VentBin2Percent,'%1.2f'), '%'], [num2str(VentBins.VentBin3Percent,'%1.2f') '%'], [num2str(VentBins.VentBin4Percent,'%1.2f') '%'],[num2str(VentBins.VentBin5Percent,'%1.2f') '%'],[num2str(VentBins.VentBin6Percent,'%1.2f') '%']};
+    dataBody = {Subject,[num2str(VentBins.VentBin1Percent,'%1.2f') '%'], [num2str(VentBins.VentBin2Percent,'%1.2f'), '%'], [num2str(VentBins.VentBin3Percent,'%1.2f') '%'], [num2str(VentBins.VentBin4Percent,'%1.2f') '%'],[num2str(VentBins.VentBin5Percent,'%1.2f') '%'],[num2str(VentBins.VentBin6Percent,'%1.2f') '%']};
 
     if HealthyDistPresent
         bodyContent2 = {'Healthy Ref',[num2str(HealthyData.BinPercentMeans.Vent(1),'%1.2f'),'±',num2str(HealthyData.BinPercentStds.Vent(1),'%1.2f')],...

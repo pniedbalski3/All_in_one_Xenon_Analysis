@@ -1,4 +1,4 @@
-function write_clin_report(write_path,scanDateStr,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumRBCBarFig,RBC2BarBins)
+function write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)
 
 %Get subject from path
 idcs = strfind(write_path,filesep);%determine location of file separators

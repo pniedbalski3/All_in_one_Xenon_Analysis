@@ -336,16 +336,11 @@ niftiwrite(RBC2Gas,fullfile(write_path,'RBC_to_Gas'),'Compressed',true);
 niftiwrite(Bar2Gas,fullfile(write_path,'Barrier_to_Gas'),'Compressed',true);
 niftiwrite(RBC2BarIm,fullfile(write_path,'RBC_to_Barrier_Im'),'Compressed',true);
 
-%write out images in a manner that is good for sharing with subjects - Just
-%do barrier and RBC - get the Ventilation one elsewhere
+%write out images in a manner that is good for sharing with subjects
 if ~isfolder(fullfile(write_path,'Shareable_Figs'))
     mkdir(fullfile(write_path,'Shareable_Figs'))
 end
-
-saveas(RBCMontage,fullfile(write_path,'Shareable_Figs','Raw_RBC_Image.jpg'));
-saveas(BarrierMontage,fullfile(write_path,'Shareable_Figs','Raw_Tissue_Image.jpg'));
-saveas(RBCBinMontage,fullfile(write_path,'Shareable_Figs','Binned_RBC_Image.jpg'));
-saveas(BarrierBinMontage,fullfile(write_path,'Shareable_Figs','Binned_Tissue_Image.jpg'));
+saveas(RBCMontage,fullfile(write_path'Raw_RBC_Image.jpg');
 
 %% Write Reports
 AllinOne_Tools.write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)

@@ -49,6 +49,12 @@ end
 VentMask = logical(VentMask);
 DisMask = logical(DisMask);
 
-%% Analysis
-% Gas Exchange
+%% Gas Exchange Analysis
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params)
+
+%% Ventilation Analysis
+analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask)
+
+%% Clean up
+close all
+fclose all
