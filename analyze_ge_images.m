@@ -1,4 +1,4 @@
-function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params)
+function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj)
 
 %% Load Things
 if(exist('C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\HealthyCohort.mat','file') == 2) %if Healthy cohort data exists, use
@@ -203,6 +203,9 @@ RBC_Mask = logical((RBCBinMap-1).*VentBinMask); %Create a mask for areas with RB
 %RBC/Barrier Binning
 RBCBarrierBinMap = AllinOne_Tools.BinImages(RBC2BarIm, RBCBarrThresh);
 RBCBarrierBinMap = RBCBarrierBinMap.*VentBinMask;%Mask to ventilated volume
+
+%% Wiggle Analysis
+AllinOne_Wiggles.wiggle_imaging(Dis_Fid,Gas_Fid,Dis_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
 
 %% Calculate SNR
 disp('Calculating SNR...')

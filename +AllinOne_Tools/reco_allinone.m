@@ -1,4 +1,4 @@
-function [Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,Vent_Im,H1_Image_Vent,H1_Image_Dis,Cal_Raw,Dis_Fid,Gas_Fid,Params] = reco_allinone(xe_file,anat_file,cal_file)
+function [Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,Vent_Im,H1_Image_Vent,H1_Image_Dis,Cal_Raw,Dis_Fid,Gas_Fid,Params,Dis_Traj] = reco_allinone(xe_file,anat_file,cal_file)
 
 if nargin < 1
     [path,xe_file] = uigetfile('*.dat','Select All-in-one Vent/Gas Exchange Data File');
