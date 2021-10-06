@@ -50,6 +50,9 @@ SixBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 0 0.57 0.71; 0 0 1]; %Used f
 VentBinMap = Tools.BinImages(ScaledVentImage, VentThresh);
 VentBinMap = VentBinMap.*Mask;%Mask to lung volume
 
+Output.VentBinMap = VentBinMap;
+Output.BinMap = SixBinMap;
+
 %% Now, find how full each bin is:
 
 %Ventilation Quantification

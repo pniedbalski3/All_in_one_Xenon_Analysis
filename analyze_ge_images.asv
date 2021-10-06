@@ -1,9 +1,5 @@
 function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj)
 
-parent_path = which('analyze_ge_images');
-idcs = strfind(parent_path,filesep);%determine location of file separators
-parent_path = parent_path(1:idcs(end)-1);%remove file
-
 %% Load Things
 if(exist('C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\HealthyCohort.mat','file') == 2) %if Healthy cohort data exists, use
     HealthyFile = dir('C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\HealthyCohort.mat');%get file info
@@ -361,7 +357,7 @@ AllinOne_Tools.write_full_report(write_path,scanDateStr,HealthyDistPresent,Healt
 
 %% Write to Excel
 matfile = 'All_in_One_GasExchange.mat';
-excel_summary_file = fullfile(parent_path,'AncillaryFiles','AllinOne_Gas_Exchange_Summary.xlsx');
+
 idcs = strfind(write_path,filesep);%determine location of file separators
 try
     sub_ind = strfind(write_path,'Xe-');
@@ -384,9 +380,10 @@ SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
     SubjectMatch = find(strcmpi(AllSubjectSummary.Subject{1},Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date{1},scanDateStr));
+        strcmpi(AllSubjectSummary.Scan_Date{1},scanDateStr) &...
+        strcmpi(AllSubjectSummary.AcquisitionNumber{1},num2str(num)));
 catch
-    headers = {'Subject', 'Scan_Date',...%Subject Info
+    headers = {'Subject', 'Scan_Date','AcquisitionNumber'...%Subject Info
                 'TE90', 'Flip_Angle',...%Acquisition Info
                 'Process_Date', 'Healthy_Cohort',...%Reconstruction Info
                 'Gas_Frequency', 'Barrier_Frequency', 'RBC_Frequency',...%Spectro Fitting Results - Freq
@@ -408,7 +405,7 @@ catch
     AllSubjectSummary = cell2table(cell(0,size(headers,2)));
     AllSubjectSummary.Properties.VariableNames = headers;
 end
-NewData = {Subject,scanDateStr,...
+NewData = {Subject,scanDateStr,num2str(num),...
             ActTE90,DisFA,...
             datestr(date,29),HealthyCohortNum,...
             GasFreq, BarrierFreq, RBCFreq,...%Spectro Fitting Results - Freq
@@ -420,12 +417,12 @@ NewData = {Subject,scanDateStr,...
             DisBins.DissolvedMean, DisBins.DissolvedStd,...%Quantitative Distributions - Dissolved
             BarBins.BarrierUptakeMean, BarBins.BarrierUptakeStd,...%Quantitative Distributions - Barrier
             RBCBins.RBCTransferMean, RBCBins.RBCTransferStd,...%Quantitative Distributions - RBC
-            RBC2BarBins.RBCBarrierMean, RBC2BarBins.RBCBarrierStd,...%Quantitative Distributions - RBC:Barrier
+            RBCBarrierMean, RBCBarrierStd,...%Quantitative Distributions - RBC:Barrier
             VentBins.VentBin1Percent, VentBins.VentBin2Percent, VentBins.VentBin3Percent, VentBins.VentBin4Percent, VentBins.VentBin5Percent, VentBins.VentBin6Percent,...%Binning Results - Vent
             DisBins.DissolvedBin1Percent, DisBins.DissolvedBin2Percent, DisBins.DissolvedBin3Percent, DisBins.DissolvedBin4Percent, DisBins.DissolvedBin5Percent, DisBins.DissolvedBin6Percent,...%Binning Results - Dissolved
             BarBins.BarrierUptakeBin1Percent, BarBins.BarrierUptakeBin2Percent, BarBins.BarrierUptakeBin3Percent, BarBins.BarrierUptakeBin4Percent, BarBins.BarrierUptakeBin5Percent, BarBins.BarrierUptakeBin6Percent, BarBins.BarrierUptakeBin7Percent, BarBins.BarrierUptakeBin8Percent,...%Binning Results - Barrier
-            RBCBins.RBCTransferBin1Percent, RBCBins.RBCTransferBin2Percent, RBCBins.RBCTransferBin3Percent, RBCBins.RBCTransferBin4Percent, RBCBins.RBCTransferBin5Percent, RBCBins.RBCTransferBin6Percent,...%Binning Results - RBC
-            RBC2BarBins.RBCBarrierBin1Percent, RBC2BarBins.RBCBarrierBin2Percent, RBC2BarBins.RBCBarrierBin3Percent, RBC2BarBins.RBCBarrierBin4Percent,RBC2BarBins.RBCBarrierBin5Percent, RBC2BarBins.RBCBarrierBin6Percent,...%Binning Results - RBC:Barrier
+            RBCBins.RBCTransferBin1Percent, RBCBins.RBCTransferBin2Percent, RBCBins.RBCTransferBin3Percent, RBCBins.RBCTransferBin4Percent, RBCBins.RBCTransferBin5Percent, RBCTransferBin6Percent,...%Binning Results - RBC
+            RBCBarrierBin1Percent, RBCBarrierBin2Percent, RBCBarrierBin3Percent, RBCBarrierBin4Percent, RBCBarrierBin5Percent, RBCBarrierBin6Percent,...%Binning Results - RBC:Barrier
             };
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append

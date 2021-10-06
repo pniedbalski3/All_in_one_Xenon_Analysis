@@ -147,7 +147,6 @@ catch
     disp('No Full Report Written')
 end
 
-%% Write to Excel
 matfile = 'All_in_One_Ventilation.mat';
 excel_summary_file = fullfile(parent_path,'AncillaryFiles','AllinOne_Ventilation_Summary.xlsx');
 idcs = strfind(write_path,filesep);%determine location of file separators
@@ -188,11 +187,23 @@ end
 NewData = {Subject,scandate,...
             datestr(date,29),...
             SNR,...
-            MALB_Output.Complete,MALB_Output.Incomplete,MALB_Output.Hyper,MALB_Output.VDP,...
-            MALB_BF_Output.Complete,MALB_BF_Output.Incomplete,MALB_BF_Output.Hyper,MALB_BF_Output.VDP,...
-            LB_Output.VentBin1Percent,LB_Output.VentBin2Percent,LB_Output.VentBin3Percent,LB_Output.VentBin4Percent,LB_Output.VentBin5Percent,LB_Output.VentBin6Percent,...
-            LB_BF_Output.VentBin1Percent,LB_BF_Output.VentBin2Percent,LB_BF_Output.VentBin3Percent,LB_BF_Output.VentBin4Percent,LB_BF_Output.VentBin5Percent,LB_BF_Output.VentBin6Percent,...
-            NT_Output.Complete,NT_Output.Incomplete,NT_Output.Normal,NT_Output.Hyper};
+            M
+            GasFreq, BarrierFreq, RBCFreq,...%Spectro Fitting Results - Freq
+            GasT2Star, BarrierT2Star, BarrierLtoGRatio, RBCT2Star,...%Spectro Fitting Results - T2*
+            disfitObj.phase(3), disfitObj.phase(2), disfitObj.phase(1),...%Spectro Fitting Results - Phase
+            RBC2Bar, SpecGasPhaseContaminationPercentage, Delta_angle_deg,...%Reconstruction Parameters
+            VentSNR, GasSNR, DissolvedSNR, BarrierSNR, RBCSNR,...%SNRs
+            VentBins.VentMean, VentBins.VentStd,...%Quantitative Distributions - Vent
+            DisBins.DissolvedMean, DisBins.DissolvedStd,...%Quantitative Distributions - Dissolved
+            BarBins.BarrierUptakeMean, BarBins.BarrierUptakeStd,...%Quantitative Distributions - Barrier
+            RBCBins.RBCTransferMean, RBCBins.RBCTransferStd,...%Quantitative Distributions - RBC
+            RBC2BarBins.RBCBarrierMean, RBC2BarBins.RBCBarrierStd,...%Quantitative Distributions - RBC:Barrier
+            VentBins.VentBin1Percent, VentBins.VentBin2Percent, VentBins.VentBin3Percent, VentBins.VentBin4Percent, VentBins.VentBin5Percent, VentBins.VentBin6Percent,...%Binning Results - Vent
+            DisBins.DissolvedBin1Percent, DisBins.DissolvedBin2Percent, DisBins.DissolvedBin3Percent, DisBins.DissolvedBin4Percent, DisBins.DissolvedBin5Percent, DisBins.DissolvedBin6Percent,...%Binning Results - Dissolved
+            BarBins.BarrierUptakeBin1Percent, BarBins.BarrierUptakeBin2Percent, BarBins.BarrierUptakeBin3Percent, BarBins.BarrierUptakeBin4Percent, BarBins.BarrierUptakeBin5Percent, BarBins.BarrierUptakeBin6Percent, BarBins.BarrierUptakeBin7Percent, BarBins.BarrierUptakeBin8Percent,...%Binning Results - Barrier
+            RBCBins.RBCTransferBin1Percent, RBCBins.RBCTransferBin2Percent, RBCBins.RBCTransferBin3Percent, RBCBins.RBCTransferBin4Percent, RBCBins.RBCTransferBin5Percent, RBCBins.RBCTransferBin6Percent,...%Binning Results - RBC
+            RBC2BarBins.RBCBarrierBin1Percent, RBC2BarBins.RBCBarrierBin2Percent, RBC2BarBins.RBCBarrierBin3Percent, RBC2BarBins.RBCBarrierBin4Percent,RBC2BarBins.RBCBarrierBin5Percent, RBC2BarBins.RBCBarrierBin6Percent,...%Binning Results - RBC:Barrier
+            };
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
 else

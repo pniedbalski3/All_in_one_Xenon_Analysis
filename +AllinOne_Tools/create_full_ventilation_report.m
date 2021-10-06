@@ -467,7 +467,7 @@ try
 
     add(newsect,table);
 
-    fig = Figure(LB_Output.HistFig);
+    fig = Figure(LB_BF_Output.HistFig);
     fig.Snapshot.Caption = 'Histogram of Ventilation Values within Masked Volume';
     add(newsect,fig);
 

@@ -30,11 +30,11 @@ end
 [Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,Vent_Im,H1_Image_Vent,H1_Image_Dis,Cal_Raw,Dis_Fid,Gas_Fid,Params,Dis_Traj] = AllinOne_Tools.reco_allinone(xe_file,anat_file,cal_file);
 
 %% Images are reconstructed - Write out:
-niftiwrite(Dis_Image,fullfile(write_path,'Dissolved_Image'),'Compressed',true);
-niftiwrite(LoRes_Gas_Image,fullfile(write_path,'LoRes_Gas_Image'),'Compressed',true);
-niftiwrite(Vent_Im,fullfile(write_path,'Vent_Image'),'Compressed',true);
-niftiwrite(H1_Image_Vent,fullfile(write_path,'HiRes_Anatomic'),'Compressed',true);
-niftiwrite(H1_Image_Dis,fullfile(write_path,'LoRes_Anatomic'),'Compressed',true);
+niftiwrite(abs(Dis_Image),fullfile(write_path,'Dissolved_Image'),'Compressed',true);
+niftiwrite(abs(LoRes_Gas_Image),fullfile(write_path,'LoRes_Gas_Image'),'Compressed',true);
+niftiwrite(abs(Vent_Im),fullfile(write_path,'Vent_Image'),'Compressed',true);
+niftiwrite(abs(H1_Image_Vent),fullfile(write_path,'HiRes_Anatomic'),'Compressed',true);
+niftiwrite(abs(H1_Image_Dis),fullfile(write_path,'LoRes_Anatomic'),'Compressed',true);
 
 %% Masking
 [VentMask,DisMask] = all_in_one_masking(write_path);
@@ -53,7 +53,7 @@ DisMask = logical(DisMask);
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj)
 
 %% Ventilation Analysis
-analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask)
+analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr)
 
 %% Clean up
 close all

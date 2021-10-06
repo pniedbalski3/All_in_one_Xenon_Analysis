@@ -83,6 +83,9 @@ tmp(defectArray==1) = 2;
 tmp(defectArray==2) = 1;
 defectArray = tmp;
 
+Output.VentBinMap = defectArray;
+Output.BinMap = CMap;
+
 %For 5 slice, I want to hit a couple different places:
 slicestep = floor((lastslice-firstslice)/8);
 VentMax = max(Image(Mask>0));
