@@ -25,7 +25,7 @@ end
 %Atropos analysis
 %% Need to add K-means clustering - Almost certainly easiest to use ANTs for this
 try
-    AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'Anatomic_Image_Mask.nii.gz'));
+    AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
     Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
 catch
     disp('Cannot Run atropos Analysis')

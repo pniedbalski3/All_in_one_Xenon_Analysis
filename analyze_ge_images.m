@@ -5,8 +5,8 @@ idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end)-1);%remove file
 
 %% Load Things
-if(exist('C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\HealthyCohort.mat','file') == 2) %if Healthy cohort data exists, use
-    HealthyFile = dir('C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\HealthyCohort.mat');%get file info
+if(exist(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'),'file') == 2) %if Healthy cohort data exists, use
+    HealthyFile = dir(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'));%get file info
     HealthyData = load(fullfile(HealthyFile.folder,HealthyFile.name), '-regexp','^(?!Comb|Ind)...');%import all variable but figures
     VentThresh = HealthyData.thresholds.Vent;
     DissolvedThresh = HealthyData.thresholds.Dissolved;
@@ -209,7 +209,7 @@ RBCBarrierBinMap = AllinOne_Tools.BinImages(RBC2BarIm, RBCBarrThresh);
 RBCBarrierBinMap = RBCBarrierBinMap.*VentBinMask;%Mask to ventilated volume
 
 %% Wiggle Analysis
-wiggle_imaging(Dis_Fid,Gas_Fid,Dis_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
+%AllinOne_Wiggles.wiggle_imaging(Dis_Fid,Gas_Fid,Dis_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
 
 %% Calculate SNR
 disp('Calculating SNR...')

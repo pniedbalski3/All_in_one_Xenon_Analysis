@@ -8,7 +8,7 @@ Xe_Dat_twix = AllinOne_DataImport.mapVBVD(xe_file,'ignoreSeg');
 
 Seq_Name = Xe_Dat_twix.hdr.Config.SequenceFileName;
 Params.imsize = Xe_Dat_twix.hdr.MeasYaps.sKSpace.lBaseResolution;
-Params.TR = (Xe_Dat_twix.hdr.MeasYaps.alTR{1}/1000)*2;
+Params.TR = ((Xe_Dat_twix.hdr.MeasYaps.alTR{1}+Xe_Dat_twix.hdr.MeasYaps.alTR{2})/1000);
 Params.TE = (Xe_Dat_twix.hdr.MeasYaps.alTE{1}/1000);
 Params.GasFA = Xe_Dat_twix.hdr.MeasYaps.adFlipAngleDegree{2};
 Params.DisFA = Xe_Dat_twix.hdr.MeasYaps.adFlipAngleDegree{1};
@@ -41,7 +41,7 @@ H1_ImSize = H1_Dat_twix.hdr.MeasYaps.sKSpace.lBaseResolution; %Desired Output Im
 H1_Dim = 1; %Dimension - 1 means 3D - I hate to hardcode, but this will always be 3D, so it's fine
 
 %Hardcode for now:
-H1_traj_file = 'C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\Traj_Files\Vent_GasEx_Anatomic_20210819_Traj.dat';
+H1_traj_file = fullfile(parent_path,'Traj_Files','Vent_GasEx_Anatomic_20210819_Traj.dat');
 
 H1_Traj = AllinOne_DataImport.spiral_coords_from_dat(H1_traj_file,H1_Ordering,H1_Dim,H1_Alpha,H1_Hubs,H1_Pro);
 %% Calibration

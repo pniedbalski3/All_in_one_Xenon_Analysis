@@ -23,16 +23,15 @@ end
 % Begin "Technical Report"
 idcs = strfind(write_path,filesep);%determine location of file separators
 path = write_path(1:idcs(end)-1);
-if ~exist(fullfile(path,'Analysis_Reports_allinone'))
-    mkdir(fullfile(path,'Analysis_Reports_allinone'));
+if ~exist(fullfile(path,'All_in_One_Analysis','Analysis_Reports'))
+    mkdir(fullfile(path,'All_in_One_Analysis','Analysis_Reports'));
 end
-num = str2num(write_path(end)); %The number of the gas exchange scan should be the last character in the write path
 Seq_Name = 'All_in_One_Gas_Exchange_';
-Rpttitle = [Seq_Name num2str(num) 'Technical_Report_Subject_' Subject];
+Rpttitle = [Seq_Name 'Technical_Report_Subject_' Subject];
 import mlreportgen.report.*
 import mlreportgen.dom.*
 
-rpt = Report(fullfile(path,'Analysis_Reports_allinone',Rpttitle),'pdf');
+rpt = Report(fullfile(path,'All_in_One_Analysis','Analysis_Reports',Rpttitle),'pdf');
 rpt.Layout.Landscape = true;
 
 try

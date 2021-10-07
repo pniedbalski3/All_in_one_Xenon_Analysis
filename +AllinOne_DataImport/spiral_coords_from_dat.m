@@ -5,7 +5,7 @@ function traj = spiral_coords_from_dat(file,Ordering,Dim,Alpha,Hubs,NPro)
 % end
 %Function to calculate spiral coordinates from measured trajectories
 
-Dat = DataImport.ReadSiemensMeasVD13_idea(file);
+Dat = AllinOne_DataImport.ReadSiemensMeasVD13_idea(file);
 
 raw = Dat.rawdata';
 

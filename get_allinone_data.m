@@ -3,6 +3,10 @@ function [Dis_Fid,Dis_Traj,Gas_Fid,Gas_Traj] = get_allinone_data(file)
 %Function to read in all_in_one data
 %%
 
+parent_path = which('get_allinone_data');
+idcs = strfind(parent_path,filesep);%determine location of file separators
+parent_path = parent_path(1:idcs(end)-1);%remove file
+
 Xe_Dat_twix = AllinOne_DataImport.mapVBVD(file,'ignoreSeg');
 Xe_Dat_twix.flagIgnoreSeg = 1;
 Xe_Dat_twix.image.flagIgnoreSeg = 1;
@@ -113,8 +117,8 @@ Dis_Traj = hold_traj;
 
 %Dis_Traj = rotate_radial(k_loc,NPts,NPro);
 %% Get Gas Traj:
-traj_file = 'C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\Traj_Files\Vent_GasExchange_20210819_Traj.dat';
-traj_twix = mapVBVD(traj_file);
+traj_file = fullfile(parent_path,'Traj_Files','Vent_GasExchange_20210819_Traj.dat');
+traj_twix = AllinOne_DataImport.mapVBVD(traj_file);
 
 Gas_Traj = Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
 
