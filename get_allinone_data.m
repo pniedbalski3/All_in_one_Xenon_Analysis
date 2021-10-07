@@ -79,7 +79,7 @@ NPro = size(Dis_Fid,2);
 
 ind = zeros(1,NPro);
 for i = 1:NPro
-    ind(i) = Halton_rand(i-1,2);
+    ind(i) = AllinOne_Tools.Halton_rand(i-1,2);
 end
 [~,newind] = sort(ind);
 

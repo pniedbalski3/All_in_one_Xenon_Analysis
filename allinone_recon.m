@@ -1,10 +1,10 @@
 function allinone_recon()
 %% Identify Image files - done in kind of a lazy way
 try 
-    files = dir(pwd);
+    files = dir(fullfile(pwd,'Raw'));
     Cell_files = struct2cell(files);
     file_names = Cell_files(1,:);
-
+    folder_names = Cell_files(2,:);
     xeprot = 'Vent_GasExchange_20210819';
     h1prot = 'Vent_GasEx_Anatomic_20210819';
     calprot = 'XeCal_ShortTR_20210827';
@@ -12,9 +12,13 @@ try
     xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
     anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
     cal_file = file_names{find(contains(file_names,calprot),1,'last')};
+    
+    xe_file = fullfile(pwd,'Raw',xe_file);
+    anat_file = fullfile(pwd,'Raw',anat_file);
+    cal_file = fullfile(pwd,'Raw',cal_file);
     %Assume that raw data is in a folder called "Raw"
     write_path = pwd;
-    write_path((end-3):end) = [];
+    %write_path((end-3):end) = [];
     write_path = fullfile(write_path,'All_in_One_Analysis');
     if ~isfolder(write_path)
         mkdir(write_path);
