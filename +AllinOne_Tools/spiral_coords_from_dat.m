@@ -224,7 +224,7 @@ end
 if Ordering == 1
     vals = zeros(1,NPro);
     for i = 1:NPro
-        vals(i) = Halton_rand(i-1,2);
+        vals(i) = AllinOne_Tools.Halton_rand(i-1,2);
     end
     [~,sort_ind] = sort(vals);
     Rx = Rx(sort_ind);
