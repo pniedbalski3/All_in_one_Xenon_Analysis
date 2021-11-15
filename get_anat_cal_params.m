@@ -19,6 +19,10 @@ scanDate = strsplit(scanDate,'.');
 scanDate = scanDate{end};
 scanDateStr = [scanDate(1:4),'-',scanDate(5:6),'-',scanDate(7:8)];
 Params.scandatestr = scanDateStr;
+Params.GE_FOV = Xe_Dat_twix.hdr.Config.ReadFoV;
+Params.scale_factor = Xe_Dat_twix.hdr.MeasYaps.sWipMemBlock.adFree{6};
+Params.GE_Voxel = Params.GE_FOV/Params.imsize;
+Params.Vent_Voxel = Params.GE_FOV/(Params.imsize*Params.scale_factor);
 
 H1_Dat_twix = AllinOne_DataImport.mapVBVD(h1_file,'ignoreSeg');
 H1_Dat_twix.flagIgnoreSeg = 1;
