@@ -324,24 +324,26 @@ RBC2BarBins.RBCBarrierBin5Percent = sum(RBCBarrierBinMap(:)==5)/sum(VentBinMask(
 RBC2BarBins.RBCBarrierBin6Percent = sum(RBCBarrierBinMap(:)==6)/sum(VentBinMask(:)==1)*100;
 %% Save all Images as Nifti - compressed
 
-niftiwrite(abs(HiRes_Gas_Image),fullfile(write_path,'Ventilation'),'Compressed',true);
-niftiwrite(abs(LoRes_Gas_Image),fullfile(write_path,'LowResGas'),'Compressed',true);
-niftiwrite(abs(Dis_Image),fullfile(write_path,'TotalDissolved'),'Compressed',true);
-niftiwrite(Bar_Image,fullfile(write_path,'Barrier'),'Compressed',true);
-niftiwrite(RBC_Image,fullfile(write_path,'RBC'),'Compressed',true);
-niftiwrite(BarrierBinMap,fullfile(write_path,'Barrier_Labeled'),'Compressed',true);
-niftiwrite(RBCBinMap,fullfile(write_path,'RBC_Labeled'),'Compressed',true);
-niftiwrite(VentBinMap,fullfile(write_path,'Vent_Labeled'),'Compressed',true);
-niftiwrite(RBCBarrierBinMap,fullfile(write_path,'RBC2Bar_Labeled'),'Compressed',true);
+
+GE_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(HiRes_Gas_Image)),fullfile(write_path,'Sharp_Kernel_Lo_Res'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(LoRes_Gas_Image)),fullfile(write_path,'LowResGas'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(Dis_Image)),fullfile(write_path,'TotalDissolved'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(Bar_Image),fullfile(write_path,'Barrier'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC_Image),fullfile(write_path,'RBC'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(BarrierBinMap),fullfile(write_path,'Barrier_Labeled'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCBinMap),fullfile(write_path,'RBC_Labeled'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(VentBinMap),fullfile(write_path,'Vent_Labeled'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCBarrierBinMap),fullfile(write_path,'RBC2Bar_Labeled'),GE_info,'Compressed',true);
 
 %Write out some of the scaled images
-niftiwrite(GasImageScaled,fullfile(write_path,'Scaled_Gas_Image'),'Compressed',true);
-niftiwrite(RBCImageCorrected,fullfile(write_path,'Corrected_RBC'),'Compressed',true);
-niftiwrite(BarrierImageCorrected,fullfile(write_path,'Corrected_Barrier'),'Compressed',true);
-niftiwrite(ScaledVentImage,fullfile(write_path,'Scaled_Vent_Image'),'Compressed',true);
-niftiwrite(RBC2Gas,fullfile(write_path,'RBC_to_Gas'),'Compressed',true);
-niftiwrite(Bar2Gas,fullfile(write_path,'Barrier_to_Gas'),'Compressed',true);
-niftiwrite(RBC2BarIm,fullfile(write_path,'RBC_to_Barrier_Im'),'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(GasImageScaled),fullfile(write_path,'Scaled_Gas_Image'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCImageCorrected),fullfile(write_path,'Corrected_RBC'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(BarrierImageCorrected),fullfile(write_path,'Corrected_Barrier'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(ScaledVentImage),fullfile(write_path,'Scaled_Vent_Image'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC2Gas),fullfile(write_path,'RBC_to_Gas'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(Bar2Gas),fullfile(write_path,'Barrier_to_Gas'),GE_info,'Compressed',true);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC2BarIm),fullfile(write_path,'RBC_to_Barrier_Im'),GE_info,'Compressed',true);
 
 %write out images in a manner that is good for sharing with subjects - Just
 %do barrier and RBC - get the Ventilation one elsewhere
