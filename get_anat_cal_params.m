@@ -1,8 +1,8 @@
 function [H1_Raw,H1_Traj,Cal_Raw,Params] = get_anat_cal_params(xe_file,h1_file,cal_file)
 
-parent_path = which('SiteSpecific.get_gasexchange_data');
+parent_path = which('get_anat_cal_params');
 idcs = strfind(parent_path,filesep);%determine location of file separators
-parent_path = parent_path(1:idcs(end-1)-1);%remove file
+parent_path = parent_path(1:idcs(end)-1);%remove file
 
 Xe_Dat_twix = AllinOne_DataImport.mapVBVD(xe_file,'ignoreSeg');
 
