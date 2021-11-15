@@ -34,11 +34,16 @@ end
 [Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,Vent_Im,H1_Image_Vent,H1_Image_Dis,Cal_Raw,Dis_Fid,Gas_Fid,Params,Dis_Traj] = AllinOne_Tools.reco_allinone(xe_file,anat_file,cal_file);
 
 %% Images are reconstructed - Write out:
-niftiwrite(abs(Dis_Image),fullfile(write_path,'Dissolved_Image'),'Compressed',true);
-niftiwrite(abs(LoRes_Gas_Image),fullfile(write_path,'LoRes_Gas_Image'),'Compressed',true);
-niftiwrite(abs(Vent_Im),fullfile(write_path,'Vent_Image'),'Compressed',true);
-niftiwrite(abs(H1_Image_Vent),fullfile(write_path,'HiRes_Anatomic'),'Compressed',true);
-niftiwrite(abs(H1_Image_Dis),fullfile(write_path,'LoRes_Anatomic'),'Compressed',true);
+Dis_info = AllinOne_Tools.nifti_metadata(Dis_Image,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(Dis_Image)),fullfile(write_path,'Dissolved_Image'),Dis_info,'Compressed',true);
+Gas_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(LoRes_Gas_Image)),fullfile(write_path,'LoRes_Gas_Image'),Gas_info,'Compressed',true);
+Vent_info = AllinOne_Tools.nifti_metadata(Vent_Im,Params.Vent_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(Vent_Im)),fullfile(write_path,'Vent_Image'),Vent_info,'Compressed',true);
+H1_Vent_info = AllinOne_Tools.nifti_metadata(H1_Image_Vent,Params.Vent_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(H1_Image_Vent)),fullfile(write_path,'HiRes_Anatomic'),H1_Vent_info,'Compressed',true);
+H1_GE_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(H1_Image_Dis)),fullfile(write_path,'LoRes_Anatomic'),H1_GE_info,'Compressed',true);
 
 %% Masking
 [VentMask,DisMask] = all_in_one_masking(write_path);
