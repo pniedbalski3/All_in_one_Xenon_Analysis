@@ -26,13 +26,17 @@ end
 %% Need to add K-means clustering - Almost certainly easiest to use ANTs for this
 try
     AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
-    Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
+    if ~ispc
+        Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
+    end
 catch
     disp('Cannot Run atropos Analysis')
 end
 
 try
     atropos_seg = niftiread(fullfile(write_path,'Vent_ImageSegmentation.nii.gz'));
+    Vent = Tools.canonical2matlab(Vent);
+    atropos_seg = Tools.canonical2matlab(atropos_seg);
     NT_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
 catch
     disp('No atropos Segmentation Found')
@@ -40,7 +44,15 @@ catch
     NT_Output.Complete = nan;
     NT_Output.Hyper = nan;
     NT_Output.Normal = nan;
+    Vent = Tools.canonical2matlab(Vent);
 end
+
+%After this point, there's no more going to and from nifti, so we can put
+%everything in the shape we need for properly oriented images - Vent is
+%already there...
+Vent_BF = Tools.canonical2matlab(Vent_BF);
+Anat_Image = Tools.canonical2matlab(Anat_Image);
+Mask = Tools.canonical2matlab(Mask);
 
 
 %% Start with CCHMC Method (Mean Anchored Linear Binning)

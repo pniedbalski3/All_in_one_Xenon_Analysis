@@ -75,6 +75,7 @@ end
 set(Output.HistFig,'Name','Ventilation Histogram');%title(Output.HistFig.CurrentAxes,'99 Percentile Scaled Ventilation Histogram');
 
 %% Display Images
+
 [centerslice,firstslice,lastslice] = Tools.getimcenter(Mask);
 
 %Create ColorMap

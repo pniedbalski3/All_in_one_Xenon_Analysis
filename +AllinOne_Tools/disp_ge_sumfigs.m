@@ -30,12 +30,12 @@ Ax_Step = floor((Ax_EndIndex-Ax_StartIndex)/NumPlotSlices);
 Slices_Ax = (Ax_MiddleIndex-Ax_Step*(NumPlotSlices-1)/2):Ax_Step:(Ax_MiddleIndex+Ax_Step*(NumPlotSlices-1)/2);
 
 
-Vent_Summary_figs = cat(3,VentBinMap(:,:,Slices_Co),fliplr(rot90(permute(squeeze(abs(VentBinMap(Slices_Ax,:,:))),[2 3 1]),-1)));
-H1_Summary_figs = cat(3,abs(H1_Image(:,:,Slices_Co)),fliplr(rot90(permute(squeeze(abs(H1_Image(Slices_Ax,:,:))),[2 3 1]),-1)));
-Dis_Summary_figs = cat(3,DissolvedBinMap(:,:,Slices_Co),fliplr(rot90(permute(squeeze(abs(DissolvedBinMap(Slices_Ax,:,:))),[2 3 1]),-1)));
-RBC_Summary_figs = cat(3,RBCBinMap(:,:,Slices_Co),fliplr(rot90(permute(squeeze(abs(RBCBinMap(Slices_Ax,:,:))),[2 3 1]),-1)));
-Barrier_Summary_figs = cat(3,BarrierBinMap(:,:,Slices_Co),fliplr(rot90(permute(squeeze(abs(BarrierBinMap(Slices_Ax,:,:))),[2 3 1]),-1)));
-RBCBar_Summary_figs = cat(3,RBCBarrierBinMap(:,:,Slices_Co),fliplr(rot90(permute(squeeze(abs(RBCBarrierBinMap(Slices_Ax,:,:))),[2 3 1]),-1)));
+Vent_Summary_figs = cat(3,VentBinMap(:,:,Slices_Co),flipud(fliplr(rot90(permute(squeeze(abs(VentBinMap(Slices_Ax,:,:))),[2 3 1]),-1))));
+H1_Summary_figs = cat(3,abs(H1_Image(:,:,Slices_Co)),flipud(fliplr(rot90(permute(squeeze(abs(H1_Image(Slices_Ax,:,:))),[2 3 1]),-1))));
+Dis_Summary_figs = cat(3,DissolvedBinMap(:,:,Slices_Co),flipud(fliplr(rot90(permute(squeeze(abs(DissolvedBinMap(Slices_Ax,:,:))),[2 3 1]),-1))));
+RBC_Summary_figs = cat(3,RBCBinMap(:,:,Slices_Co),flipud(fliplr(rot90(permute(squeeze(abs(RBCBinMap(Slices_Ax,:,:))),[2 3 1]),-1))));
+Barrier_Summary_figs = cat(3,BarrierBinMap(:,:,Slices_Co),flipud(fliplr(rot90(permute(squeeze(abs(BarrierBinMap(Slices_Ax,:,:))),[2 3 1]),-1))));
+RBCBar_Summary_figs = cat(3,RBCBarrierBinMap(:,:,Slices_Co),flipud(fliplr(rot90(permute(squeeze(abs(RBCBarrierBinMap(Slices_Ax,:,:))),[2 3 1]),-1))));
 
 Vent_Sum_Tile = AllinOne_Tools.tile_image(Vent_Summary_figs,3,'nColumns',NumPlotSlices);
 H1_Sum_Tile = AllinOne_Tools.tile_image(H1_Summary_figs,3,'nColumns',NumPlotSlices);

@@ -231,9 +231,9 @@ SNRS.RBCSNR = RBCSNR;
 SNRS.RBC2Bar = RBC2Bar;
 
 %% Display Figures
-[Anatomic_Fig,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage,VentBinMontage,DissolvedBinMontage,RBCBinMontage,BarrierBinMontage,RBCBarBinMontage] = AllinOne_Tools.disp_ge_montages(H1_Image_Dis,Proton_Mask,ScaledVentImage,LoRes_Gas_Image,Dis_Image,Bar_Image,RBC_Image,RBC2BarIm,VentBinMap,DissolvedBinMap,BarrierBinMap,RBCBinMap,RBCBarrierBinMap,SNRS);
+[Anatomic_Fig,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage,VentBinMontage,DissolvedBinMontage,RBCBinMontage,BarrierBinMontage,RBCBarBinMontage] = AllinOne_Tools.disp_ge_montages(Tools.canonical2matlab(H1_Image_Dis),Tools.canonical2matlab(Proton_Mask),Tools.canonical2matlab(ScaledVentImage),Tools.canonical2matlab(LoRes_Gas_Image),Tools.canonical2matlab(Dis_Image),Tools.canonical2matlab(Bar_Image),Tools.canonical2matlab(RBC_Image),Tools.canonical2matlab(RBC2BarIm),Tools.canonical2matlab(VentBinMap),Tools.canonical2matlab(DissolvedBinMap),Tools.canonical2matlab(BarrierBinMap),Tools.canonical2matlab(RBCBinMap),Tools.canonical2matlab(RBCBarrierBinMap),SNRS);
 
-[SumVentFig,SumDissFig,SumBarrFig,SumRBCFig,SumRBCBarFig] = AllinOne_Tools.disp_ge_sumfigs(Proton_Mask,VentBinMap,H1_Image_Dis,DissolvedBinMap,BarrierBinMap,RBCBinMap,RBCBarrierBinMap,SNRS);
+[SumVentFig,SumDissFig,SumBarrFig,SumRBCFig,SumRBCBarFig] = AllinOne_Tools.disp_ge_sumfigs(Tools.canonical2matlab(Proton_Mask),Tools.canonical2matlab(VentBinMap),Tools.canonical2matlab(H1_Image_Dis),Tools.canonical2matlab(DissolvedBinMap),Tools.canonical2matlab(BarrierBinMap),Tools.canonical2matlab(RBCBinMap),Tools.canonical2matlab(RBCBarrierBinMap),SNRS);
 
 %% Histograms - Copied from Matt - removed some of the elegance... should fix at some point
 disp('Calculating Histograms...')
@@ -326,24 +326,24 @@ RBC2BarBins.RBCBarrierBin6Percent = sum(RBCBarrierBinMap(:)==6)/sum(VentBinMask(
 
 
 GE_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(HiRes_Gas_Image)),fullfile(write_path,'Sharp_Kernel_Lo_Res'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(LoRes_Gas_Image)),fullfile(write_path,'LowResGas'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(abs(Dis_Image)),fullfile(write_path,'TotalDissolved'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(Bar_Image),fullfile(write_path,'Barrier'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC_Image),fullfile(write_path,'RBC'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(BarrierBinMap),fullfile(write_path,'Barrier_Labeled'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCBinMap),fullfile(write_path,'RBC_Labeled'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(VentBinMap),fullfile(write_path,'Vent_Labeled'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCBarrierBinMap),fullfile(write_path,'RBC2Bar_Labeled'),GE_info,'Compressed',true);
+niftiwrite(abs(HiRes_Gas_Image),fullfile(write_path,'Sharp_Kernel_Lo_Res'),GE_info,'Compressed',true);
+niftiwrite(abs(LoRes_Gas_Image),fullfile(write_path,'LowResGas'),GE_info,'Compressed',true);
+niftiwrite(abs(Dis_Image),fullfile(write_path,'TotalDissolved'),GE_info,'Compressed',true);
+niftiwrite(Bar_Image,fullfile(write_path,'Barrier'),GE_info,'Compressed',true);
+niftiwrite(RBC_Image,fullfile(write_path,'RBC'),GE_info,'Compressed',true);
+niftiwrite(BarrierBinMap,fullfile(write_path,'Barrier_Labeled'),GE_info,'Compressed',true);
+niftiwrite(RBCBinMap,fullfile(write_path,'RBC_Labeled'),GE_info,'Compressed',true);
+niftiwrite(VentBinMap,fullfile(write_path,'Vent_Labeled'),GE_info,'Compressed',true);
+niftiwrite(RBCBarrierBinMap,fullfile(write_path,'RBC2Bar_Labeled'),GE_info,'Compressed',true);
 
 %Write out some of the scaled images
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(GasImageScaled),fullfile(write_path,'Scaled_Gas_Image'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBCImageCorrected),fullfile(write_path,'Corrected_RBC'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(BarrierImageCorrected),fullfile(write_path,'Corrected_Barrier'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(ScaledVentImage),fullfile(write_path,'Scaled_Vent_Image'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC2Gas),fullfile(write_path,'RBC_to_Gas'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(Bar2Gas),fullfile(write_path,'Barrier_to_Gas'),GE_info,'Compressed',true);
-niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(RBC2BarIm),fullfile(write_path,'RBC_to_Barrier_Im'),GE_info,'Compressed',true);
+niftiwrite(GasImageScaled,fullfile(write_path,'Scaled_Gas_Image'),GE_info,'Compressed',true);
+niftiwrite(RBCImageCorrected,fullfile(write_path,'Corrected_RBC'),GE_info,'Compressed',true);
+niftiwrite(BarrierImageCorrected,fullfile(write_path,'Corrected_Barrier'),GE_info,'Compressed',true);
+niftiwrite(ScaledVentImage,fullfile(write_path,'Scaled_Vent_Image'),GE_info,'Compressed',true);
+niftiwrite(RBC2Gas,fullfile(write_path,'RBC_to_Gas'),GE_info,'Compressed',true);
+niftiwrite(Bar2Gas,fullfile(write_path,'Barrier_to_Gas'),GE_info,'Compressed',true);
+niftiwrite(RBC2BarIm,fullfile(write_path,'RBC_to_Barrier_Im'),GE_info,'Compressed',true);
 
 %write out images in a manner that is good for sharing with subjects - Just
 %do barrier and RBC - get the Ventilation one elsewhere
@@ -355,6 +355,13 @@ saveas(RBCMontage,fullfile(write_path,'Shareable_Figs','Raw_RBC_Image.jpg'));
 saveas(BarrierMontage,fullfile(write_path,'Shareable_Figs','Raw_Tissue_Image.jpg'));
 saveas(RBCBinMontage,fullfile(write_path,'Shareable_Figs','Binned_RBC_Image.jpg'));
 saveas(BarrierBinMontage,fullfile(write_path,'Shareable_Figs','Binned_Tissue_Image.jpg'));
+
+Vent_Pts = ScaledVentImage(Proton_Mask(:));
+Bar_Pts = Bar2Gas(VentBinMask(:));
+RBC_Pts = RBC2Gas(VentBinMask(:));
+RBC2Bar_Pts = RBC2BarIm(VentBinMask(:));
+
+save(fullfile(write_path,'GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
 
 %% Write Reports
 AllinOne_Tools.write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)
