@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="161480463" file="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis\Controller_App.prj" location="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis" name="Controller_App" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3770298542" file="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis\Controller_App.prj" location="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis" name="Controller_App" target="target.mlapps" target-name="Package App">
     <param.appname>Controller_App</param.appname>
     <param.authnamewatermark>Peter Niedbalski</param.authnamewatermark>
     <param.email>pniedbalski@kumc.edu</param.email>
@@ -8,7 +8,7 @@
     <param.icons />
     <param.summary>App to control reconstruction and analysis of Hyperpolarized 129Xe MRI data acquired at KUMC</param.summary>
     <param.description />
-    <param.screenshot>C:\Users\pniedbalski\AppData\Local\Temp\1\tpae679215_6d74_4fab_833a_5c333a8a5bb4.png</param.screenshot>
+    <param.screenshot>C:\Users\pniedbalski\AppData\Local\Temp\1\tp86be8430_7833_4346_8783_a8659bede197.png</param.screenshot>
     <param.version>1.0</param.version>
     <param.products.name />
     <param.products.id />
