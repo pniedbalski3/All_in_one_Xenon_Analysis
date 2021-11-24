@@ -1,0 +1,209 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="3770298542" file="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis\Controller_App.prj" location="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis" name="Controller_App" target="target.mlapps" target-name="Package App">
+    <param.appname>Controller_App</param.appname>
+    <param.authnamewatermark>Peter Niedbalski</param.authnamewatermark>
+    <param.email>pniedbalski@kumc.edu</param.email>
+    <param.company>University of Kansas Medical Center</param.company>
+    <param.icon />
+    <param.icons />
+    <param.summary>App to control reconstruction and analysis of Hyperpolarized 129Xe MRI data acquired at KUMC</param.summary>
+    <param.description />
+    <param.screenshot>C:\Users\pniedbalski\AppData\Local\Temp\1\tp86be8430_7833_4346_8783_a8659bede197.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms>
+      <item>win64</item>
+    </param.platforms>
+    <param.output>${PROJECT_ROOT}</param.output>
+    <param.guid>212d4889-cd11-4e24-bc5f-72ff7779028e</param.guid>
+    <unset>
+      <param.icon />
+      <param.icons />
+      <param.description />
+      <param.version />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.output />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\Controller_App.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${MATLAB_ROOT}\toolbox\matlab\demos\ngc6543a.jpg</file>
+      <file>${PROJECT_ROOT}\+AllinOne_DataImport\mapVBVD.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_DataImport\read_twix_hdr.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_DataImport\ReadSiemensMeasVD13_idea.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_DataImport\spiral_coords_from_dat.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_DataImport\twix_map_obj.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Recon\base_floret_recon.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Recon\Dissolved_HighResRecon.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Recon\Dissolved_Phase_LowResRecon.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Recon\gasex_floret_recon.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Recon\gasex_h1radial_recon.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Seg\CNN_Seg.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\all_in_one_canonical_orientation.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\atropos_analysis.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\atropos_vent_analysis.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\BinImages.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\binning_colorbar.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\CalculateDissolvedHistogram.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\column_traj.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\create_full_ventilation_report.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\create_ventilation_report.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\disp_ge_montages.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\disp_ge_sumfigs.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\erode_dilate.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\getimcenter.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\Halton_rand.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\imoverlay.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\imoverlay_tool.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\LB_vent_analysis.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\MALB_vent_analysis.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\nifti_metadata.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\reco_allinone.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\SinglePointDixon_FID.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\SinglePointDixon_V2.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\SOS_Coil_Combine.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\spiral_coords_from_dat.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\tile_image.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\Vent_BiasCorrection.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\write_clin_report.m</file>
+      <file>${PROJECT_ROOT}\+AllinOne_Tools\write_full_report.m</file>
+      <file>${PROJECT_ROOT}\all_in_one_masking.m</file>
+      <file>${PROJECT_ROOT}\all_in_one_read_recon.m</file>
+      <file>${PROJECT_ROOT}\allinone_recon.m</file>
+      <file>${PROJECT_ROOT}\analyze_ge_images.m</file>
+      <file>${PROJECT_ROOT}\analyze_vent_images.m</file>
+      <file>${PROJECT_ROOT}\get_allinone_data.m</file>
+      <file>${PROJECT_ROOT}\get_anat_cal_params.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Non_Cartesian_Base_Tools\+Recon\bnispiralgen.mexw64</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Preclinical_UTE_Recon\+Tools\traj_delay_correction.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Import\mapVBVD.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Tools\column_traj.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Tools\compare_twix.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Tools\seek_spiral_traj.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Tools\siemensspiralcoords.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Reconstruct_Siemens_Spiral\+Tools\spiral_coords_from_dat.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataFind\data_select.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataFind\find_files4analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\DICOM_Load_All.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\mapVBVD.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\read_twix_hdr.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\ReadSiemensMeasVD13_idea.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\spiral_coords_from_dat.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+DataImport\twix_map_obj.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Healthy\CreateHealthyCohort.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+DCF\DCF.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+DCF\Iterative.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+ReconModel\GriddedReconModel.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+ReconModel\LSQGridded.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+ReconModel\ReconModel.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\+Kernel\Gaussian.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\+Kernel\Kernel.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\+Proximity\L2Proximity.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\+Proximity\Proximity.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\+Proximity\sparse_gridding_distance_mex.mexw64</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\@MatrixSystemModel\MatrixSystemModel.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\+Recon\+SysModel\@SystemModel\SystemModel.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\dicom2nifti.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\Dissolved_HighResRecon.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\Dissolved_Phase_LowResRecon.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\duke_halton_random_mex.mexw64</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\gas_exchange_recon_only.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\gas_exchange_traj_gen.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\gasex_floret_recon.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\gasex_h1radial_recon.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\get_DCF.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\recon_noncart.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Reconstruction\reconstruct_all.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Report\create_full_ventilation_report.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Report\create_ventilation_report.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Segmentation\CNN_Seg.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Segmentation\segment_all.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\get_bval.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\get_duke_gasexchange_data.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\get_gasexchange_data.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\get_gasexchange_TR.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\get_raw_noncart.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\parse_xenon_images.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+SiteSpecific\protocol_library_read.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Spectroscopy\NMR_Fit_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Spectroscopy\NMR_Mix_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Spectroscopy\NMR_TimeFit_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\ADCFitting_3D.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\BinImages.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\binning_colorbar.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\CalculateDissolvedHistogram.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\canonical2matlab.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\erode_dilate.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\fermifilter1D.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\fermifilter2D.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\getimcenter.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\imoverlay.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\imoverlay_tool.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\SinglePointDixon_FID.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\SinglePointDixon_V2.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\SOS_Coil_Combine.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\tile_image.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Tools\vent_canon_orient.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\atropos_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\atropos_vent_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\BoltzQC.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\check_CTC_anatomic.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\gas_exchange_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\LB_vent_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\MALB_vent_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\pipe_diffusion_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\pipe_ventilation_analysis.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\+Xe_Analysis\Vent_BiasCorrection.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\kumc_xenon_pipeline.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\mapVBVD.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_Fit.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_Fit_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_Mix.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_Mix_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_TimeFit.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\NMR_TimeFit_v.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\read_twix_hdr.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Duke_Cal\twix_map_obj.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Useful Scripts\imoverlay.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Xenon_FLORET_Recon_Package\Halton_rand.m</file>
+      <file>C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\MATLAB\Xenon_FLORET_Recon_Package\imoverlay_tool.m</file>
+    </fileset.depfun>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub" name="All_in_one_Xenon_Analysis" optional="false">C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2020a</root>
+      <toolboxes>
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

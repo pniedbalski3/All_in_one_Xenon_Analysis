@@ -33,6 +33,8 @@ end
 
 try
     atropos_seg = niftiread(fullfile(write_path,'Vent_ImageSegmentation.nii.gz'));
+    Vent = Tools.canonical2matlab(Vent);
+    atropos_seg = Tools.canonical2matlab(atropos_seg);
     NT_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
 catch
     disp('No atropos Segmentation Found')
@@ -41,6 +43,11 @@ catch
     NT_Output.Hyper = nan;
     NT_Output.Normal = nan;
 end
+
+%After this point, there's no more going to and from nifti, so we can put
+%everything in the shape we need for properly oriented images - Vent is
+%already there...
+Vent_
 
 
 %% Start with CCHMC Method (Mean Anchored Linear Binning)

@@ -1,8 +1,7 @@
 function allinone_recon(mypath)
 %% Identify Image files - done in kind of a lazy way
 if nargin < 1
-    mypath = uigetdir([],'Select folder containing xenon data');
-end
+    mypuigetdir([],'Select Folder Path')
 try 
     files = dir(fullfile(mypath,'Raw'));
     Cell_files = struct2cell(files);
@@ -16,24 +15,21 @@ try
     anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
     cal_file = file_names{find(contains(file_names,calprot),1,'last')};
     
-    xe_file = fullfile(mypath,'Raw',xe_file);
-    anat_file = fullfile(mypath,'Raw',anat_file);
-    cal_file = fullfile(mypath,'Raw',cal_file);
+    xe_file = fullfile(pwd,'Raw',xe_file);
+    anat_file = fullfile(pwd,'Raw',anat_file);
+    cal_file = fullfile(pwd,'Raw',cal_file);
     %Assume that raw data is in a folder called "Raw"
-    write_path = mypath;
+    write_path = pwd;
     %write_path((end-3):end) = [];
     write_path = fullfile(write_path,'All_in_One_Analysis');
     if ~isfolder(write_path)
         mkdir(write_path);
     end
 catch
-  %  xe_file = uigetfile('.dat','Select Xenon File');
-  %  anat_file = uigetfile('.dat','Select Anatomic File');
-  %  cal_file = uigetfile('.dat','Select Calibration File');
-  %  write_path = uigetdir(mypath,'Select Output Folder');
-  %This isn't the best possible way to do this, but let's just return if
-  %this fails.
-  return;
+    xe_file = uigetfile('.dat','Select Xenon File');
+    anat_file = uigetfile('.dat','Select Anatomic File');
+    cal_file = uigetfile('.dat','Select Calibration File');
+    write_path = uigetdir(pwd,'Select Output Folder');
 end
 
 %% Reconstruct
