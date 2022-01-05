@@ -1,4 +1,4 @@
-function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj)
+function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 parent_path = which('analyze_ge_images');
 idcs = strfind(parent_path,filesep);%determine location of file separators
@@ -209,7 +209,9 @@ RBCBarrierBinMap = AllinOne_Tools.BinImages(RBC2BarIm, RBCBarrThresh);
 RBCBarrierBinMap = RBCBarrierBinMap.*VentBinMask;%Mask to ventilated volume
 
 %% Wiggle Analysis
-AllinOne_Wiggles.wiggle_imaging(Dis_Fid,Gas_Fid,Dis_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
+ImSize = size(RBC2Gas,1);
+save(fullfile(write_path,'Gase_Exchange_Workspace_4_wiggles.mat'),'Dis_Fid','Gas_Fid','Dis_Traj','Gas_Traj','H1_Image_Dis','LoRes_Gas_Image','Proton_Mask','VentBinMask','RBC_Mask','-RBC2Bar','TR','ImSize','scanDateStr','write_path');
+AllinOne_Wiggles.wiggle_imaging_2(Dis_Fid,Gas_Fid,Dis_Traj,Gas_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
 
 %% Calculate SNR
 disp('Calculating SNR...')
@@ -356,14 +358,10 @@ saveas(BarrierMontage,fullfile(write_path,'Shareable_Figs','Raw_Tissue_Image.jpg
 saveas(RBCBinMontage,fullfile(write_path,'Shareable_Figs','Binned_RBC_Image.jpg'));
 saveas(BarrierBinMontage,fullfile(write_path,'Shareable_Figs','Binned_Tissue_Image.jpg'));
 
-
-%% Save Workspace variable with useful values
 Vent_Pts = ScaledVentImage(Proton_Mask(:));
 Bar_Pts = Bar2Gas(VentBinMask(:));
 RBC_Pts = RBC2Gas(VentBinMask(:));
 RBC2Bar_Pts = RBC2BarIm(VentBinMask(:));
-
-save(fullfile(write_path,'All_in_One_GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
 
 save(fullfile(write_path,'GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
 
@@ -402,8 +400,8 @@ end
 SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
-    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject{1},Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date{1},scanDateStr));
+    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject{:},Subject) &...
+        strcmpi(AllSubjectSummary.Scan_Date{:},scanDateStr));
 catch
     headers = {'Subject', 'Scan_Date',...%Subject Info
                 'TE90', 'Flip_Angle',...%Acquisition Info

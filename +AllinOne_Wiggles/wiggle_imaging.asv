@@ -13,11 +13,7 @@ RBC_Mask = logical(RBC_Mask);
 %Make a nice purple color
 purp = [168 96 168]/255;
 
-if TR == 8
-    parent_path = which('AllinOne_Wiggles.wiggle_imaging');
-else
-    parent_path = which('Xe_Analysis.pipe_ventilation_analysis');
-end
+parent_path = which('Xe_Analysis.wiggle_imaging');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 
@@ -36,12 +32,6 @@ end
 %For now
 RBCOscThresh = [8.9596-2*10.5608,8.9596-1*10.5608,8.9596,8.9596+1*10.5608,8.9596+2*10.5608,8.9596+3*10.5608,8.9596+4*10.5608];%8
 
-%% Rotate Mask and Gas
-
-H1_Mask = Tools.canonical2matlab(H1_Mask);
-RBC_Mask = Tools.canonical2matlab(RBC_Mask);
-
-Gas_Image = Tools.canonical2matlab(Gas_Image);
 
 %% Change Sizes!
 % oldsize = ImSize;
@@ -278,7 +268,12 @@ for i = 1:size(Alt_Bin,1)
     Alt_Images(:,:,:,i) = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,thiskey_r,thistraj);
 end
 
+%% Rotate Mask and Gas
 
+H1_Mask = Tools.canonical2matlab(H1_Mask);
+RBC_Mask = Tools.canonical2matlab(RBC_Mask);
+
+Gas_Image = Tools.canonical2matlab(Gas_Image);
 %Let's create a mask from the gas image, just for now
 %[~,H1_Mask] = erode_dilate(Gas_Image,1,10);
 %H1_Mask = logical(H1_Mask);
@@ -299,7 +294,7 @@ for i = 1:size(Alt_Bin,1)
     [Alt_Bar(:,:,:,i),Alt_RBC(:,:,:,i),~,~] = Tools.SinglePointDixon_V2(squeeze(Alt_Images(:,:,:,i)),-Alt_RBC2Bar(i),Gas_Image,H1_Mask);
 end
 Alt_RBC = abs(Alt_RBC);
-All_RBC = abs(All_RBC);
+
 % if ~MaskPres
 %     %Just get RBC points with SNR > 2.5
 %     [~,RBC_Mask] = Tools.erode_dilate(All_RBC,1,2.5);
@@ -329,6 +324,7 @@ All_RBC2 = All_RBC/allmean;
 Phase_Step = 360 / size(Alt_Bin,1);
 
 %Let's find the "phase" of the overall mean RBC:
+mean_Phase = 0;
 if Alt_Min2Min
     [~,extr_ind] = max(mean_RBC);
     mean_Phase = extr_ind*Phase_Step;
@@ -339,17 +335,15 @@ end
 
 Amp = zeros(ImSize,ImSize,ImSize);
 Phase = zeros(ImSize,ImSize,ImSize);
-Phase(Phase == 0) = -361;
 
 for i = 1:ImSize
     for j = 1:ImSize
         for k = 1:ImSize
             if RBC_Mask(i,j,k) == 1
                 tmp_RBC = Alt_RBC(i,j,k,:);
-                %In the original paper, I scaled by the mean of the
-                %non-keyhole RBC - Let's try that again!
-                Amp(i,j,k) = (max(tmp_RBC)-min(tmp_RBC))/mean(All_RBC2(RBC_Mask==1));
-                %Need to know whether we went from max to max or min to min           
+                Amp(i,j,k) = max(tmp_RBC)-min(tmp_RBC);
+                %Need to know whether we went from max to max or min to min
+                extr_ind = 0;
                 if Alt_Min2Min
                     [~,extr_ind] = max(tmp_RBC);
                 else

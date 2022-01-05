@@ -13,11 +13,7 @@ RBC_Mask = logical(RBC_Mask);
 %Make a nice purple color
 purp = [168 96 168]/255;
 
-if TR == 8
-    parent_path = which('AllinOne_Wiggles.wiggle_imaging');
-else
-    parent_path = which('Xe_Analysis.pipe_ventilation_analysis');
-end
+parent_path = which('Xe_Analysis.wiggle_imaging');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 
@@ -42,6 +38,7 @@ H1_Mask = Tools.canonical2matlab(H1_Mask);
 RBC_Mask = Tools.canonical2matlab(RBC_Mask);
 
 Gas_Image = Tools.canonical2matlab(Gas_Image);
+H1_im = Tools.canonical2matlab(H1_im);
 
 %% Change Sizes!
 % oldsize = ImSize;
@@ -125,62 +122,6 @@ end
 %Put high and low keys in keyhole
 High_Key(1:Key_Rad,High_Indx) = dis2gasfid(1:Key_Rad,High_Indx);
 Low_Key(1:Key_Rad,Low_Indx) = dis2gasfid(1:Key_Rad,Low_Indx);
-%% Create Many Keys instead
-%What if I just skip over the binning and keyhole based on every .200
-%seconds (i.e. 5 frames per second) - That's hardly any data in each
-%key, but it may work. This should allow us to discern up to 100 bpm heart
-%rate. Maybe reduce in the future, but let's do the max right now.
-%Need to recalculate Key Radius
-Key_Time_Res = 0.2; %Key Time Resolution in s
-nProperkey = ceil(Key_Time_Res/(TR/1000));
-nKey = floor(Tot_Proj/nProperkey);
-
-radpts = 1:0.1:ceil(size(disfid,1)/2);
-Full_Samp = 4*pi*radpts.^2;
-
-Samp = nProperkey./Full_Samp*100;
-
-Key_Rad_Pts = find(Samp > 50.0,1,'last');
-
-Key_Rad = radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
-
-%Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
-Traj_Rad = squeeze(sqrt(traj(1,:,:).^2+traj(2,:,:).^2+traj(3,:,:).^2));
-num_k0 = length(find(Traj_Rad(:,1)==0));
-
-Pts = find(Traj_Rad(:,1)<Key_Rad,1,'last');
-Key_Rad = Pts;
-
-Keyhole = dis2gasfid;
-Keyhole(1:Key_Rad,:) = NaN;
-
-Many_Keys = zeros(size(dis2gasfid,1),size(dis2gasfid,2),nKey);
-% figure('Name','Sanity Check Many Keys')
-%In this case, I need to get each individual RBC/Barrier Ratio
-[Dis_Shift,~] = Tools.SinglePointDixon_FID(disfid,RBC2Bar,gasfid);
-RBC_Shift = abs(real(Dis_Shift));
-Bar_Shift = abs(imag(Dis_Shift));
-Many_R2B = zeros(1,nKey);
-% spsize = ceil(sqrt(nKey));
-for i = 1:nKey
-    Many_R2B(i) = mean(RBC_Shift(1,(1:nProperkey)+(i-1)*nProperkey))/mean(Bar_Shift(1,(1:nProperkey)+(i-1)*nProperkey));
-    Many_Keys(:,:,i) = Keyhole;
-    mean_thiskey = mean(abs(dis2gasfid(1,(1:nProperkey) + (i-1)*nProperkey)));
-    for j = 1:length(Keyhole)
-        Many_Keys(:,j,i) = Many_Keys(:,j,i)*mean_thiskey/abs(dis2gasfid(1,j));
-    end
-    Many_Keys(1:Key_Rad,(1:nProperkey)+(i-1)*nProperkey,i) = dis2gasfid(1:Key_Rad,(1:nProperkey)+(i-1)*nProperkey);
-%     
-%     subplot(spsize,spsize,i)
-%   %  imagesc(abs(squeeze(Many_Keys(:,:,i))));
-%  %   figure('Name',['KeyTraj for key ' num2str(i)])
-%     hold on
-%     for j = 1:nProperkey
-%         plot3(traj(1,:,j+(i-1)*nProperkey),traj(2,:,j+(i-1)*nProperkey),traj(3,:,j+(i-1)*nProperkey))
-%     end
-%     hold off
-%     
-end
 
 %% Keyhole Alternative Binning
 radpts = 1:0.1:ceil(size(disfid,1)/2);
@@ -253,18 +194,6 @@ High_Dis = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,high_data_r,high_tr
 Low_Dis = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,low_data_r,low_traj_r);
 %Gas_Image = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,gas_data_r,gastraj_r);
 
-%% Reconstruct the many, many keys
-Many_Images = zeros(ImSize,ImSize,ImSize,nKey);
-for i = 1:nKey
-    thiskey = squeeze(Many_Keys(:,:,i));
-    thistraj = traj_r;
-    thiskey_r = reshape(thiskey,1,[])';
-    thisnan = isnan(thiskey_r);
-    thiskey_r(thisnan) = [];
-    thistraj(thisnan,:) = [];
-    Many_Images(:,:,:,i) = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,thiskey_r,thistraj);
-end
-
 %% What about alternative binning:
 
 Alt_Images = zeros(ImSize,ImSize,ImSize,size(Alt_Bin,1));
@@ -278,20 +207,10 @@ for i = 1:size(Alt_Bin,1)
     Alt_Images(:,:,:,i) = Reconstruction.Dissolved_Phase_LowResRecon(ImSize,thiskey_r,thistraj);
 end
 
-
-%Let's create a mask from the gas image, just for now
-%[~,H1_Mask] = erode_dilate(Gas_Image,1,10);
-%H1_Mask = logical(H1_Mask);
 %% Separate RBC and Barrier Images
 [All_Bar,All_RBC, ~, ~] = Tools.SinglePointDixon_V2(All_Dis,-RBC2Bar,Gas_Image,H1_Mask);
 [High_Bar,High_RBC, ~, ~] = Tools.SinglePointDixon_V2(High_Dis,-High_RBC2Bar,Gas_Image,H1_Mask);
 [Low_Bar,Low_RBC, ~, ~] = Tools.SinglePointDixon_V2(Low_Dis,-Low_RBC2Bar,Gas_Image,H1_Mask);
-
-Many_RBC = zeros(ImSize,ImSize,ImSize,nKey);
-Many_Bar = zeros(ImSize,ImSize,ImSize,nKey);
-for i = 1:nKey
-    [Many_Bar(:,:,:,i),Many_RBC(:,:,:,i),~,~] = Tools.SinglePointDixon_V2(squeeze(Many_Images(:,:,:,i)),-Many_R2B(i),Gas_Image,H1_Mask);
-end
 
 Alt_RBC = zeros(ImSize,ImSize,ImSize,size(Alt_Bin,1));
 Alt_Bar = zeros(ImSize,ImSize,ImSize,size(Alt_Bin,1));
@@ -361,47 +280,10 @@ for i = 1:ImSize
     end
 end
 
-
-
-%% Fourier Decomposition 
-[Amp,Phase,Freq,R2,BP_Ims] = Tools.fourier_decomp(Many_RBC,RBC_Mask,Key_Time_Res,HR);
-
-[Amp2,Amp3] = Tools.simp_amp(Many_RBC,RBC_Mask);
-
-Amp3 = Amp3/mean(All_RBC2(RBC_Mask==1));
-Amp3 = Amp3*100;
-
-if ~isfolder(fullfile(write_path,'Wiggle_figs'))
-    mkdir(fullfile(write_path,'Wiggle_figs'));
-end
 Amp = Amp*100;
 
-%There are some ludicrously high Amp Values - Get rid of them
-RBC_Mask(Amp>50) = false;
-Amp = Amp.*RBC_Mask;
-Phase = Phase.*RBC_Mask;
-Freq = Freq.*RBC_Mask;
+save(fullfile(write_path,'Alternative_Binning.mat'),'Amp','Phase');
 
-PhaseEdges = linspace(-pi,pi,60);
-AmpEdges = linspace(0,30,60);
-
-NewHistFig = figure('Name','New Histograms');
-set(NewHistFig,'color','white','Units','inches','Position',[1 1 10 8])
-subplot(2,2,1)
-histogram(Amp(RBC_Mask(:)),AmpEdges)
-title('Amplitude')
-xlabel('Oscilation Amplitude (%)');
-subplot(2,2,2)
-histogram(Phase(RBC_Mask(:)),PhaseEdges)
-title('Phase')
-xlabel('Oscilation Phase (Radians)');
-subplot(2,2,3)
-histogram(Freq(RBC_Mask(:)),60);
-title('Frequency')
-xlabel('Oscillation Frequency (Hz)');
-saveas(NewHistFig,fullfile(write_path,'Wiggle_figs','NewMethod_Histograms.png'));
-
-save(fullfile(write_path,'Wiggle_decomposition_2.mat'),'Amp','Phase','Freq','R2','BP_Ims','Amp2');
 %% Get SNR
 NoiseMask = imerode(~H1_Mask,strel('sphere',7));%avoid edges/artifacts/partialvolume
 HighRBC_SNR = (mean(High_RBC(Vent_Mask(:)))- mean(High_RBC(NoiseMask(:))))/std(High_RBC(NoiseMask(:)));
@@ -492,11 +374,7 @@ try
     BarOscDis_tiled = Tools.tile_image(Bar_Osc_Dis(:,:,(firstslice-2):(lastslice+2)),3);
     OscBin_tiled = Tools.tile_image(OscBinMap(:,:,(firstslice-2):(lastslice+2)),3);
     Amp_tiled = Tools.tile_image(Amp(:,:,(firstslice-2):(lastslice+2)),3);
-    Amp2_tiled = Tools.tile_image(Amp2(:,:,(firstslice-2):(lastslice+2)),3);
-    Freq_tiled = Tools.tile_image(Freq(:,:,(firstslice-2):(lastslice+2)),3);
     Phase_tiled = Tools.tile_image(Phase(:,:,(firstslice-2):(lastslice+2)),3);
-    R2_tiled = Tools.tile_image(R2(:,:,(firstslice-2):(lastslice+2)),3);
-    Amp3_tiled = Tools.tile_image(Amp3(:,:,(firstslice-2):(lastslice+2)),3);
 catch
     Anat_tiled1 = Tools.tile_image(H1_im,3,'nRows',3);
     BarHigh_tiled = abs(Tools.tile_image(High_Bar,3,'nRows',3));
@@ -512,11 +390,7 @@ catch
     RBCHigh_tiled = Tools.tile_image(High_RBC,3,'nRows',3);
     RBCLow_tiled = Tools.tile_image(Low_RBC,3,'nRows',3);
     Amp_tiled = Tools.tile_image(Amp(:,:,:),3);
-    Amp2_tiled = Tools.tile_image(Amp2(:,:,:),3);
-    Amp3_tiled = Tools.tile_image(Amp3(:,:,:),3);
-    Freq_tiled = Tools.tile_image(Freq(:,:,:),3);
     Phase_tiled = Tools.tile_image(Phase(:,:,:),3);
-    R2_tiled = Tools.tile_image(R2(:,:,:),3);
 end
 
 %RBC_Lim = [min(RBC_Osc(RBC_Mask(:))) max(RBC_Osc(RBC_Mask(:)))];
@@ -603,59 +477,59 @@ annotation(RBC_Osc_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String
 %set(RBC_Osc_Montage,'WindowState','minimized');
 saveas(RBC_Osc_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Old_Way.png'));
 
-%Amplitude from Fit
-Amp_Montage = figure('Name','Oscillation Amplitude from Sine Fit','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+%Amplitude from Alternative Binning Method
+Amp_Montage = figure('Name','Oscillation Amplitude from Alternative Binning','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(Amp_Montage,'color','white','Units','inches','Position',[1 1 8 7.2])
 %set(RBCMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
-[~,~] = Tools.imoverlay(Anat_tiled,Amp_tiled,[0.0001 20],[0,0.99*ProtonMax],parula,1,gca);
+[~,~] = Tools.imoverlay(Anat_tiled,Amp_tiled,[0.01 40],[0,0.99*ProtonMax],parula,1,gca);
 axis off
 colormap(parula);
 cbar = colorbar(gca','Location','southoutside');
 pos = cbar.Position;
 cbar.Position = [pos(1),0.03,pos(3),pos(4)];
-title('RBC Oscillation Amplitude Sine Fit','FontSize',16)
+title('RBC Oscillation Amplitude Alternative Binning','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(Amp_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC Osc Mean = ' num2str(mean(Amp(RBC_Mask(:))),'%.3f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
 %set(RBC_Osc_Montage,'WindowState','minimized');
-saveas(Amp_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_Sine_Fit.png'));
+saveas(Amp_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_Alternative_Binning.png'));
 
 %Amplitude from Simple way
-Amp2_Montage = figure('Name','Oscillation Amplitude from RBC Stack','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+Amp2_Montage = figure('Name','Oscillation Phase from Alternative Binning','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(Amp2_Montage,'color','white','Units','inches','Position',[1 1 8 7.2])
 %set(RBCMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
-[~,~] = Tools.imoverlay(Anat_tiled,Amp2_tiled,[0.0001 20],[0,0.99*ProtonMax],parula,1,gca);
+[~,~] = Tools.imoverlay(Anat_tiled,Phase_tiled,[-360 360],[0,0.99*ProtonMax],parula,1,gca);
 axis off
 colormap(parula);
 cbar = colorbar(gca','Location','southoutside');
 pos = cbar.Position;
 cbar.Position = [pos(1),0.03,pos(3),pos(4)];
-title('RBC Oscillation Amplitude Image Peak Diff','FontSize',16)
+title('RBC Oscillation Phase Alternative Binning','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-annotation(Amp2_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC Osc Mean = ' num2str(mean(Amp2(RBC_Mask(:))),'%.3f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+annotation(Amp2_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC Osc Mean = ' num2str(mean(Phase(RBC_Mask(:))),'%.3f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
 %set(RBC_Osc_Montage,'WindowState','minimized');
-saveas(Amp2_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_mean_diff_Btw_peaks.png'));
+saveas(Amp2_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Phase_From_Alternative_Binning.png'));
 
 %Amplitude from Simple way scaled by mean RBC rather than voxel
-Amp3_Montage = figure('Name','Oscillation Amplitude from RBC Stack','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
-set(Amp3_Montage,'color','white','Units','inches','Position',[1 1 8 7.2])
-%set(RBCMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
-axes('Units', 'normalized', 'Position', [0 0 1 1])
-[~,~] = Tools.imoverlay(Anat_tiled,Amp3_tiled,[0.0001 20],[0,0.99*ProtonMax],parula,1,gca);
-axis off
-colormap(parula);
-cbar = colorbar(gca','Location','southoutside');
-pos = cbar.Position;
-cbar.Position = [pos(1),0.03,pos(3),pos(4)];
-title('RBC Oscillation Amplitude Image Peak Diff Scaled by mean RBC','FontSize',16)
-InSet = get(gca, 'TightInset');
-set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-annotation(Amp3_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC Osc Mean = ' num2str(mean(Amp3(RBC_Mask(:))),'%.3f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-%set(RBC_Osc_Montage,'WindowState','minimized');
-saveas(Amp3_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_mean_diff_Btw_peaks.png'));
+% Amp3_Montage = figure('Name','Oscillation Amplitude from RBC Stack','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+% set(Amp3_Montage,'color','white','Units','inches','Position',[1 1 8 7.2])
+% %set(RBCMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
+% axes('Units', 'normalized', 'Position', [0 0 1 1])
+% [~,~] = Tools.imoverlay(Anat_tiled,Amp3_tiled,[0.0001 20],[0,0.99*ProtonMax],parula,1,gca);
+% axis off
+% colormap(parula);
+% cbar = colorbar(gca','Location','southoutside');
+% pos = cbar.Position;
+% cbar.Position = [pos(1),0.03,pos(3),pos(4)];
+% title('RBC Oscillation Amplitude Image Peak Diff Scaled by mean RBC','FontSize',16)
+% InSet = get(gca, 'TightInset');
+% set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
+% annotation(Amp3_Montage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC Osc Mean = ' num2str(mean(Amp3(RBC_Mask(:))),'%.3f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+% %set(RBC_Osc_Montage,'WindowState','minimized');
+% saveas(Amp3_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_mean_diff_Btw_peaks.png'));
 
 
 % %RBC Osc as scaled by gas
@@ -879,6 +753,20 @@ saveas(Amp3_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Amp_From_mean_dif
 % RBCOscBin7Percent = sum(OscBinMap(:)==7)/sum(RBC_Mask(:)==1)*100;
 % RBCOscBin8Percent = sum(OscBinMap(:)==8)/sum(RBC_Mask(:)==1)*100;
 
+Hist_Fig = figure('Name','Histograms');
+subplot(2,2,1)
+histogram(RBC_Osc(RBC_Mask(:)))
+title('Old Way RBC Oscillation Amplitude')
+subplot(2,2,2)
+histogram(Amp(RBC_Mask(:)))
+title('Alternative Binning Amplitude')
+subplot(2,2,4)
+histogram(Phase(RBC_Mask(:)))
+title('Alternative Binning Phase');
+
+
+saveas(Hist_Fig,fullfile(write_path,'Wiggle_Histograms.png'));
+
 %% Save Workspace
 save(fullfile(write_path,'Wiggle_Workspace.mat'),'RBC_Osc','RBC_Mask','High_RBC','Low_RBC','H1_im','RBC_Osc_Mean','RBC_Osc_Std','All_RBC');
 
@@ -903,19 +791,19 @@ catch
     Subject = 'Unknown';
 end
 
-matfile = 'Wiggles.mat';
+matfile = 'Wiggles2.mat';
 SubjectMatch = [];
 try
     load(fullfile(parent_path,'AncillaryFiles',matfile),'Wiggles');
-    SubjectMatch = find(strcmpi(Wiggles.Date{1},scanDateStr) &...
-        strcmpi(Wiggles.Subject{1},Subject));
+    SubjectMatch = find(strcmpi(Wiggles.Date{:},scanDateStr) &...
+        strcmpi(Wiggles.Subject{:},Subject));
 catch
-    headers = {'Subject','Date','Global_Amp','Global_Amp_std','Osc_Amp_Old_mean','Osc_Amp_Old_std','Osc_Amp_sin_mean','Osc_Amp_sin_std','Osc_Amp_simp_mean','Osc_Amp_simp_std','Osc_Amp_simp_mean_meanscaled','Osc_Amp_simp_std_meanscaled'};
+    headers = {'Subject','Date','Global_Amp','Global_Amp_std','Osc_Amp_Old_mean','Osc_Amp_Old_std','Osc_Amp_Alt_mean','Osc_Amp_Alt_std','Osc_Phase_mean','Osc_Phase_std'};
     Wiggles = cell2table(cell(0,size(headers,2)));
     Wiggles.Properties.VariableNames = headers;
 end
 
-NewData = {Subject,scanDateStr,Glob_Amp,Glob_Amp_Std,RBC_Osc_Mean,RBC_Osc_Std,mean(Amp(RBC_Mask(:))),std(Amp(RBC_Mask(:))),mean(Amp2(RBC_Mask(:))),std(Amp2(RBC_Mask(:))),mean(Amp3(RBC_Mask(:))),std(Amp3(RBC_Mask(:)))};
+NewData = {Subject,scanDateStr,Glob_Amp,Glob_Amp_Std,RBC_Osc_Mean,RBC_Osc_Std,mean(Amp(RBC_Mask(:))),std(Amp(RBC_Mask(:))),mean(Phase(RBC_Mask(:))),std(Phase(RBC_Mask(:)))};
 
 if (isempty(SubjectMatch))%if no match
     Wiggles = [Wiggles;NewData];%append
@@ -923,7 +811,7 @@ else
     Wiggles(SubjectMatch,:) = NewData;%overwrite
 end
 save(fullfile(parent_path,'AncillaryFiles',matfile),'Wiggles')
-excel_summary_file =  fullfile(parent_path,'AncillaryFiles','Wiggle_Summary.xlsx');
+excel_summary_file =  fullfile(parent_path,'AncillaryFiles','Wiggle_Summary_New.xlsx');
 writetable(Wiggles,excel_summary_file,'Sheet',1)
 % %% Reporting - "Clinical"
 % idcs = strfind(write_path,filesep);%determine location of file separators
