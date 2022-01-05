@@ -356,27 +356,28 @@ saveas(BarrierMontage,fullfile(write_path,'Shareable_Figs','Raw_Tissue_Image.jpg
 saveas(RBCBinMontage,fullfile(write_path,'Shareable_Figs','Binned_RBC_Image.jpg'));
 saveas(BarrierBinMontage,fullfile(write_path,'Shareable_Figs','Binned_Tissue_Image.jpg'));
 
-<<<<<<< HEAD
+
 %% Save Workspace variable with useful values
-=======
->>>>>>> fb28413ca600f5aced46161a99de4a6718077166
 Vent_Pts = ScaledVentImage(Proton_Mask(:));
 Bar_Pts = Bar2Gas(VentBinMask(:));
 RBC_Pts = RBC2Gas(VentBinMask(:));
 RBC2Bar_Pts = RBC2BarIm(VentBinMask(:));
 
-<<<<<<< HEAD
 save(fullfile(write_path,'All_in_One_GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
 
-=======
 save(fullfile(write_path,'GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
->>>>>>> fb28413ca600f5aced46161a99de4a6718077166
 
 %% Write Reports
-AllinOne_Tools.write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)
-
-AllinOne_Tools.write_full_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,RBCBins,BarBins,RBC2BarBins,VentBinMontage,VentHistFig,RBCBinMontage,RBCHistFig,BarrierBinMontage,BarHistFig,RBCBarBinMontage,RBCBarHistFig,k0fig,DissolvedNMR,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage);
-
+try
+    AllinOne_Tools.write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)
+catch
+    disp('No Clinical Report Written')
+end
+try
+    AllinOne_Tools.write_full_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,RBCBins,BarBins,RBC2BarBins,VentBinMontage,VentHistFig,RBCBinMontage,RBCHistFig,BarrierBinMontage,BarHistFig,RBCBarBinMontage,RBCBarHistFig,k0fig,DissolvedNMR,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage);
+catch
+    disp('No Technical Report Written')
+end
 %% Write to Excel
 matfile = 'All_in_One_GasExchange.mat';
 excel_summary_file = fullfile(parent_path,'AncillaryFiles','AllinOne_Gas_Exchange_Summary.xlsx');
