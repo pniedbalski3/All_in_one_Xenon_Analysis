@@ -210,7 +210,7 @@ RBCBarrierBinMap = RBCBarrierBinMap.*VentBinMask;%Mask to ventilated volume
 
 %% Wiggle Analysis
 ImSize = size(RBC2Gas,1);
-save(fullfile(write_path,'Gase_Exchange_Workspace_4_wiggles.mat'),'Dis_Fid','Gas_Fid','Dis_Traj','Gas_Traj','H1_Image_Dis','LoRes_Gas_Image','Proton_Mask','VentBinMask','RBC_Mask','-RBC2Bar','TR','ImSize','scanDateStr','write_path');
+save(fullfile(write_path,'Gase_Exchange_Workspace_4_wiggles.mat'),'Dis_Fid','Gas_Fid','Dis_Traj','Gas_Traj','H1_Image_Dis','LoRes_Gas_Image','Proton_Mask','VentBinMask','RBC_Mask','RBC2Bar','TR','ImSize','scanDateStr','write_path');
 AllinOne_Wiggles.wiggle_imaging_2(Dis_Fid,Gas_Fid,Dis_Traj,Gas_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
 
 %% Calculate SNR
