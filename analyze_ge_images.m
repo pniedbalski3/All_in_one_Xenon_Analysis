@@ -39,7 +39,7 @@ scanDateStr = Params.scandatestr;
 %% Calibration
 try
     disData_avg = Cal_Raw.data;
-    t = double((0:(size(disData_avg,1)-1))*Cal_Raw.dwell);
+    t = double((0:(length(disData_avg)-1))*Cal_Raw.dwell);
     disfitObj = Spectroscopy.NMR_TimeFit_v(disData_avg,t,[1 1 1],[0 -700  -7400],[250 200 30],[0 200 0],[0 0 0],0,length(t)); % first widths lorenzian, 2nd are gauss
     disfitObj = disfitObj.fitTimeDomainSignal();
     AppendedDissolvedFit = Cal_Raw.dwell*fftshift(fft(disfitObj.calcComponentTimeDomainSignal(t),[],1),1);
