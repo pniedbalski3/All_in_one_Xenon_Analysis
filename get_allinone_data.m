@@ -20,7 +20,7 @@ loop = Xe_Raw.loopcounters;
 
 %I could do something more elegant, but really, this is just every other,
 %starting with Dis
-Dis_Fid = fid(1:2:end,:);
+Dis_Fid = fid(1:2:(end-1),:);
 %Again could do something more elegant, but start with easy
 Dis_Fid(:,65:end) = [];
 Dis_Fid = Dis_Fid';
