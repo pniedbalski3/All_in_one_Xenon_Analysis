@@ -3,6 +3,7 @@ function allinone_recon(mypath)
 if nargin < 1
     mypath = uigetdir([],'Select folder containing xenon data');
 end
+%% Read Data
 try 
     files = dir(fullfile(mypath,'Raw'));
     Cell_files = struct2cell(files);
@@ -27,6 +28,7 @@ try
         mkdir(write_path);
     end
 catch
+    disp('Something is broken');
   %  xe_file = uigetfile('.dat','Select Xenon File');
   %  anat_file = uigetfile('.dat','Select Anatomic File');
   %  cal_file = uigetfile('.dat','Select Calibration File');

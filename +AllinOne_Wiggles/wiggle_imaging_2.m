@@ -1,4 +1,4 @@
-function wiggle_imaging(disfid,gasfid,traj,gastraj,H1_im,Gas_Image,H1_Mask,Vent_Mask,RBC_Mask,RBC2Bar,TR,ImSize,scanDateStr,write_path)
+function wiggle_imaging_2(disfid,gasfid,traj,gastraj,H1_im,Gas_Image,H1_Mask,Vent_Mask,RBC_Mask,RBC2Bar,TR,ImSize,scanDateStr,write_path)
 %% Body of Function
 %Function to implement data detrending, oscillation binning, etc.
 %Pass fids, trajectories, Proton image, RBC/Barrier Ratio, and TR. This function is going to be
@@ -459,6 +459,10 @@ RBC_Lim = [-20 40];
 % set(Bar_Low_Montage,'WindowState','minimized');
 % saveas(RBC_Low_Montage,fullfile(write_path,'Wiggle_figs','RBCLow.png'));
 
+if ~isfolder(fullfile(write_path,'Wiggle_figs'))
+    mkdir(fullfile(write_path,'Wiggle_figs'));
+end
+
 %RBC Osc
 RBC_Osc_Montage = figure('Name','RBC Oscillation old way','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(RBC_Osc_Montage,'color','white','Units','inches','Position',[1 1 8 7.2])
@@ -795,8 +799,8 @@ matfile = 'Wiggles2.mat';
 SubjectMatch = [];
 try
     load(fullfile(parent_path,'AncillaryFiles',matfile),'Wiggles');
-    SubjectMatch = find(strcmpi(Wiggles.Date{:},scanDateStr) &...
-        strcmpi(Wiggles.Subject{:},Subject));
+    SubjectMatch = find(strcmpi(Wiggles.Date,scanDateStr) &...
+        strcmpi(Wiggles.Subject,Subject));
 catch
     headers = {'Subject','Date','Global_Amp','Global_Amp_std','Osc_Amp_Old_mean','Osc_Amp_Old_std','Osc_Amp_Alt_mean','Osc_Amp_Alt_std','Osc_Phase_mean','Osc_Phase_std'};
     Wiggles = cell2table(cell(0,size(headers,2)));
