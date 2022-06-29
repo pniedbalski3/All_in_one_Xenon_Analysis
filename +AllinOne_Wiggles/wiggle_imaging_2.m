@@ -88,7 +88,7 @@ Full_Samp = 4*pi*radpts.^2;
 
 Samp = NHigh./Full_Samp*100;
 
-Key_Rad_Pts = find(Samp > 50.0,1,'last');
+Key_Rad_Pts = find(Samp > 100.0,1,'last');
 
 Key_Rad = radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
 
@@ -130,7 +130,7 @@ Full_Samp = 4*pi*radpts.^2;
 
 Samp = NHigh./Full_Samp*100;
 
-Key_Rad_Pts = find(Samp > 50.0,1,'last');
+Key_Rad_Pts = find(Samp > 100.0,1,'last');
 
 Key_Rad = radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
 
@@ -144,10 +144,19 @@ Key_Rad = Pts;
 Keyhole = dis2gasfid;
 Keyhole(1:Key_Rad,:) = NaN;
 
+%I should scale the keyhole!
 Alt_Keys = zeros([size(dis2gasfid) size(Alt_Bin,1)]);
 for i = 1:size(Alt_Bin,1)
     Alt_Keys(:,:,i) = Keyhole;
+    mean_key = mean(abs(dis2gasfid(1,Alt_Bin(i,:))));
+    for j = 1:length(Keyhole)
+        Alt_Keys(:,j,i) = Alt_Keys(:,j,i)*mean_key/abs(dis2gasfid(1,j));
+    end
     Alt_Keys(1:Key_Rad,Alt_Bin(i,:),i) = dis2gasfid(1:Key_Rad,Alt_Bin(i,:));
+    
+    %For debugging, let's look at the trajectories in each key
+    %Tools.disp_traj(traj(:,:,Alt_Bin(i,:))); It really looks pretty good.
+    
 end
 
 %% Now, need to reconstruct High, Low, and Unaltered Data
@@ -260,11 +269,17 @@ Amp = zeros(ImSize,ImSize,ImSize);
 Phase = zeros(ImSize,ImSize,ImSize);
 Phase(Phase == 0) = -361;
 
+figure('Name','Debug Wiggles')
+counter = 1;
 for i = 1:ImSize
     for j = 1:ImSize
         for k = 1:ImSize
             if RBC_Mask(i,j,k) == 1
-                tmp_RBC = Alt_RBC(i,j,k,:);
+                tmp_RBC = squeeze(Alt_RBC(i,j,k,:));
+                
+                %Can I smooth this at all:
+                tmp_RBC = smooth(tmp_RBC,3);
+                
                 %In the original paper, I scaled by the mean of the
                 %non-keyhole RBC - Let's try that again!
                 Amp(i,j,k) = (max(tmp_RBC)-min(tmp_RBC))/mean(All_RBC2(RBC_Mask==1));
@@ -272,9 +287,21 @@ for i = 1:ImSize
                 if Alt_Min2Min
                     [~,extr_ind] = max(tmp_RBC);
                 else
-                    [~,extr_ind] = min(mean_RBC);
+                    [~,extr_ind] = min(tmp_RBC);
                 end
                 Phase(i,j,k) = mean_Phase - Phase_Step*extr_ind;
+                
+                %Let's have a look at every 100th point to see how this is
+                %working
+                if mod((i*ImSize*ImSize+j*ImSize+k),100) == 0
+                    subplot(10,10,counter)
+                    plot(tmp_RBC);
+                    counter = counter+1;
+                    if counter > 100
+                        counter = 1;
+                    end
+                end
+                
             end
         end
     end
