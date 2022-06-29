@@ -3,24 +3,20 @@ function [Dis_Fid,Dis_Traj,Gas_Fid,Gas_Traj] = get_allinone_data(file)
 %Function to read in all_in_one data
 %%
 
-parent_path = which('get_allinone_data');
-idcs = strfind(parent_path,filesep);%determine location of file separators
-parent_path = parent_path(1:idcs(end)-1);%remove file
-
-Xe_Dat_twix = AllinOne_DataImport.mapVBVD(file,'ignoreSeg');
+Xe_Dat_twix = DataImport.mapVBVD(file,'ignoreSeg');
 Xe_Dat_twix.flagIgnoreSeg = 1;
 Xe_Dat_twix.image.flagIgnoreSeg = 1;
 Xe_Dat_twix.image.flagAverageReps = 1;
 Xe_Dat_twix.flagAverageReps = 1;
 Seq_Name = Xe_Dat_twix.hdr.Config.SequenceFileName;
 
-Xe_Raw = AllinOne_DataImport.ReadSiemensMeasVD13_idea(file);
+Xe_Raw = DataImport.ReadSiemensMeasVD13_idea(file);
 fid = Xe_Raw.rawdata;
 loop = Xe_Raw.loopcounters;
 
 %I could do something more elegant, but really, this is just every other,
 %starting with Dis
-Dis_Fid = fid(1:2:end,:);
+Dis_Fid = fid(1:2:(end-1),:);
 %Again could do something more elegant, but start with easy
 Dis_Fid(:,65:end) = [];
 Dis_Fid = Dis_Fid';
@@ -83,7 +79,7 @@ NPro = size(Dis_Fid,2);
 
 ind = zeros(1,NPro);
 for i = 1:NPro
-    ind(i) = AllinOne_Tools.Halton_rand(i-1,2);
+    ind(i) = Halton_rand(i-1,2);
 end
 [~,newind] = sort(ind);
 
@@ -117,10 +113,10 @@ Dis_Traj = hold_traj;
 
 %Dis_Traj = rotate_radial(k_loc,NPts,NPro);
 %% Get Gas Traj:
-traj_file = fullfile(parent_path,'Traj_Files','Vent_GasExchange_20210819_Traj.dat');
-traj_twix = AllinOne_DataImport.mapVBVD(traj_file);
+traj_file = 'C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\Traj_Files\Vent_GasExchange_20210819_Traj.dat';
+traj_twix = mapVBVD(traj_file);
 
-Gas_Traj = AllinOne_Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
+Gas_Traj = Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
 
 hold_traj = Gas_Traj;
 hold_traj(1,:,:) = Gas_Traj(2,:,:);
