@@ -13,7 +13,11 @@ RBC_Mask = logical(RBC_Mask);
 %Make a nice purple color
 purp = [168 96 168]/255;
 
-parent_path = which('Xe_Analysis.wiggle_imaging');
+if TR == 8
+    parent_path = which('AllinOne_Wiggles.wiggle_imaging');
+else
+    parent_path = which('Xe_Analysis.pipe_ventilation_analysis');
+end
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 
