@@ -183,8 +183,8 @@ end
 SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
-    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject{1},Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date{1},scanDateStr));
+    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject,Subject) &...
+        strcmpi(AllSubjectSummary.Scan_Date,scanDateStr));
 catch
     headers = {'Subject', 'Scan_Date',...%Subject Info
                 'Process_Date',...%Reconstruction Info

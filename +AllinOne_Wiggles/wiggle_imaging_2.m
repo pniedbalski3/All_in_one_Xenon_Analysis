@@ -17,6 +17,11 @@ parent_path = which('Xe_Analysis.wiggle_imaging');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 
+if ~isdir(fullfile(write_path,'Wiggle_figs'))
+    mkdir(fullfile(write_path,'Wiggle_figs'));
+end
+
+
 %excel_summary_file = 'C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\Xenon_Pipeline\Analysis_Pipeline\AncillaryFiles\All_Wiggle_Summary.xlsx';
 
 if(exist(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'),'file') == 2) %if Healthy cohort data exists, use
