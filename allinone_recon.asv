@@ -76,7 +76,7 @@ if force_recon
 
     save(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 else
-    load(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
+    load(
 end
 %% Masking
 [VentMask,DisMask] = all_in_one_masking(write_path);
@@ -98,5 +98,5 @@ analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw
 analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr)
 
 %% Clean up
-close all;
-fclose all;
+close all
+fclose all

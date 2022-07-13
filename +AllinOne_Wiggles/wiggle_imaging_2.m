@@ -811,18 +811,16 @@ save(fullfile(write_path,'Wiggle_Workspace.mat'),'RBC_Osc','RBC_Mask','High_RBC'
 %Get subject from path
 idcs = strfind(write_path,filesep);%determine location of file separators
 try
-    sub_ind = strfind(write_path,'Xe-');
-    sub_end = find(idcs>sub_ind,1,'first');
-    sub_end = idcs(sub_end);
-    move = true;
-    while move
-        if write_path(sub_ind-1) ~= '_'
-            sub_ind = sub_ind - 1;
+    subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
+    if contains(subject_tmp,'_')
+        uscore = strfind(subject_tmp,'_');
+        if length(uscore) == 1 && (length(subject_tmp)-uscore(1)) < 3
+            subject_tmp(1:uscore(1)) = [];
         else
-            move = false;
+            subject_tmp(1:uscore(1)) = [];
         end
     end
-    Subject = write_path(sub_ind:(sub_end-1));
+    Subject = subject_tmp;
 catch
     Subject = 'Unknown';
 end

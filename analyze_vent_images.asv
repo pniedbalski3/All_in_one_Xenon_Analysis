@@ -22,7 +22,7 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 %% Now, need to do some bias correction 
 %On a PC, use Matt's code
 if ispc
-    [Vent_BF,~] = AllinOne_Tools.Vent_BiasCorrection(Vent,Mask);
+    [Vent_BF,BiasField] = AllinOne_Tools.Vent_BiasCorrection(Vent,Mask);
 end
 %If not a PC, we should be able to get Bias Corrected Image from the
 %Atropos analysis
@@ -206,7 +206,7 @@ catch
                 'LB_Bin1','LB_Bin2','LB_Bin3','LB_Bin4','LB_Bin5','LB_Bin6',...
                 'BF_LB_Bin1','BF_LB_Bin2','BF_LB_Bin3','BF_LB_Bin4','BF_LB_Bin5','BF_LB_Bin6',...
                 'ATROPOS_Cluster1','ATROPOS_Cluster2','ATROPOS_Cluster3','ATROPOS_Cluster4',...
-                'H_Index','CV','CV_BF'};
+                'H_Index};
     AllSubjectSummary = cell2table(cell(0,size(headers,2)));
     AllSubjectSummary.Properties.VariableNames = headers;
 end
@@ -217,8 +217,7 @@ NewData = {Subject,Pipeline_Version,scandate,...
             MALB_BF_Output.Complete,MALB_BF_Output.Incomplete,MALB_BF_Output.Hyper,MALB_BF_Output.VDP,...
             LB_Output.VentBin1Percent,LB_Output.VentBin2Percent,LB_Output.VentBin3Percent,LB_Output.VentBin4Percent,LB_Output.VentBin5Percent,LB_Output.VentBin6Percent,...
             LB_BF_Output.VentBin1Percent,LB_BF_Output.VentBin2Percent,LB_BF_Output.VentBin3Percent,LB_BF_Output.VentBin4Percent,LB_BF_Output.VentBin5Percent,LB_BF_Output.VentBin6Percent,...
-            NT_Output.Complete,NT_Output.Incomplete,NT_Output.Normal,NT_Output.Hyper,...
-            H_Index,CV,CV_BF};
+            NT_Output.Complete,NT_Output.Incomplete,NT_Output.Normal,NT_Output.Hyper};
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
 else

@@ -30,40 +30,39 @@ Gas_Traj_save = Gas_Traj;
 Dis_k0 = abs(Dis_Fid(1,:));
 Gas_k0 = abs(Gas_Fid(1,:));
 
-[~,rm_dis] = rmoutliers(Dis_k0,'movmedian',8);
-[~,rm_gas] = rmoutliers(Gas_k0,'movmedian',8);
+[Dis_k02,rm_dis] = rmoutliers(Dis_k0,'movmedian',8);
+[Gas_k02,rm_gas] = rmoutliers(Gas_k0,'movmedian',8);
 
 Dis_Fid(:,rm_dis) = [];
 Gas_Fid(:,rm_gas) = [];
-Dis_Traj(:,:,rm_dis) = [];
-Gas_Traj(:,:,rm_gas) = [];
 
-% %Sanity Check/Debugging
-% figure('Name','Test Spike Removal');
-% subplot(4,2,1)
-% plot(Dis_k0)
-% title('Dissolved k0 - No Spike Filter')
-% subplot(4,2,2)
-% plot(abs(Dis_Fid(1,:)))
-% title('Dissolved k0 - After Spike Filter')
-% subplot(4,2,3)
-% plot(abs(Dis_Fid_save));
-% title('Dissolved FIDs - No Spike Filter')
-% subplot(4,2,4)
-% plot(abs(Dis_Fid));
-% title('Dissolved FIDs - With Spike Filter')
-% subplot(4,2,5)
-% plot(Gas_k0)
-% title('Gas k0 - No Spike Filter')
-% subplot(4,2,6)
-% plot(abs(Gas_Fid(1,:)))
-% title('Gas k0 - After Spike Filter')
-% subplot(4,2,7)
-% plot(abs(Gas_Fid_save));
-% title('Gas FIDs - No Spike Filter')
-% subplot(4,2,8)
-% plot(abs(Gas_Fid));
-% title('Gas FIDs - With Spike Filter')
+%Sanity Check/Debugging
+figure('Name','Test Spike Removal');
+subplot(4,2,1)
+plot(Dis_k0)
+title('Dissolved k0 - No Spike Filter')
+subplot(4,2,2)
+plot(abs(Dis_Fid(1,:)))
+title('Dissolved k0 - After Spike Filter')
+subplot(4,2,3)
+plot(abs(Dis_Fid_save));
+title('Dissolved FIDs - No Spike Filter')
+subplot(4,2,4)
+plot(abs(Dis_Fid));
+title('Dissolved FIDs - With Spike Filter')
+subplot(4,2,5)
+plot(Gas_k0)
+title('Gas k0 - No Spike Filter')
+subplot(4,2,6)
+plot(abs(Gas_Fid(1,:)))
+title('Gas k0 - After Spike Filter')
+subplot(4,2,7)
+plot(abs(Gas_Fid_save));
+title('Gas FIDs - No Spike Filter')
+subplot(4,2,8)
+plot(abs(Gas_Fid));
+title('Gas FIDs - With Spike Filter')
+
 
 %% Reconstruct
 % Get Ventilation Image - Easy
@@ -71,21 +70,13 @@ reco_gas = reshape(Gas_Fid,1,[])';
 gas_traj = AllinOne_Tools.column_traj(Gas_Traj);
 
 %Remove some of the spikes:
-[~,rm_recogas] = rmoutliers(abs(reco_gas),'movmedian',8);
-gas_traj(rm_recogas,:) = [];
-reco_gas(rm_recogas) = [];
+
 
 Vent_Im = AllinOne_Recon.base_floret_recon(96,reco_gas,gas_traj); %Don't want to Hardcode image size, but palatable for now
 
 % Dissolved Image - Also Easy
 reco_dis = reshape(Dis_Fid,1,[])';
 dis_traj = AllinOne_Tools.column_traj(Dis_Traj); 
-
-%Remove some of the spikes:
-[~,rm_recodis] = rmoutliers(abs(reco_dis),'movmedian',8);
-dis_traj(rm_recodis,:) = [];
-reco_dis(rm_recodis) = [];
-
 Dis_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(64,reco_dis,dis_traj); %Don't want to Hardcode image size, but palatable for now
 
 %Now, need to scale k-space to get lo-res gas image:
