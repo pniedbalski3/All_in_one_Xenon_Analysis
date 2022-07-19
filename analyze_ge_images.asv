@@ -4,10 +4,6 @@ parent_path = which('analyze_ge_images');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end)-1);%remove file
 
-V_file = fopen(fullfile(parent_path,'Pipeline_Version.txt'),'r');
-Pipeline_Version = fscanf(V_file,'%s');
-
-
 %% Load Things
 if(exist(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'),'file') == 2) %if Healthy cohort data exists, use
     HealthyFile = dir(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'));%get file info
@@ -39,8 +35,6 @@ DisFA = Params.DisFA;
 Dwell = Params.Dwell;
 freq_jump = Params.freq_offset;
 scanDateStr = Params.scandatestr;
-
-Lung_Volume = nnz(double(Proton_Mask))*((Params.GE_FOV/size(Dis_Image,1)).^3)*1e-6;
 
 %% Calibration
 try
@@ -371,13 +365,12 @@ RBC2Bar_Pts = RBC2BarIm(VentBinMask(:));
 
 save(fullfile(write_path,'GasExchangeWorkspace.mat'),'RBC2Bar_Pts','RBC_Pts','Bar_Pts','Vent_Pts','ScaledVentImage','Proton_Mask','Dis2Gas','VentBinMask','Bar2Gas','RBC2Gas','RBC2BarIm','RBC2Bar');
 
-%% Write Reports - Clinical
+%% Write Reports
 try
     AllinOne_Tools.write_clin_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,SumVentFig,RBCBins,SumRBCFig,BarBins,SumBarrFig,SumRBCBarFig,RBC2BarBins,VentHistFig,BarHistFig,RBCHistFig,RBCBarHistFig,RBC2Bar)
 catch
     disp('No Clinical Report Written')
 end
-%% Write Reports - Technical
 try
     AllinOne_Tools.write_full_report(write_path,scanDateStr,HealthyDistPresent,HealthyData,VentBins,RBCBins,BarBins,RBC2BarBins,VentBinMontage,VentHistFig,RBCBinMontage,RBCHistFig,BarrierBinMontage,BarHistFig,RBCBarBinMontage,RBCBarHistFig,k0fig,DissolvedNMR,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage);
 catch
@@ -391,11 +384,9 @@ try
     subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
     if contains(subject_tmp,'_')
         uscore = strfind(subject_tmp,'_');
-        if length(uscore) == 1 && (length(subject_tmp)-uscore(1)) < 3
+        if length(uscore) == 1 && length(subject_tmp) > 2
             subject_tmp(1:uscore(1)) = [];
-        else
-            subject_tmp(1:uscore(1)) = [];
-        end
+        
     end
     Subject = subject_tmp;
 catch
@@ -408,10 +399,9 @@ try
     SubjectMatch = find(strcmpi(AllSubjectSummary.Subject,Subject) &...
         strcmpi(AllSubjectSummary.Scan_Date,scanDateStr));
 catch
-    headers = {'Subject','Analysis_Version','Scan_Date',...%Subject Info
+    headers = {'Subject', 'Scan_Date',...%Subject Info
                 'TE90', 'Flip_Angle',...%Acquisition Info
                 'Process_Date', 'Healthy_Cohort',...%Reconstruction Info
-                'Lung_Volume',...
                 'Gas_Frequency', 'Barrier_Frequency', 'RBC_Frequency',...%Spectro Fitting Results - Freq
                 'Gas_T2star', 'Barrier_T2star', 'Barrier_LtoG_ratio', 'RBC_T2star',...%Spectro Fitting Results - T2*
                 'Gas_Phase', 'Barrier_Phase', 'RBC_Phase',...%Spectro Fitting Results - Phase
@@ -431,10 +421,9 @@ catch
     AllSubjectSummary = cell2table(cell(0,size(headers,2)));
     AllSubjectSummary.Properties.VariableNames = headers;
 end
-NewData = {Subject,Pipeline_Version,scanDateStr,...
+NewData = {Subject,scanDateStr,...
             ActTE90,DisFA,...
             datestr(date,29),HealthyCohortNum,...
-            Lung_Volume,...
             GasFreq, BarrierFreq, RBCFreq,...%Spectro Fitting Results - Freq
             GasT2Star, BarrierT2Star, BarrierLtoGRatio, RBCT2Star,...%Spectro Fitting Results - T2*
             disfitObj.phase(3), disfitObj.phase(2), disfitObj.phase(1),...%Spectro Fitting Results - Phase
