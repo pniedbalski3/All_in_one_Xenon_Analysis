@@ -25,7 +25,11 @@ end
 %Atropos analysis
 %% Need to add K-means clustering - Almost certainly easiest to use ANTs for this
 try
-    AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
+    try
+        AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
+    catch
+        AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
+    end
     if ~ispc
         Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
     end
@@ -70,7 +74,7 @@ end
 try
     MALB_BF_Output = AllinOne_Tools.MALB_vent_analysis(Vent_BF,Mask);
 catch
-    disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image')
+    disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image');
     MALB_BF_Output.VDP = nan;
     MALB_BF_Output.Incomplete = nan;
     MALB_BF_Output.Complete = nan;
@@ -183,8 +187,8 @@ end
 SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
-    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject{1},Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date{1},scandate));
+    SubjectMatch = find(strcmpi(AllSubjectSummary.Subject,Subject) &...
+        strcmpi(AllSubjectSummary.Scan_Date,scandate));
 catch
     headers = {'Subject', 'Scan_Date',...%Subject Info
                 'Process_Date',...%Reconstruction Info
