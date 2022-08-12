@@ -205,7 +205,7 @@ DissolvedBinMap = DissolvedBinMap.*VentBinMask;%Mask to ventilated volume
 %Barrier Binning
 BarrierBinMap = AllinOne_Tools.BinImages(Bar2Gas, BarrierThresh);
 BarrierBinMap = BarrierBinMap.*VentBinMask;%Mask to ventilated volume
-Barrier2Gas = Barrier2Gas.*VentBinMask;
+Bar2Gas = Bar2Gas.*VentBinMask;
 
 RBCBinMap = AllinOne_Tools.BinImages(RBC2Gas, RBCThresh);
 RBCBinMap = RBCBinMap.*VentBinMask;%Mask to ventilated volume

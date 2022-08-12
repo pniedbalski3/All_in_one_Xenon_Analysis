@@ -49,9 +49,6 @@ ct_tiff_write(CT_Image,MALB,MALBMap,[0.01 3],0.5,'MALB',mypath)
 clear MALB
 %% LB Ventilation Mask
 LB = double(niftiread(fullfile(mypath,'All_in_One_Analysis','N4_LB_Ventilation_Labeled_warped.nii.gz')));
-ct_tiff_write(CT_Image,LB,SixBinMap,[0.01 6],0.5,'LB',mypath)
-clear LB
-%% Atropos Ventilation Mask
-Atropos = double(niftiread(fullfile(mypath,'All_in_One_Analysis','N4_LB_Ventilation_Labeled_warped.nii.gz')));
-ct_tiff_write(CT_Image,Atropos,ATROPOSMap,[0.01 4],0.5,'Atropos',mypath)
-clear Atropos
+ct_tiff_write(CT_Image,MALB,MALBMap,[0.01 3],0.5,'MALB',mypath)
+clear MALB
+
