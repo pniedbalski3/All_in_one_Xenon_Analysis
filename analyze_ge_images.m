@@ -205,10 +205,12 @@ DissolvedBinMap = DissolvedBinMap.*VentBinMask;%Mask to ventilated volume
 %Barrier Binning
 BarrierBinMap = AllinOne_Tools.BinImages(Bar2Gas, BarrierThresh);
 BarrierBinMap = BarrierBinMap.*VentBinMask;%Mask to ventilated volume
+Barrier2Gas = Barrier2Gas.*VentBinMask;
 
 RBCBinMap = AllinOne_Tools.BinImages(RBC2Gas, RBCThresh);
 RBCBinMap = RBCBinMap.*VentBinMask;%Mask to ventilated volume
 RBC_Mask = logical((RBCBinMap-1).*VentBinMask); %Create a mask for areas with RBC signal
+RBC2Gas = RBC2Gas.*VentBinMask;
 
 %RBC/Barrier Binning
 RBCBarrierBinMap = AllinOne_Tools.BinImages(RBC2BarIm, RBCBarrThresh);
