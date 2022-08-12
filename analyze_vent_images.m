@@ -1,4 +1,4 @@
-function analyze_vent_images(write_path,Vent,Anat_Image,Mask,scandate)
+function analyze_vent_images(write_path,Vent,Anat_Image,Mask,scandate,Params)
 
 Vent = abs(Vent);
 
@@ -31,6 +31,8 @@ try
     AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
     if ~ispc
         Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
+        nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+        niftiwrite(double(Vent_BF),fullfile(write_path,'Vent_ImageSegmentation0N4'),nifti_info,'Compressed',true)
     end
 catch
     disp('Cannot Run atropos Analysis')
@@ -38,9 +40,13 @@ end
 
 try
     atropos_seg = niftiread(fullfile(write_path,'Vent_ImageSegmentation.nii.gz'));
+    %Write this right back out to get the correct orientation
+    nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(double(atropos_seg),fullfile(write_path,'Vent_ImageSegmentation'),nifti_info,'Compressed',true)
     Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
     NT_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
+    
 catch
     disp('No atropos Segmentation Found')
     NT_Output.Incomplete = nan;
@@ -72,6 +78,8 @@ end
 %Now Bias Corrected
 try
     MALB_BF_Output = AllinOne_Tools.MALB_vent_analysis(Vent_BF,Mask);
+    nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(MALB_BF_Output.VentBinMap),fullfile(write_path,'N4_MALB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image')
     MALB_BF_Output.VDP = nan;
@@ -96,6 +104,8 @@ end
 %Then Bias Corrected
 try 
     LB_BF_Output = AllinOne_Tools.LB_vent_analysis(Vent_BF,Anat_Image,Mask,1);
+    nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(LB_BF_Output.VentBinMap),fullfile(write_path,'N4_LB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
     disp('Linear Binning Analysis Failed - bias corrected image')
     LB_BF_Output.VentBin1Percent = nan;
@@ -196,7 +206,7 @@ SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
     SubjectMatch = find(strcmpi(AllSubjectSummary.Subject,Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date,scanDateStr));
+        strcmpi(AllSubjectSummary.Scan_Date,scandate));
 catch
     headers = {'Subject', 'Analysis_Version','Scan_Date',...%Subject Info
                 'Process_Date',...%Reconstruction Info

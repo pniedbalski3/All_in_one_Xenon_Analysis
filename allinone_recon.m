@@ -88,6 +88,13 @@ if isnan(DisMask)
     DisMask = AllinOne_Tools.erode_dilate(HiRes_Gas_Image,1,5);
 end
 
+%Now, let's re-write the mask so that it has the correct orientation and
+%dimensions in the nifti file:
+GE_mask_info = AllinOne_Tools.nifti_metadata(DisMask,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(double(DisMask),fullfile(write_path,'LoRes_Anatomic_mask'),GE_mask_info,'Compressed',true);
+Vent_mask_info = AllinOne_Tools.nifti_metadata(VentMask,Params.Vent_Voxel,Params.GE_FOV);
+niftiwrite(double(VentMask),fullfile(write_path,'HiRes_Anatomic_mask'),Vent_mask_info,'Compressed',true);
+
 VentMask = logical(VentMask);
 DisMask = logical(DisMask);
 
@@ -95,7 +102,7 @@ DisMask = logical(DisMask);
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr)
+analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
 
 %% Clean up
 close all;
