@@ -24,9 +24,13 @@ try
         xeprot = 'Vent_GasEx_20220628';
         xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
     end
-    anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
-    cal_file = file_names{find(contains(file_names,calprot),1,'last')};
     
+    anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
+    try
+        cal_file = file_names{find(contains(file_names,calprot),1,'last')};
+    catch
+        cal_file = file_names{find(contains(file_names,'fid_xe_calibration_2202'),1,'last')};
+    end
     xe_file = fullfile(mypath,'Raw',xe_file);
     anat_file = fullfile(mypath,'Raw',anat_file);
     cal_file = fullfile(mypath,'Raw',cal_file);
@@ -103,6 +107,9 @@ analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw
 
 %% Ventilation Analysis
 analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
+
+%% Wiggle Analysis
+analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
 
 %% Clean up
 close all;
