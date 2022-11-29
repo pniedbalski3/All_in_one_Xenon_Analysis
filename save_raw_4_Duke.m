@@ -9,8 +9,12 @@ folder_names = Cell_files(2,:);
 xeprot = 'Vent_GasExchange_20210819';
 h1prot = 'Vent_GasEx_Anatomic_20210819';
 calprot = 'XeCal_ShortTR_20210827';
-
-xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
+try
+    xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
+catch
+    xeprot = 'Vent_GasEx_20220628';
+    xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
+end
 anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
 cal_file = file_names{find(contains(file_names,calprot),1,'last')};
 
@@ -23,7 +27,7 @@ cal_file = fullfile(mypath,'Raw',cal_file);
 [H1_Fid_Vent,H1_Traj_Vent,Cal_Raw,Params] = get_anat_cal_params(xe_file,anat_file,cal_file);
 
 disData_avg = Cal_Raw.data;
-t = double((0:(size(disData_avg,1)-1))*Cal_Raw.dwell);
+t = double((0:(length(disData_avg)-1))*Cal_Raw.dwell);
 disfitObj = Spectroscopy.NMR_TimeFit_v(disData_avg,t,[1 1 1],[0 -700  -7400],[250 200 30],[0 200 0],[0 0 0],0,length(t)); % first widths lorenzian, 2nd are gauss
 disfitObj = disfitObj.fitTimeDomainSignal();
 %AppendedDissolvedFit = Cal_Raw.dwell*fftshift(fft(disfitObj.calcComponentTimeDomainSignal(t),[],1),1);

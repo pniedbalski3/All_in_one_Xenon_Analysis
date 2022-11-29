@@ -45,14 +45,13 @@ try
     niftiwrite(double(atropos_seg),fullfile(write_path,'Vent_ImageSegmentation'),nifti_info,'Compressed',true)
     Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
-    NT_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
-    
+    Atropos_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
 catch
     disp('No atropos Segmentation Found')
-    NT_Output.Incomplete = nan;
-    NT_Output.Complete = nan;
-    NT_Output.Hyper = nan;
-    NT_Output.Normal = nan;
+    Atropos_Output.Incomplete = nan;
+    Atropos_Output.Complete = nan;
+    Atropos_Output.Hyper = nan;
+    Atropos_Output.Normal = nan;
     Vent = Tools.canonical2matlab(Vent);
 end
 
@@ -165,7 +164,7 @@ end
 
 try
     Rpttitle = ['Subject_' Subject '_Ventilation_Summary_atropos_functional_segmentation'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent,NT_Output,SNR,Rpttitle);
+    AllinOne_Tools.create_ventilation_report(write_path,Vent,Atropos_Output,SNR,Rpttitle);
 catch
     disp('No atropos Functional Segmentation Summary written')
 
@@ -227,7 +226,7 @@ NewData = {Subject,Pipeline_Version,scandate,...
             MALB_BF_Output.Complete,MALB_BF_Output.Incomplete,MALB_BF_Output.Hyper,MALB_BF_Output.VDP,...
             LB_Output.VentBin1Percent,LB_Output.VentBin2Percent,LB_Output.VentBin3Percent,LB_Output.VentBin4Percent,LB_Output.VentBin5Percent,LB_Output.VentBin6Percent,...
             LB_BF_Output.VentBin1Percent,LB_BF_Output.VentBin2Percent,LB_BF_Output.VentBin3Percent,LB_BF_Output.VentBin4Percent,LB_BF_Output.VentBin5Percent,LB_BF_Output.VentBin6Percent,...
-            NT_Output.Complete,NT_Output.Incomplete,NT_Output.Normal,NT_Output.Hyper,...
+            Atropos_Output.Complete,Atropos_Output.Incomplete,Atropos_Output.Normal,Atropos_Output.Hyper,...
             H_Index,CV,CV_BF};
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
@@ -236,5 +235,6 @@ else
 end
 save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
+
 
 

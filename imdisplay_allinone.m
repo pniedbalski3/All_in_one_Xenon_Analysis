@@ -12,7 +12,7 @@ sub1 = 'All_in_One_Analysis';
 
 %% Load in ventilation data
 vent_nii = 'Vent_Image.nii.gz';
-vent_nii = 'Vent_ImageSegmentation0N4.nii.gz';
+%vent_nii = 'Vent_ImageSegmentation0N4.nii.gz';
 vent_anat_nii = 'HiRes_Anatomic.nii.gz';
 vent_mask_nii = 'HiRes_Anatomic_mask.nii.gz';
 
