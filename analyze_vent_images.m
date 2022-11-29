@@ -1,4 +1,4 @@
-function analyze_vent_images(write_path,Vent,Anat_Image,Mask,scandate)
+function analyze_vent_images(write_path,Vent,Anat_Image,Mask,scandate,Params)
 
 Vent = abs(Vent);
 
@@ -31,6 +31,8 @@ try
     AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
     if ~ispc
         Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
+        nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+        niftiwrite(double(Vent_BF),fullfile(write_path,'Vent_ImageSegmentation0N4'),nifti_info,'Compressed',true)
     end
 catch
     disp('Cannot Run atropos Analysis')
@@ -38,15 +40,18 @@ end
 
 try
     atropos_seg = niftiread(fullfile(write_path,'Vent_ImageSegmentation.nii.gz'));
+    %Write this right back out to get the correct orientation
+    nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(double(atropos_seg),fullfile(write_path,'Vent_ImageSegmentation'),nifti_info,'Compressed',true)
     Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
-    NT_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
+    Atropos_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
 catch
     disp('No atropos Segmentation Found')
-    NT_Output.Incomplete = nan;
-    NT_Output.Complete = nan;
-    NT_Output.Hyper = nan;
-    NT_Output.Normal = nan;
+    Atropos_Output.Incomplete = nan;
+    Atropos_Output.Complete = nan;
+    Atropos_Output.Hyper = nan;
+    Atropos_Output.Normal = nan;
     Vent = Tools.canonical2matlab(Vent);
 end
 
@@ -72,6 +77,8 @@ end
 %Now Bias Corrected
 try
     MALB_BF_Output = AllinOne_Tools.MALB_vent_analysis(Vent_BF,Mask);
+    nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(MALB_BF_Output.VentBinMap),fullfile(write_path,'N4_MALB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image')
     MALB_BF_Output.VDP = nan;
@@ -96,6 +103,8 @@ end
 %Then Bias Corrected
 try 
     LB_BF_Output = AllinOne_Tools.LB_vent_analysis(Vent_BF,Anat_Image,Mask,1);
+    nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+    niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(LB_BF_Output.VentBinMap),fullfile(write_path,'N4_LB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
     disp('Linear Binning Analysis Failed - bias corrected image')
     LB_BF_Output.VentBin1Percent = nan;
@@ -155,7 +164,7 @@ end
 
 try
     Rpttitle = ['Subject_' Subject '_Ventilation_Summary_atropos_functional_segmentation'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent,NT_Output,SNR,Rpttitle);
+    AllinOne_Tools.create_ventilation_report(write_path,Vent,Atropos_Output,SNR,Rpttitle);
 catch
     disp('No atropos Functional Segmentation Summary written')
 
@@ -196,7 +205,7 @@ SubjectMatch = [];
 try 
     load(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary');
     SubjectMatch = find(strcmpi(AllSubjectSummary.Subject,Subject) &...
-        strcmpi(AllSubjectSummary.Scan_Date,scanDateStr));
+        strcmpi(AllSubjectSummary.Scan_Date,scandate));
 catch
     headers = {'Subject', 'Analysis_Version','Scan_Date',...%Subject Info
                 'Process_Date',...%Reconstruction Info
@@ -217,7 +226,7 @@ NewData = {Subject,Pipeline_Version,scandate,...
             MALB_BF_Output.Complete,MALB_BF_Output.Incomplete,MALB_BF_Output.Hyper,MALB_BF_Output.VDP,...
             LB_Output.VentBin1Percent,LB_Output.VentBin2Percent,LB_Output.VentBin3Percent,LB_Output.VentBin4Percent,LB_Output.VentBin5Percent,LB_Output.VentBin6Percent,...
             LB_BF_Output.VentBin1Percent,LB_BF_Output.VentBin2Percent,LB_BF_Output.VentBin3Percent,LB_BF_Output.VentBin4Percent,LB_BF_Output.VentBin5Percent,LB_BF_Output.VentBin6Percent,...
-            NT_Output.Complete,NT_Output.Incomplete,NT_Output.Normal,NT_Output.Hyper,...
+            Atropos_Output.Complete,Atropos_Output.Incomplete,Atropos_Output.Normal,Atropos_Output.Hyper,...
             H_Index,CV,CV_BF};
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
@@ -226,5 +235,6 @@ else
 end
 save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
+
 
 

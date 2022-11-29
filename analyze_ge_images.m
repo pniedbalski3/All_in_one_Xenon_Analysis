@@ -1,4 +1,4 @@
-function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
+function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj,negr2b)
 
 parent_path = which('analyze_ge_images');
 idcs = strfind(parent_path,filesep);%determine location of file separators
@@ -7,6 +7,9 @@ parent_path = parent_path(1:idcs(end)-1);%remove file
 V_file = fopen(fullfile(parent_path,'Pipeline_Version.txt'),'r');
 Pipeline_Version = fscanf(V_file,'%s');
 
+if nargin < 13
+    negr2b = false;
+end
 
 %% Load Things
 if(exist(fullfile(parent_path,'AncillaryFiles','HealthyCohort.mat'),'file') == 2) %if Healthy cohort data exists, use
@@ -161,7 +164,11 @@ set(k0fig,'WindowState','minimized');
 ProtonMax = prctile(abs(H1_Image_Dis(:)),99.99);
 
 %% Separate into RBC and Barrier
-[Bar_Image,RBC_Image, Delta_angle_deg, ~] = AllinOne_Tools.SinglePointDixon_V2(Dis_Image,-RBC2Bar,LoRes_Gas_Image,Proton_Mask);
+if negr2b
+    [Bar_Image,RBC_Image, Delta_angle_deg, ~] = AllinOne_Tools.SinglePointDixon_V2(Dis_Image,RBC2Bar,LoRes_Gas_Image,Proton_Mask);
+else
+    [Bar_Image,RBC_Image, Delta_angle_deg, ~] = AllinOne_Tools.SinglePointDixon_V2(Dis_Image,-RBC2Bar,LoRes_Gas_Image,Proton_Mask);
+end
 
 %% Need to do quantitative corrections for imperfect TE90, T2star, etc... use Matt's code
 disp('Correcting Image Intensities for Comparison...')
@@ -205,10 +212,12 @@ DissolvedBinMap = DissolvedBinMap.*VentBinMask;%Mask to ventilated volume
 %Barrier Binning
 BarrierBinMap = AllinOne_Tools.BinImages(Bar2Gas, BarrierThresh);
 BarrierBinMap = BarrierBinMap.*VentBinMask;%Mask to ventilated volume
+Bar2Gas = Bar2Gas.*VentBinMask;
 
 RBCBinMap = AllinOne_Tools.BinImages(RBC2Gas, RBCThresh);
 RBCBinMap = RBCBinMap.*VentBinMask;%Mask to ventilated volume
 RBC_Mask = logical((RBCBinMap-1).*VentBinMask); %Create a mask for areas with RBC signal
+RBC2Gas = RBC2Gas.*VentBinMask;
 
 %RBC/Barrier Binning
 RBCBarrierBinMap = AllinOne_Tools.BinImages(RBC2BarIm, RBCBarrThresh);
@@ -217,7 +226,7 @@ RBCBarrierBinMap = RBCBarrierBinMap.*VentBinMask;%Mask to ventilated volume
 %% Wiggle Analysis
 ImSize = size(RBC2Gas,1);
 save(fullfile(write_path,'Gas_Exchange_Workspace_4_wiggles.mat'),'Dis_Fid','Gas_Fid','Dis_Traj','Gas_Traj','H1_Image_Dis','LoRes_Gas_Image','Proton_Mask','VentBinMask','RBC_Mask','RBC2Bar','TR','ImSize','scanDateStr','write_path');
-AllinOne_Wiggles.wiggle_imaging_2(Dis_Fid,Gas_Fid,Dis_Traj,Gas_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
+% AllinOne_Wiggles.wiggle_imaging_2(Dis_Fid,Gas_Fid,Dis_Traj,Gas_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,-RBC2Bar,TR,size(RBC2Gas,1),scanDateStr,write_path)
 
 %% Calculate SNR
 disp('Calculating SNR...')

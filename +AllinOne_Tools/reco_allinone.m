@@ -110,6 +110,7 @@ ActTE90 = TE;
 GasFA = Params.GasFA;
 DisFA = Params.DisFA;
 Dwell = Params.Dwell;
+Params.GE_FOV = 400;
 freq_jump = Params.freq_offset;
 scanDateStr = Params.scandatestr;
 %Now, need to determine how many points to throw away based on flip angle

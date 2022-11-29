@@ -23,8 +23,10 @@ catch
     Vent_BF_tiled = Tools.tile_image(Vent_BF,3);
 end
 ProtonMax = max(Anat_Image(:));
+Vent_tiled_hold = Vent_tiled;
 Vent_tiled = Vent_tiled.*Mask_tiled;
 Vent_BF_tiled = Vent_BF_tiled.*Mask_tiled;
+
 
 %Plot Anatomic
 Anatomic_Fig = figure('Name','All Anatomic','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
@@ -78,7 +80,7 @@ fig = Figure(Mask_Fig);
 fig.Snapshot.Caption = 'Anatomic Image with Mask Overlay';
 add(newsect,fig);
 
-Scaled_Vent_tile = Vent_tiled/(prctile(Vent_tiled(Mask_tiled==1),95));
+Scaled_Vent_tile = Vent_tiled_hold/(prctile(Vent_tiled(Mask_tiled==1),95));
 %Plot Ventilation with Mask outlines
 Vent_Fig = figure('Name','All Ventilation with Mask Outline','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(Vent_Fig,'color','white','Units','inches','Position',[1 1 8 8])
@@ -102,7 +104,7 @@ add(newsect,fig);
 
 %Plot Anatomic with Ventilation Overlay
 CMap = [linspace(0,0,256)',linspace(0,1,256)',linspace(0,1,256)'];
-
+Scaled_Vent_tile = Vent_tiled/(prctile(Vent_tiled(Mask_tiled==1),95));
 Vent_Overlay_Fig = figure('Name','Ventilation Overlay','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(Vent_Overlay_Fig,'color','white','Units','inches','Position',[1 1 8 8])
 axes('Units', 'normalized', 'Position', [0 0 1 1])

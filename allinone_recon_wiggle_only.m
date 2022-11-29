@@ -1,4 +1,4 @@
-function allinone_recon(mypath,force_recon)
+function allinone_recon_wiggle_only(mypath,force_recon)
 %% Identify Image files - done in kind of a lazy way
 if nargin < 1
     mypath = uigetdir([],'Select folder containing xenon data');
@@ -76,7 +76,7 @@ if force_recon
 
     save(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 else
-    load(
+    load(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 end
 %% Masking
 [VentMask,DisMask] = all_in_one_masking(write_path);
@@ -92,11 +92,14 @@ VentMask = logical(VentMask);
 DisMask = logical(DisMask);
 
 %% Gas Exchange Analysis
-analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
+%analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr)
+%analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr)
+
+%% Wiggle Analysis
+analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
 
 %% Clean up
-close all
-fclose all
+close all;
+fclose all;

@@ -13,7 +13,7 @@ RBC_Mask = logical(RBC_Mask);
 %Make a nice purple color
 purp = [168 96 168]/255;
 
-parent_path = which('Xe_Analysis.wiggle_imaging');
+parent_path = which('AllinOne_Wiggles.wiggle_imaging_2');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 
@@ -36,6 +36,7 @@ else
 end
 %For now
 RBCOscThresh = [8.9596-2*10.5608,8.9596-1*10.5608,8.9596,8.9596+1*10.5608,8.9596+2*10.5608,8.9596+3*10.5608,8.9596+4*10.5608];%8
+RBCOscThresh2 = [17.7060   21.6670   25.6280   29.5890   33.5500   37.5109   41.4719];%8
 
 %% Rotate Mask and Gas
 
@@ -44,17 +45,6 @@ RBC_Mask = Tools.canonical2matlab(RBC_Mask);
 
 Gas_Image = Tools.canonical2matlab(Gas_Image);
 H1_im = Tools.canonical2matlab(H1_im);
-
-%% Change Sizes!
-% oldsize = ImSize;
-% ImSize = ImSize/2;
-% H1_Mask = imresize3(H1_Mask,0.5);
-% if size(gasfid,1) ~= size(disfid,1)
-%     [gasfid,gastraj] = ImTools.change_mat_size(gasfid,gastraj,ImSize,oldsize*3/2);
-% else
-%     [gasfid,gastraj] = ImTools.change_mat_size(gasfid,gastraj,ImSize,oldsize);
-% end
-% [disfid,traj] = ImTools.change_mat_size(disfid,traj,ImSize,oldsize);
 
 %% Check whether we've done the binning before - if so, load in binning values
 %if isfile(fullfile(write_path,'Wiggle_Binning.mat'))
@@ -94,8 +84,8 @@ Full_Samp = 4*pi*radpts.^2;
 Samp = NHigh./Full_Samp*100;
 
 Key_Rad_Pts = find(Samp > 100.0,1,'last');
-
-Key_Rad = radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
+% Per Junlan's recommendation, set key radius always to 9
+Key_Rad = 9;%radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
 
 %Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
 Traj_Rad = squeeze(sqrt(traj(1,:,:).^2+traj(2,:,:).^2+traj(3,:,:).^2));
@@ -137,7 +127,8 @@ Samp = NHigh./Full_Samp*100;
 
 Key_Rad_Pts = find(Samp > 100.0,1,'last');
 
-Key_Rad = radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
+%Same thing - set keyrad to be 9 points always
+Key_Rad = 9;%radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
 
 %Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
 Traj_Rad = squeeze(sqrt(traj(1,:,:).^2+traj(2,:,:).^2+traj(3,:,:).^2));
@@ -270,47 +261,57 @@ else
     mean_Phase = extr_ind*Phase_Step;
 end
 
-Amp = zeros(ImSize,ImSize,ImSize);
-Phase = zeros(ImSize,ImSize,ImSize);
-Phase(Phase == 0) = -361;
+%Amp = zeros(ImSize,ImSize,ImSize);
+imslice(abs(Alt_RBC));
+Amp = (max(Alt_RBC,[],4) - min(Alt_RBC,[],4))/mean(All_RBC2(RBC_Mask==1));
 
-figure('Name','Debug Wiggles')
-counter = 1;
-for i = 1:ImSize
-    for j = 1:ImSize
-        for k = 1:ImSize
-            if RBC_Mask(i,j,k) == 1
-                tmp_RBC = squeeze(Alt_RBC(i,j,k,:));
-                
-                %Can I smooth this at all:
-                tmp_RBC = smooth(tmp_RBC,3);
-                
-                %In the original paper, I scaled by the mean of the
-                %non-keyhole RBC - Let's try that again!
-                Amp(i,j,k) = (max(tmp_RBC)-min(tmp_RBC))/mean(All_RBC2(RBC_Mask==1));
-                %Need to know whether we went from max to max or min to min           
-                if Alt_Min2Min
-                    [~,extr_ind] = max(tmp_RBC);
-                else
-                    [~,extr_ind] = min(tmp_RBC);
-                end
-                Phase(i,j,k) = mean_Phase - Phase_Step*extr_ind;
-                
-                %Let's have a look at every 100th point to see how this is
-                %working
-                if mod((i*ImSize*ImSize+j*ImSize+k),100) == 0
-                    subplot(10,10,counter)
-                    plot(tmp_RBC);
-                    counter = counter+1;
-                    if counter > 100
-                        counter = 1;
-                    end
-                end
-                
-            end
-        end
-    end
+if Alt_Min2Min 
+    [~,extr_ind] = max(Alt_RBC,[],4);
+else
+    [~,extr_ind] = min(Alt_RBC,[],4);
 end
+Phase = mean_Phase* ones(size(RBC_Mask)) - Phase_Step*extr_ind;
+Phase(RBC_Mask==0) = -361;
+Amp(RBC_Mask==0) = -361;
+
+
+% figure('Name','Debug Wiggles')
+% counter = 1;
+% for i = 1:ImSize
+%     for j = 1:ImSize
+%         for k = 1:ImSize
+%             if RBC_Mask(i,j,k) == 1
+%                 tmp_RBC = squeeze(Alt_RBC(i,j,k,:));
+%                 
+%                 %Can I smooth this at all:
+%                 tmp_RBC = smooth(tmp_RBC,3);
+%                 
+%                 %In the original paper, I scaled by the mean of the
+%                 %non-keyhole RBC - Let's try that again!
+%                 Amp(i,j,k) = (max(tmp_RBC)-min(tmp_RBC))/mean(All_RBC2(RBC_Mask==1));
+%                 %Need to know whether we went from max to max or min to min           
+%                 if Alt_Min2Min
+%                     [~,extr_ind] = max(tmp_RBC);
+%                 else
+%                     [~,extr_ind] = min(tmp_RBC);
+%                 end
+%                 Phase(i,j,k) = mean_Phase - Phase_Step*extr_ind;
+%                 
+% %                 %Let's have a look at every 100th point to see how this is
+% %                 %working
+% %                 if mod((i*ImSize*ImSize+j*ImSize+k),100) == 0
+% %                     subplot(10,10,counter)
+% %                     plot(tmp_RBC);
+% %                     counter = counter+1;
+% %                     if counter > 100
+% %                         counter = 1;
+% %                     end
+% %                 end
+%                 
+%             end
+%         end
+%     end
+% end
 
 Amp = Amp*100;
 
@@ -383,8 +384,9 @@ Bar_OscGas_Std = std(Bar_Osc_Gas(RBC_Mask(:)));
 %% Bin Images - I am starting to think that this isn't the best way to do this for oscillations
 EightBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 184/255 226/255 145/255; 243/255 205/255 213/255; 225/255 129/255 162/255; 197/255 27/255 125/255]; %Used for barrier
 OscBinMap = Tools.BinImages(RBC_Osc, RBCOscThresh);
+OscBinMap2 = Tools.BinImages(Amp, RBCOscThresh2);
 OscBinMap = OscBinMap.*RBC_Mask;%Mask to ventilated volume
-
+OscBinMap2 = OscBinMap2.*RBC_Mask;
 %% Now summary figures
 [~,firstslice,lastslice] = Tools.getimcenter(H1_Mask);
 ProtonMax = max(H1_im(:));
@@ -405,6 +407,7 @@ try
     BarOscGas_tiled = Tools.tile_image(Bar_Osc_Gas(:,:,(firstslice-2):(lastslice+2)),3);
     BarOscDis_tiled = Tools.tile_image(Bar_Osc_Dis(:,:,(firstslice-2):(lastslice+2)),3);
     OscBin_tiled = Tools.tile_image(OscBinMap(:,:,(firstslice-2):(lastslice+2)),3);
+    OscBin2_tiled = Tools.tile_image(OscBinMap2(:,:,(firstslice-2):(lastslice+2)),3);
     Amp_tiled = Tools.tile_image(Amp(:,:,(firstslice-2):(lastslice+2)),3);
     Phase_tiled = Tools.tile_image(Phase(:,:,(firstslice-2):(lastslice+2)),3);
 catch
@@ -658,23 +661,41 @@ saveas(Amp2_Montage,fullfile(write_path,'Wiggle_figs','RBC_Osc_Phase_From_Altern
 % %set(Bar_Osc_Montage,'WindowState','minimized');
 % saveas(Bar_OscDis_Montage,fullfile(write_path,'Wiggle_figs','Bar_Osc_Scaled_Dis.png'));
 
-% OscBinMontage = figure('Name','Binned Oscillations','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
-% %set(BarrierBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
-% set(OscBinMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
-% axes('Units', 'normalized', 'Position', [0 0 1 1])
-% [~,~] = Tools.imoverlay(Anat_tiled,OscBin_tiled,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
-% axis off
-% colormap(gca,EightBinMap)
-% cbar = colorbar(gca','Location','southoutside','Ticks',[]);
-% pos = cbar.Position;
-% cbar.Position = [pos(1),0,pos(3),pos(4)];
-% %Tools.binning_colorbar(cbar,8,Bar_Label);
-% title('Binned Oscillation Image','FontSize',16)
-% InSet = get(gca, 'TightInset');
-% set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-% annotation(OscBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['Mean Osc = ' num2str(RBC_Osc_Mean,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-% %set(OscBinMontage,'WindowState','minimized');
-% saveas(OscBinMontage,fullfile(write_path,'Wiggle_figs','Binned_Oscillations.png'));
+OscBinMontage = figure('Name','Binned Oscillations','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+%set(BarrierBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
+set(OscBinMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
+axes('Units', 'normalized', 'Position', [0 0 1 1])
+[~,~] = Tools.imoverlay(Anat_tiled,OscBin_tiled,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
+axis off
+colormap(gca,EightBinMap)
+cbar = colorbar(gca','Location','southoutside','Ticks',[]);
+pos = cbar.Position;
+cbar.Position = [pos(1),0,pos(3),pos(4)];
+%Tools.binning_colorbar(cbar,8,Bar_Label);
+title('Binned Oscillation Image','FontSize',16)
+InSet = get(gca, 'TightInset');
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
+annotation(OscBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['Mean Osc = ' num2str(RBC_Osc_Mean,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+%set(OscBinMontage,'WindowState','minimized');
+saveas(OscBinMontage,fullfile(write_path,'Wiggle_figs','Binned_Oscillations.png'));
+
+OscBinMontage2 = figure('Name','Binned Oscillationsv2','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+%set(BarrierBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
+set(OscBinMontage2,'color','white','Units','inches','Position',[1 1 8 7.2])
+axes('Units', 'normalized', 'Position', [0 0 1 1])
+[~,~] = Tools.imoverlay(Anat_tiled,OscBin2_tiled,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
+axis off
+colormap(gca,EightBinMap)
+cbar = colorbar(gca','Location','southoutside','Ticks',[]);
+pos = cbar.Position;
+cbar.Position = [pos(1),0,pos(3),pos(4)];
+%Tools.binning_colorbar(cbar,8,Bar_Label);
+title('Binned Oscillation 2 Image','FontSize',16)
+InSet = get(gca, 'TightInset');
+set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
+annotation(OscBinMontage2,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['Mean Osc = ' num2str(mean(Amp(RBC_Mask==1)),'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+%set(OscBinMontage,'WindowState','minimized');
+saveas(OscBinMontage2,fullfile(write_path,'Wiggle_figs','Binned_Oscillations2.png'));
 % 
 % 
 
