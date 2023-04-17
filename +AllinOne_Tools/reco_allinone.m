@@ -68,8 +68,12 @@ Gas_Traj(:,:,rm_gas) = [];
 %% Reconstruct
 % Get Ventilation Image - Easy
 reco_gas = reshape(Gas_Fid,1,[])';
-gas_traj = AllinOne_Tools.column_traj(Gas_Traj);
+%gas_traj = AllinOne_Tools.column_traj(Gas_Traj);
+traj_x = reshape(Gas_Traj(1,:,:),1,[])';
+traj_y = reshape(Gas_Traj(2,:,:),1,[])';
+traj_z = reshape(Gas_Traj(3,:,:),1,[])';
 
+gas_traj= [-traj_x -traj_z traj_y];
 %Remove some of the spikes:
 [~,rm_recogas] = rmoutliers(abs(reco_gas),'movmedian',8);
 gas_traj(rm_recogas,:) = [];
@@ -79,7 +83,12 @@ Vent_Im = AllinOne_Recon.base_floret_recon(96,reco_gas,gas_traj); %Don't want to
 
 % Dissolved Image - Also Easy
 reco_dis = reshape(Dis_Fid,1,[])';
-dis_traj = AllinOne_Tools.column_traj(Dis_Traj); 
+% dis_traj = AllinOne_Tools.column_traj(Dis_Traj); 
+traj_x = reshape(Dis_Traj(1,:,:),1,[])';
+traj_y = reshape(Dis_Traj(2,:,:),1,[])';
+traj_z = reshape(Dis_Traj(3,:,:),1,[])';
+
+dis_traj= [-traj_x -traj_y traj_z];
 
 %Remove some of the spikes:
 [~,rm_recodis] = rmoutliers(abs(reco_dis),'movmedian',8);
@@ -90,11 +99,11 @@ Dis_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(64,reco_dis,dis_traj); %D
 
 %Now, need to scale k-space to get lo-res gas image:
 gas_traj2 = gas_traj*1.5;
-hold_traj = gas_traj2;
-hold_traj(:,1) = gas_traj2(:,1);
-hold_traj(:,2) = gas_traj2(:,3);
-hold_traj(:,3) = gas_traj2(:,2);
-gas_traj2 = hold_traj;
+% hold_traj = gas_traj2;
+% hold_traj(:,1) = gas_traj2(:,1);
+% hold_traj(:,2) = gas_traj2(:,3);
+% hold_traj(:,3) = gas_traj2(:,2);
+% gas_traj2 = hold_traj;
 rad = sqrt(gas_traj2(:,1).^2+gas_traj2(:,2).^2+gas_traj2(:,3).^2);
 toobig = find(rad>0.5);
 reco_gas(toobig) = [];
@@ -123,7 +132,7 @@ H1_trajz = reshape(H1_Traj(3,:,:),1,[])';
 
 H1_trajz = -H1_trajz;
 % 
-H1_traj_r = [H1_trajx H1_trajy H1_trajz];
+H1_traj_r = [-H1_trajy H1_trajz H1_trajx];
 
 
 %Vent Recon
@@ -141,17 +150,17 @@ for i = 1:size(H1_Raw,3)
 end
 H1_Image_Vent = AllinOne_Tools.SOS_Coil_Combine(H1_Image_AllCoils);
 H1_Image_Vent = H1_Image_Vent/max(H1_Image_Vent(:));
-H1_Image_Vent = rot90(flip(fliplr(rot90(H1_Image_Vent)),3),2);
+% H1_Image_Vent = rot90(flip(fliplr(rot90(H1_Image_Vent)),3),2);
 
 %ProtonMax = prctile(abs(H1_Image(:)),99.99);
 
 
-H1_trajx = reshape(H1_Traj(1,:,:),1,[])';
-H1_trajy = reshape(H1_Traj(2,:,:),1,[])';
-H1_trajz = reshape(H1_Traj(3,:,:),1,[])';
-H1_trajz = -H1_trajz;
-% 
-H1_traj_r = [H1_trajx H1_trajy H1_trajz];
+% H1_trajx = reshape(H1_Traj(1,:,:),1,[])';
+% H1_trajy = reshape(H1_Traj(2,:,:),1,[])';
+% H1_trajz = reshape(H1_Traj(3,:,:),1,[])';
+% H1_trajz = -H1_trajz;
+% % 
+% H1_traj_r = [H1_trajx H1_trajy H1_trajz];
 
 H1_traj_r = H1_traj_r*1.5;
 
@@ -174,6 +183,6 @@ for i = 1:size(H1_Raw,3)
 end
 H1_Image_Dis = AllinOne_Tools.SOS_Coil_Combine(H1_Image_AllCoils);
 H1_Image_Dis = H1_Image_Dis/max(H1_Image_Dis(:));
-H1_Image_Dis = rot90(flip(fliplr(rot90(H1_Image_Dis)),3),2);
+% H1_Image_Dis = rot90(flip(fliplr(rot90(H1_Image_Dis)),3),2);
 
 

@@ -1,17 +1,17 @@
-function [SumVentFig,SumDissFig,SumBarrFig,SumRBCFig,SumRBCBarFig] = disp_ge_sumfigs(Proton_Mask,VentBinMap,H1_Image,DissolvedBinMap,BarrierBinMap,RBCBinMap,RBCBarrierBinMap,SNRS)
+function [SumVentFig,SumDissFig,SumMemFig,SumRBCFig,SumRBCMemFig] = disp_ge_sumfigs(Proton_Mask,VentBinMap,H1_Image,DissolvedBinMap,MembraneBinMap,RBCBinMap,RBCMembraneBinMap,SNRS)
 
 ProtonMax = prctile(abs(H1_Image(:)),99.99);
 
 VentSNR = SNRS.VentSNR;
 GasSNR = SNRS.GasSNR;
 DissolvedSNR = SNRS.DissolvedSNR;
-BarrierSNR = SNRS.BarrierSNR;
+MembraneSNR = SNRS.MembraneSNR;
 RBCSNR = SNRS.RBCSNR;
-RBC2Bar = SNRS.RBC2Bar;
+RBC2Mem = SNRS.RBC2Mem;
 
 SixBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 0 0.57 0.71; 0 0 1]; %Used for Vent and RBC
-EightBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 184/255 226/255 145/255; 243/255 205/255 213/255; 225/255 129/255 162/255; 197/255 27/255 125/255]; %Used for barrier
-SixBinRBCBarMap = [ 197/255 27/255 125/255; 225/255 129/255 162/255; 0.4 0.7 0.4; 0 1 0; 1 0.7143 0; 1 0 0]; %Used for RBC/Barrier ratio
+EightBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 184/255 226/255 145/255; 243/255 205/255 213/255; 225/255 129/255 162/255; 197/255 27/255 125/255]; %Used for Membrane
+SixBinRBCMemMap = [ 197/255 27/255 125/255; 225/255 129/255 162/255; 0.4 0.7 0.4; 0 1 0; 1 0.7143 0; 1 0 0]; %Used for RBC/Membrane ratio
 
 %% Determine which slices to plot (a la Matt Willmering)
 NumPlotSlices = 16;
@@ -34,15 +34,15 @@ Vent_Summary_figs = cat(3,VentBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),VentBin
 H1_Summary_figs = cat(3,abs(H1_Image(:,:,Slices_Co(1:(NumPlotSlices/2)))),abs(H1_Image(:,:,Slices_Co((NumPlotSlices/2+1):end))));
 Dis_Summary_figs = cat(3,DissolvedBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(DissolvedBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
 RBC_Summary_figs = cat(3,RBCBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(RBCBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
-Barrier_Summary_figs = cat(3,BarrierBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(BarrierBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
-RBCBar_Summary_figs = cat(3,RBCBarrierBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(RBCBarrierBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
+Membrane_Summary_figs = cat(3,MembraneBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(MembraneBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
+RBCMem_Summary_figs = cat(3,RBCMembraneBinMap(:,:,Slices_Co(1:(NumPlotSlices/2))),abs(RBCMembraneBinMap(:,:,Slices_Co((NumPlotSlices/2+1):end))));
 
 Vent_Sum_Tile = AllinOne_Tools.tile_image(Vent_Summary_figs,3,'nColumns',NumPlotSlices/2);
 H1_Sum_Tile = AllinOne_Tools.tile_image(H1_Summary_figs,3,'nColumns',NumPlotSlices/2);
 Dis_Sum_Tile = AllinOne_Tools.tile_image(Dis_Summary_figs,3,'nColumns',NumPlotSlices/2);
 RBC_Sum_Tile = AllinOne_Tools.tile_image(RBC_Summary_figs,3,'nColumns',NumPlotSlices/2);
-Bar_Sum_Tile = AllinOne_Tools.tile_image(Barrier_Summary_figs,3,'nColumns',NumPlotSlices/2);
-RBCBar_Sum_Tile = AllinOne_Tools.tile_image(RBCBar_Summary_figs,3,'nColumns',NumPlotSlices/2);
+Mem_Sum_Tile = AllinOne_Tools.tile_image(Membrane_Summary_figs,3,'nColumns',NumPlotSlices/2);
+RBCMem_Sum_Tile = AllinOne_Tools.tile_image(RBCMem_Summary_figs,3,'nColumns',NumPlotSlices/2);
 
 %Vent
 SumVentFig = figure('Name','Ventitlation Binned','units','normalized','outerposition',[0 0 1 4/((NumPlotSlices/2))]);%set(SumVentFig,'WindowState','minimized');
@@ -52,9 +52,9 @@ colormap(gca,SixBinMap)
 %title('Binned Ventilation','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
-cbar = colorbar(gca','Location','south','Ticks',[]);
+cMem = colorbar(gca','Location','south','Ticks',[]);
 try
-    AllinOne_Tools.binning_colorbar(cbar,6,Vent_Dis_RBC_Label);
+    AllinOne_Tools.binning_colorbar(cMem,6,Vent_Dis_RBC_Label);
 catch
 end
 set(SumVentFig,'WindowState','minimized');
@@ -67,27 +67,27 @@ colormap(gca,SixBinMap)
 %title('Binned Dissolved','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
-cbar = colorbar(gca','Location','south','Ticks',[]);
+cMem = colorbar(gca','Location','south','Ticks',[]);
 try
-    AllinOne_Tools.binning_colorbar(cbar,6,Vent_Dis_RBC_Label);
+    AllinOne_Tools.binning_colorbar(cMem,6,Vent_Dis_RBC_Label);
 catch
 end
 set(SumDissFig,'WindowState','minimized');
 
-%Barrier
-SumBarrFig = figure('Name','Barrier Binned','units','normalized','outerposition',[0 0 1 4/(NumPlotSlices/2)]);%set(SumVentFig,'WindowState','minimized');
-set(SumBarrFig,'color','white','Units','inches','Position',[0.5 0.5 2*(NumPlotSlices/2)-1.1 2*2])
-[~,~] = AllinOne_Tools.imoverlay(H1_Sum_Tile,Bar_Sum_Tile,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
+%Membrane
+SumMemFig = figure('Name','Membrane Binned','units','normalized','outerposition',[0 0 1 4/(NumPlotSlices/2)]);%set(SumVentFig,'WindowState','minimized');
+set(SumMemFig,'color','white','Units','inches','Position',[0.5 0.5 2*(NumPlotSlices/2)-1.1 2*2])
+[~,~] = AllinOne_Tools.imoverlay(H1_Sum_Tile,Mem_Sum_Tile,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
 colormap(gca,EightBinMap)
-%title('Binned Barrier','FontSize',16)
+%title('Binned Membrane','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
-cbar = colorbar(gca','Location','south','Ticks',[]);
+cMem = colorbar(gca','Location','south','Ticks',[]);
 try
-    AllinOne_Tools.binning_colorbar(cbar,8,Bar_Label);
+    AllinOne_Tools.binning_colorbar(cMem,8,Mem_Label);
 catch
 end
-set(SumBarrFig,'WindowState','minimized');
+set(SumMemFig,'WindowState','minimized');
 
 %RBC
 SumRBCFig = figure('Name','RBC Binned','units','normalized','outerposition',[0 0 1 4/(NumPlotSlices/2)]);%set(SumVentFig,'WindowState','minimized');
@@ -97,24 +97,24 @@ colormap(gca,SixBinMap)
 %title('Binned RBC','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
-cbar = colorbar(gca','Location','south','Ticks',[]);
+cMem = colorbar(gca','Location','south','Ticks',[]);
 try
-    AllinOne_Tools.binning_colorbar(cbar,6,Vent_Dis_RBC_Label);
+    AllinOne_Tools.binning_colorbar(cMem,6,Vent_Dis_RBC_Label);
 catch
 end
 set(SumRBCFig,'WindowState','minimized');
 
-%RBC/Barrier
-SumRBCBarFig = figure('Name','RBC to Barrier Binned','units','normalized','outerposition',[0 0 1 4/(NumPlotSlices/2)]);%set(SumVentFig,'WindowState','minimized');
-set(SumRBCBarFig,'color','white','Units','inches','Position',[0.5 0.5 2*(NumPlotSlices/2)-1.1 2*2])
-[~,~] = AllinOne_Tools.imoverlay(H1_Sum_Tile,RBCBar_Sum_Tile,[1,6],[0,0.99*ProtonMax],SixBinRBCBarMap,1,gca);
-colormap(gca,SixBinRBCBarMap)
-%title('Binned RBC/Barrier','FontSize',16)
+%RBC/Membrane
+SumRBCMemFig = figure('Name','RBC to Membrane Binned','units','normalized','outerposition',[0 0 1 4/(NumPlotSlices/2)]);%set(SumVentFig,'WindowState','minimized');
+set(SumRBCMemFig,'color','white','Units','inches','Position',[0.5 0.5 2*(NumPlotSlices/2)-1.1 2*2])
+[~,~] = AllinOne_Tools.imoverlay(H1_Sum_Tile,RBCMem_Sum_Tile,[1,6],[0,0.99*ProtonMax],SixBinRBCMemMap,1,gca);
+colormap(gca,SixBinRBCMemMap)
+%title('Binned RBC/Membrane','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)])
-cbar = colorbar(gca','Location','south','Ticks',[]);
+cMem = colorbar(gca','Location','south','Ticks',[]);
 try
-    AllinOne_Tools.binning_colorbar(cbar,6,RBCBar_Label);
+    AllinOne_Tools.binning_colorbar(cMem,6,RBCMem_Label);
 catch
 end
-set(SumRBCBarFig,'WindowState','minimized');
+set(SumRBCMemFig,'WindowState','minimized');

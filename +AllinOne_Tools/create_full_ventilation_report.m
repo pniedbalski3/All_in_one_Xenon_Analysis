@@ -7,6 +7,11 @@ import mlreportgen.dom.*
 %% Load in the full workspace
 load(workspace_file)
 
+Mask = Tools.canonical2matlab(Mask);
+Vent = Tools.canonical2matlab(Vent);
+Vent_BF = Tools.canonical2matlab(Vent_BF);
+Anat_Image = Tools.canonical2matlab(Anat_Image);
+
 
 %% Start by looking at anatomic, mask, and ventilation images
 [centerslice,firstslice,lastslice] = Tools.getimcenter(Mask);
@@ -52,10 +57,10 @@ end
 Subject = write_path(sub_ind:(idcs(end)-1));
 
 
-Rpttitle = ['Full_Ventilation_Report_Subject_' Subject];
+Rpttitle = [Subject '_VDP_Report_All'];
 rpt = Report(fullfile(path,'Analysis_Reports',Rpttitle),'pdf');
 
-chap1 = Chapter(['Ventilation Imaging Results, Subject ' Subject]);
+chap1 = Chapter(['Ventilation Imaging Results: ' Subject]);
 chap1.Numbered = false;
 
 newsect = Section('Reconstruction and Masking');
@@ -481,11 +486,11 @@ catch
     add(chap1,newsect);
 end
 try
-    newsect = Section('Tustison Functional Segmentation Analysis');
+    newsect = Section('Atropos Analysis');
     newsect.Numbered = false;
 
-    fig = Figure(NT_Output.AllFig);
-    fig.Snapshot.Caption = 'Ventilation Image with Functional Segmentation overlaid - Red: Complete Defect, Orange: Incomplete Defect, Blue: Hyperventilation';
+    fig = Figure(Atropos_Output.AllFig);
+    fig.Snapshot.Caption = 'Ventilation Image with Atropos Segmentation overlaid - Red: Complete Defect, Orange: Incomplete Defect, Blue: Hyperventilation';
     add(newsect,fig);
 
     tableStyle = { Width("100%"), ...
@@ -502,9 +507,9 @@ try
                 WhiteSpace("preserve") };
 
     headerContent = {'Complete Defect', 'Incomplete Defect', 'Normal', 'Hyperventilated'};
-    bodyContent = {[num2str(NT_Output.Complete,'%1.2f') '%'], [num2str(NT_Output.Incomplete,'%1.2f'), '%'], [num2str(NT_Output.Normal,'%1.2f') '%'], [num2str(NT_Output.Hyper,'%1.2f') '%']};
+    bodyContent = {[num2str(Atropos_Output.Complete,'%1.2f') '%'], [num2str(Atropos_Output.Incomplete,'%1.2f'), '%'], [num2str(Atropos_Output.Normal,'%1.2f') '%'], [num2str(Atropos_Output.Hyper,'%1.2f') '%']};
 
-    footerContent = {[],'VDP ',[num2str(NT_Output.VDP,'%1.2f') '%'],[]};
+    footerContent = {[],'VDP ',[num2str(Atropos_Output.VDP,'%1.2f') '%'],[]};
 
     table = FormalTable(headerContent,bodyContent,footerContent);
     table.Style = tableStyle;
@@ -535,15 +540,15 @@ try
 
     add(newsect,table);
 
-    fig = Figure(NT_Output.HistFig);
+    fig = Figure(Atropos_Output.HistFig);
     fig.Snapshot.Caption = 'Histogram of Ventilation Values within Masked Volume using Mean Anchored Linear Binning Approach';
     add(newsect,fig);
 
     add(chap1,newsect);
 catch
-    newsect = Section('Tustison Functional Segmentation Analysis');
+    newsect = Section('Atropos Analysis');
     newsect.Numbered = false;
-    add(newsect,'Report Generation Failed for Tustison Functional Segmentation Analysis');
+    add(newsect,'Report Generation Failed for Atropos Analysis');
     add(chap1,newsect);
 end
 add(rpt,chap1);

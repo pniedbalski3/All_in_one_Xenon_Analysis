@@ -49,29 +49,36 @@ H1_traj_file = fullfile(parent_path,'Traj_Files','Vent_GasEx_Anatomic_20210819_T
 
 H1_Traj = AllinOne_DataImport.spiral_coords_from_dat(H1_traj_file,H1_Ordering,H1_Dim,H1_Alpha,H1_Hubs,H1_Pro);
 %% Calibration
-Cal_Dat_twix = AllinOne_DataImport.mapVBVD(cal_file);
-nFids = Cal_Dat_twix.hdr.Config.NRepMeas;
-te = Cal_Dat_twix.hdr.Phoenix.alTE{1}; 
-dwell_time = Cal_Dat_twix.hdr.MeasYaps.sRXSPEC.alDwellTime{1,1}*1e-9;
-theFID = squeeze(double(Cal_Dat_twix.image()));
-if nFids > 100 %If we have a lot of FIDs, that means we're using the old version of the calibration
-    nDis = 100;
-    disData = theFID(:,101:(100+nDis)); % Throw out first 100 points for old calibration
+if contains(cal_file,'20210819')
+    Cal_Dat_twix = AllinOne_DataImport.mapVBVD(cal_file);
+    nFids = Cal_Dat_twix.hdr.Config.NRepMeas;
+    te = Cal_Dat_twix.hdr.Phoenix.alTE{1}; 
+    dwell_time = Cal_Dat_twix.hdr.MeasYaps.sRXSPEC.alDwellTime{1,1}*1e-9;
+    theFID = squeeze(double(Cal_Dat_twix.image()));
+    if nFids > 100 %If we have a lot of FIDs, that means we're using the old version of the calibration
+        nDis = 100;
+        disData = theFID(:,101:(100+nDis)); % Throw out first 100 points for old calibration
+    else
+        nDis = 13; %use all data for new calibration
+        disData = theFID(:,1:nDis);
+    end
+
+    %Average all dissolved data (to accomodate possible differences among
+    %calibration sequences
+    disData_avg = mean(disData,2);
+    % Spec_Post = nan;
+    % if ~prod(isnan(Spec_Post))
+    %     Spec_Post = transpose(Spec_Post);
+    %     disData_avg = mean(Spec_Post,2); 
+    %     dwell_time = Xe_Dat_twix.hdr.MeasYaps.sWipMemBlock.adFree{15}*1e-6/2; %Off by a factor of 2 - Probably due to readout oversampling?
+    %     te = Params.TE;
+    % end
+
+    Cal_Raw.data = disData_avg;
+    Cal_Raw.dwell = dwell_time;
 else
-    nDis = 13; %use all data for new calibration
-    disData = theFID(:,1:nDis);
+    Xe_Raw = DataImport.ReadSiemensMeasVD13_idea(xe_file);
+    fid = Xe_Raw.rawdata;
+    Cal_Raw.data = fid(end,1:512);
+    Cal_Raw.dwell = Params.Dwell;
 end
-
-%Average all dissolved data (to accomodate possible differences among
-%calibration sequences
-disData_avg = mean(disData,2);
-% Spec_Post = nan;
-% if ~prod(isnan(Spec_Post))
-%     Spec_Post = transpose(Spec_Post);
-%     disData_avg = mean(Spec_Post,2); 
-%     dwell_time = Xe_Dat_twix.hdr.MeasYaps.sWipMemBlock.adFree{15}*1e-6/2; %Off by a factor of 2 - Probably due to readout oversampling?
-%     te = Params.TE;
-% end
-
-Cal_Raw.data = disData_avg;
-Cal_Raw.dwell = dwell_time;

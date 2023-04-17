@@ -9,6 +9,11 @@ parent_path = parent_path(1:idcs(end)-1);%remove file
 V_file = fopen(fullfile(parent_path,'Pipeline_Version.txt'),'r');
 Pipeline_Version = fscanf(V_file,'%s');
 
+if ~isfolder(fullfile(write_path,'Ventilation_Output'))
+    mkdir(fullfile(write_path,'Ventilation_Output'));
+end
+
+
 %% Get SNR
 SE = 7; %Let's get rid of many more points - want to avoid trachea, etc.
 [x,y,z]=meshgrid(-SE:SE,-SE:SE, -SE:SE);
@@ -28,45 +33,47 @@ end
 %Atropos analysis
 %% Need to add K-means clustering - Almost certainly easiest to use ANTs for this
 try
-    AllinOne_Tools.atropos_analysis(fullfile(write_path,'Vent_Image.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
+    AllinOne_Tools.atropos_analysis(fullfile(write_path,'Ventilation.nii.gz'),fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
     if ~ispc
-        Vent_BF = niftiread(fullfile(write_path,'Vent_ImageSegmentation0N4.nii.gz'));
-        nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
-        niftiwrite(double(Vent_BF),fullfile(write_path,'Vent_ImageSegmentation0N4'),nifti_info,'Compressed',true)
+        Vent_BF = niftiread(fullfile(write_path,'VentilationSegmentation0N4.nii.gz'));
+        %nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+        %niftiwrite(double(Vent_BF),fullfile(write_path,'VentilationSegmentation0N4'),nifti_info,'Compressed',true)
     end
 catch
     disp('Cannot Run atropos Analysis')
 end
 
 try
-    atropos_seg = niftiread(fullfile(write_path,'Vent_ImageSegmentation.nii.gz'));
+    atropos_seg = niftiread(fullfile(write_path,'VentilationSegmentation.nii.gz'));
+    
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(atropos_seg),fullfile(write_path,'Vent_ImageSegmentation'),nifti_info,'Compressed',true)
-    Vent = Tools.canonical2matlab(Vent);
+    %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(atropos_seg),fullfile(write_path,'Vent_ImageSegmentation'),nifti_info,'Compressed',true)
+    %Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
-    Atropos_Output = AllinOne_Tools.atropos_vent_analysis(Vent,atropos_seg);
+    Atropos_Output = AllinOne_Tools.atropos_vent_analysis(Tools.canonical2matlab(Vent),atropos_seg);
+    
 catch
     disp('No atropos Segmentation Found')
     Atropos_Output.Incomplete = nan;
     Atropos_Output.Complete = nan;
     Atropos_Output.Hyper = nan;
     Atropos_Output.Normal = nan;
-    Vent = Tools.canonical2matlab(Vent);
+    %Vent = Tools.canonical2matlab(Vent);
 end
 
 %After this point, there's no more going to and from nifti, so we can put
 %everything in the shape we need for properly oriented images - Vent is
 %already there...
-Vent_BF = Tools.canonical2matlab(Vent_BF);
-Anat_Image = Tools.canonical2matlab(Anat_Image);
-Mask = Tools.canonical2matlab(Mask);
+%Vent_BF = Tools.canonical2matlab(Vent_BF);
+%Anat_Image = Tools.canonical2matlab(Anat_Image);
+%Mask = Tools.canonical2matlab(Mask);
 
 
 %% Start with CCHMC Method (Mean Anchored Linear Binning)
 %First do not bias corrected
 try
-    MALB_Output = AllinOne_Tools.MALB_vent_analysis(Vent,Mask);
+    MALB_Output = AllinOne_Tools.MALB_vent_analysis(Tools.canonical2matlab(Vent),Tools.canonical2matlab(Mask));
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - non bias corrected image')
     MALB_Output.VDP = nan;
@@ -76,7 +83,7 @@ catch
 end
 %Now Bias Corrected
 try
-    MALB_BF_Output = AllinOne_Tools.MALB_vent_analysis(Vent_BF,Mask);
+    MALB_BF_Output = AllinOne_Tools.MALB_vent_analysis(Tools.canonical2matlab(Vent_BF),Tools.canonical2matlab(Mask));
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(MALB_BF_Output.VentBinMap),fullfile(write_path,'N4_MALB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
@@ -90,7 +97,7 @@ end
 %% Next, we'll do Linear Binning Method (a la Duke)
 %First not bias corrected
 try 
-    LB_Output = AllinOne_Tools.LB_vent_analysis(Vent,Anat_Image,Mask,0);
+    LB_Output = AllinOne_Tools.LB_vent_analysis(Tools.canonical2matlab(Vent),Tools.canonical2matlab(Anat_Image),Tools.canonical2matlab(Mask),0);
 catch
     disp('Linear Binning Analysis Failed - non bias corrected image')
     LB_Output.VentBin1Percent = nan;
@@ -102,7 +109,7 @@ catch
 end
 %Then Bias Corrected
 try 
-    LB_BF_Output = AllinOne_Tools.LB_vent_analysis(Vent_BF,Anat_Image,Mask,1);
+    LB_BF_Output = AllinOne_Tools.LB_vent_analysis(Tools.canonical2matlab(Vent_BF),Tools.canonical2matlab(Anat_Image),Tools.canonical2matlab(Mask),1);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(LB_BF_Output.VentBinMap),fullfile(write_path,'N4_LB_Ventilation_Labeled'),nifti_info,'Compressed',true)
 catch
@@ -138,33 +145,33 @@ catch
 end
 
 try
-    Rpttitle = ['Subject_' Subject '_Ventilation_Summary_MALB'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent,MALB_Output,SNR,Rpttitle);
+    Rpttitle = [Subject '_VDP_Summary_MALB'];
+    AllinOne_Tools.create_ventilation_report(write_path,Tools.canonical2matlab(Vent),MALB_Output,SNR,Rpttitle);
 catch
     disp('No MALB Summary written')
 end
 try
-    Rpttitle = ['Subject_' Subject '_Ventilation_Summary_MALB_BiasCorrection'];
+    Rpttitle = [Subject '_VDP_Summary_N4MALB'];
     AllinOne_Tools.create_ventilation_report(write_path,Vent_BF,MALB_BF_Output,SNR,Rpttitle);
 catch
     disp('No MALB-Bias Summary written')
 end
 try
-    Rpttitle = ['Subject_' Subject '_Ventilation_Summary_LB'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent,LB_Output,SNR,Rpttitle);
+    Rpttitle = [Subject '_VDP_Summary_LB'];
+    AllinOne_Tools.create_ventilation_report(write_path,Tools.canonical2matlab(Vent),LB_Output,SNR,Rpttitle);
 catch
     disp('No LB Summary written')
 end
 try
-    Rpttitle = ['Subject_' Subject '_Ventilation_Summary_LB_BiasCorrection'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent_BF,LB_BF_Output,SNR,Rpttitle);
+    Rpttitle = [Subject '_VDP_Summary_N4LB'];
+    AllinOne_Tools.create_ventilation_report(write_path,Tools.canonical2matlab(Vent_BF),LB_BF_Output,SNR,Rpttitle);
 catch
     disp('No Bias Corrected LB Summary written')
 end
 
 try
-    Rpttitle = ['Subject_' Subject '_Ventilation_Summary_atropos_functional_segmentation'];
-    AllinOne_Tools.create_ventilation_report(write_path,Vent,Atropos_Output,SNR,Rpttitle);
+    Rpttitle = [Subject '_VDP_Summary_Atropos'];
+    AllinOne_Tools.create_ventilation_report(write_path,Tools.canonical2matlab(Vent),Atropos_Output,SNR,Rpttitle);
 catch
     disp('No atropos Functional Segmentation Summary written')
 

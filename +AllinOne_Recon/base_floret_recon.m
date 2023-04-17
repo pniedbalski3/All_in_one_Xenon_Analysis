@@ -59,5 +59,4 @@ reconObj.deapodize = deapodizeImage;
 
 % Reconstruct image using trajectories in pixel units
 [Image_Out,kspace] = reconObj.reconstruct(data, traj); 
-Image_Out = rot90(flip(Image_Out));
 

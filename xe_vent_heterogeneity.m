@@ -19,19 +19,23 @@ Noise_STD = std(Image(Noise_Mask));
 zero_mat = zeros(size(Image));
 H_Map = zeros(size(Image));
 %Probably faster ways to do this, but for now do the easy thing:
-for i = 1:size(Image,1)
-    for j = 1:size(Image,2)
-        for k = 1:size(Image,3)
+for i = ceil(L/2):(size(Image,1)-ceil(L/2))
+    for j = ceil(L/2):(size(Image,2)-ceil(L/2))
+        for k = ceil(L/2):(size(Image,3)-ceil(L/2))
             if Mask(i,j,k)
                 %Get a cube mask centered on the voxel of interest
-                Cube = zero_mat;
-                [X,Y,Z] = meshgrid((i-((L-1)/2)):(i+((L-1)/2)),(j-((L-1)/2)):(j+((L-1)/2)),(k-((L-1)/2)):(k+((L-1)/2)));
-                Cube(X,Y,Z) = 1;
+                ROI = Image((i-floor(L/2)):(i+floor(L/2)),(j-floor(L/2)):(j+floor(L/2)),(k-floor(L/2)):(k+floor(L/2)));
+                ROI_Mask = Mask((i-floor(L/2)):(i+floor(L/2)),(j-floor(L/2)):(j+floor(L/2)),(k-floor(L/2)):(k+floor(L/2)));
+                %Cube = zero_mat;
+                %[X,Y,Z] = meshgrid((i-((L-1)/2)):(i+((L-1)/2)),(j-((L-1)/2)):(j+((L-1)/2)),(k-((L-1)/2)):(k+((L-1)/2)));
+                %Cube(X,Y,Z) = 1;
                 %Remove cube points that aren't in mask
-                Cube = Cube.*Mask;
+                %Cube = Cube.*Mask;
                 
-                Mean_Sig_ROI = mean(Image(Cube==1));
-                SD_Sig_ROI = std(Image(Cube==1));
+                %Mean_Sig_ROI = mean(Image(Cube==1));
+                %SD_Sig_ROI = std(Image(Cube==1));
+                Mean_Sig_ROI= mean(ROI(ROI_Mask==1));
+                SD_Sig_ROI = std(ROI(ROI_Mask==1));
                 
                 SNR_ROI = (Mean_Sig_ROI - Noise_Mean)/Noise_STD;
                 

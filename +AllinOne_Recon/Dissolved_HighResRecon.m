@@ -55,10 +55,6 @@ reconObj.deapodize = deapodizeImage;
 
 % Reconstruct image
 Image_Out = reconObj.reconstruct(data_redim, traj_redim);
-Image_Out = permute(Image_Out,[3 1 2]);
-%figure;montage(Image_Out);
-
-Image_Out = fliplr(flip(Image_Out));
 
 
 

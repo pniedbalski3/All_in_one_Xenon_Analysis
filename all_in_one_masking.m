@@ -8,7 +8,11 @@ else
         DisMask = niftiread(fullfile(write_path,'LoRes_Anatomic_mask.nii.gz'));
     catch
         try
-            DisMask = niftiread(fullfile(write_path,'LoRes_Anatomic_mask.nii.gz'));
+            try
+                DisMask = niftiread(fullfile(write_path,'LoRes_Anatomic_mask.nii.gz'));
+            catch
+                DisMask = niftiread(fullfile(write_path,'LoRes_Anatomic_Mask.nii.gz'));
+            end
         catch
             DisMask = nan;
         end
@@ -22,7 +26,11 @@ else
         VentMask = niftiread(fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
     catch
         try
-            VentMask = niftiread(fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
+            try
+                VentMask = niftiread(fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
+            catch
+                VentMask = niftiread(fullfile(write_path,'HiRes_Anatomic_Mask.nii.gz'));
+            end
         catch
             VentMask = nan;
         end

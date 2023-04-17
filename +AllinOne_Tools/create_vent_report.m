@@ -35,10 +35,11 @@ dataTableEntriesStyle = {OuterMargin('4pt', '4pt', '4pt', '4pt'), VAlign('middle
 
 dataHeader = {[]};
 dataBody = {[]};
-for i = length(Output_Struct)
+for i = 1:length(Output_Struct)
     dataHeader = [dataHeader ['Bin ' num2str(i)]];
     dataBody = [dataBody [num2str(Output_Struct(i).BinPct,'%1.1f') '%']];
 end
+
 %     if HealthyDistPresent
 %         bodyContent2 = {'Ref',[num2str(HealthyData.BinPercentMeans.Vent(1),'%1.1f'),'±',num2str(HealthyData.BinPercentStds.Vent(1),'%1.1f') '%'],...
 %                          [num2str(HealthyData.BinPercentMeans.Vent(2),'%1.1f'),'±',num2str(HealthyData.BinPercentStds.Vent(2),'%1.1f') '%'],...
@@ -50,15 +51,15 @@ table.Header.Style = [table.Header.Style {Bold}];
 table.Style = dataTableStyle;
 table.TableEntriesStyle = [table.TableEntriesStyle dataTableEntriesStyle]; 
 table.Header.TableEntriesHAlign = "center";
-    Defect_Entry = entry(table.Body,2,1);
-Defect_Entry.Style = {BackgroundColor('#ff0000'), ...
-            Bold(true) };
-Low_Entry = entry(table.Body,3,1);
-Low_Entry.Style = {BackgroundColor('#ffb600'), ...
-            Bold(true) }; 
-High2_Entry = entry(table.Body,4,1);
-High2_Entry.Style = {BackgroundColor('#0000ff'), ...
-            Bold(true) };  
+%     Defect_Entry = entry(table.Body,2,1);
+% Defect_Entry.Style = {BackgroundColor('#ff0000'), ...
+%             Bold(true) };
+% Low_Entry = entry(table.Body,3,1);
+% Low_Entry.Style = {BackgroundColor('#ffb600'), ...
+%             Bold(true) }; 
+% High2_Entry = entry(table.Body,4,1);
+% High2_Entry.Style = {BackgroundColor('#0000ff'), ...
+%             Bold(true) };  
 table.TableEntriesHAlign = "center";
 imgStyle = {ScaleToFit(true)};
 %Montage Figure
