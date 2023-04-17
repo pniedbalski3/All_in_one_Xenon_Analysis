@@ -42,10 +42,7 @@ se1=strel('arbitrary',nhood);
 %erode by one more voxel
 %vent_mask=imerode(vent_mask,se1);
 my_slice_mask = squeeze(vent_mask(:,:,slice_vent));%ones(size(my_slice_vent));%
-my_slice_mask2 = squeeze(vent_mask2(:,:,slice_vent));
 
-my_slice_mask = my_slice_mask + my_slice_mask2;
-my_slice_mask(my_slice_mask>0) = 1;
 
 my_slice_vent = imresize(my_slice_vent,8);
 my_slice_anat = imresize(my_slice_anat,8);

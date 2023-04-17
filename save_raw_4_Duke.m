@@ -8,7 +8,7 @@ file_names = Cell_files(1,:);
 folder_names = Cell_files(2,:);
 xeprot = 'Vent_GasExchange_20210819';
 h1prot = 'Vent_GasEx_Anatomic_20210819';
-calprot = 'XeCal_ShortTR_20210827';
+calprot = 'Duke_Xe_Calibration_20210827_x2';
 try
     xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
 catch
@@ -16,8 +16,11 @@ catch
     xe_file = file_names{find(contains(file_names,xeprot),1,'last')};
 end
 anat_file = file_names{find(contains(file_names,h1prot),1,'last')};
-cal_file = file_names{find(contains(file_names,calprot),1,'last')};
-
+try
+    cal_file = file_names{find(contains(file_names,calprot),1,'last')};
+catch
+    cal_file = file_names{find(contains(file_names,'fid_xe_calibration'),1,'last')};
+end
 xe_file = fullfile(mypath,'Raw',xe_file);
 anat_file = fullfile(mypath,'Raw',anat_file);
 cal_file = fullfile(mypath,'Raw',cal_file);

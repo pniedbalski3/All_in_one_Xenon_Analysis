@@ -1,6 +1,10 @@
 function disp_ct_xenon(mypath)
 %Load CT image - will need to fix this path)
-CT_Image = double(niftiread(fullfile(mypath,'All_in_One_Analysis','CT_4_XenonAnalysis','CT_Image.nii.gz')));
+try
+    CT_Image = double(niftiread(fullfile(mypath,'All_in_One_Analysis','CT_4_XenonAnalysis','CT_Image.nii.gz')));
+catch
+    CT_Image = double(niftiread(fullfile(mypath,'CT_Image.nii.gz')));
+end
 
 RBCMap = [linspace(0,1,256)',linspace(0,0,256)',linspace(0,0,256)'];
 MemMap = [linspace(0,185/256,256)',linspace(0,58/256,256)',linspace(0,206/256,256)'];
@@ -38,7 +42,11 @@ clear RBCMem_labeled
 
 %% Ventilation 
 Vent = double(niftiread(fullfile(mypath,'All_in_One_Analysis','Vent_Image_warped.nii.gz')));
-Vent_Mask = double(niftiread(fullfile(mypath,'All_in_One_Analysis','HiRes_Anatomic_mask_warped.nii.gz')));
+try
+    Vent_Mask = double(niftiread(fullfile(mypath,'All_in_One_Analysis','HiRes_Anatomic_mask_warped.nii.gz')));
+catch
+    Vent_Mask = ones(size(Vent));
+end
 Vent = Vent/prctile(Vent(:),97);
 Vent = Vent.*Vent_Mask;
 ct_tiff_write(CT_Image,Vent,VentMap,[0.01 1],0.75,'Ventilation',mypath)

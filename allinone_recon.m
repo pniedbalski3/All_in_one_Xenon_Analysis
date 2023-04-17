@@ -16,7 +16,8 @@ try
     folder_names = Cell_files(2,:);
     
     h1prot = 'Vent_GasEx_Anatomic_20210819';
-    calprot = 'XeCal_ShortTR_20210827';
+    %calprot = 'XeCal_ShortTR_20210827';
+    calprot = 'Duke_Xe_Calibration_20210827_x2';
     try
         xeprot = 'Vent_GasExchange_20210819';
         xe_file = file_names{find(contains(file_names,xeprot),1,'last')};

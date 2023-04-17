@@ -12,7 +12,8 @@ for i = 1:size(CT,3)
     Overlay_slice = fliplr(rot90(Overlay_slice,-1));
     CT_slice = [CT_slice CT_slice];
     Overlay_slice = [zeros(size(Overlay_slice)),Overlay_slice];
-    [~,~] = Tools.imoverlay(CT_slice,Overlay_slice,CLim,[-1023 106],gray,alpha,gca);
+   [~,~] = Tools.imoverlay(CT_slice,Overlay_slice,CLim,[-1400 200],gray,alpha,gca); %Set to CT lung window/Level
+  % [~,~] = Tools.imoverlay(CT_slice,Overlay_slice,CLim,[0 1467],gray,alpha,gca);
     colormap(gca,Colormap);
     My_title = strrep(FileName,'_',' ');
     title(My_title)

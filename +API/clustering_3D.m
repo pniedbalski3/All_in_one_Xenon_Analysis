@@ -123,8 +123,8 @@ for slice = 1:numberOfslices
     clusterI(negativeMask2) = 0; % assining all non-ventilated area to the background cluster, named cluster 0
     mask = ~negativeMask2;
     temp3 = xor(negativeMask1,negativeMask2);
-    clusterI(temp3) = 1; % assining small non-ventilated area to the hypoVV cluster, named cluster 1
     temp = clusterI == 1;
+    clusterI(temp3) = 1; % assining small non-ventilated area to the hypoVV cluster, named cluster 1
     clusterArea_3D(slice,1) = sum(temp(:));
     clusters_3D(:,:,slice) = clusterI;
     heSlicesMask_3D(:,:,slice) = mask;

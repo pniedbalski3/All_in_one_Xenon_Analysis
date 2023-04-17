@@ -1,4 +1,4 @@
-function wiggle_imaging_2(disfid,gasfid,traj,gastraj,H1_im,Gas_Image,H1_Mask,Vent_Mask,RBC_Mask,RBC2Bar,TR,ImSize,scanDateStr,write_path)
+function wiggle_imaging_2(Dis_Fid,Gas_Fid,Dis_Traj,Gas_Traj,H1_Image_Dis,LoRes_Gas_Image,Proton_Mask,VentBinMask,RBC_Mask,RBC2Bar,TR,ImSize,scanDateStr,write_path)
 %% Body of Function
 %Function to implement data detrending, oscillation binning, etc.
 %Pass fids, trajectories, Proton image, RBC/Barrier Ratio, and TR. This function is going to be
@@ -6,8 +6,8 @@ function wiggle_imaging_2(disfid,gasfid,traj,gastraj,H1_im,Gas_Image,H1_Mask,Ven
 %display figures, and write out an "oscillation report". 
 
 %Make sure masks are logical
-H1_Mask = logical(H1_Mask);
-Vent_Mask = logical(H1_Mask);
+Proton_Mask = logical(Proton_Mask);
+VentBinMask = logical(Proton_Mask);
 RBC_Mask = logical(RBC_Mask);
 
 %Make a nice purple color
@@ -40,17 +40,17 @@ RBCOscThresh2 = [17.7060   21.6670   25.6280   29.5890   33.5500   37.5109   41.
 
 %% Rotate Mask and Gas
 
-H1_Mask = Tools.canonical2matlab(H1_Mask);
+Proton_Mask = Tools.canonical2matlab(Proton_Mask);
 RBC_Mask = Tools.canonical2matlab(RBC_Mask);
 
-Gas_Image = Tools.canonical2matlab(Gas_Image);
-H1_im = Tools.canonical2matlab(H1_im);
+LoRes_Gas_Image = Tools.canonical2matlab(LoRes_Gas_Image);
+H1_Image_Dis = Tools.canonical2matlab(H1_Image_Dis);
 
 %% Check whether we've done the binning before - if so, load in binning values
 %if isfile(fullfile(write_path,'Wiggle_Binning.mat'))
  %   load(fullfile(write_path,'Wiggle_Binning.mat'));
 %else
-    [Glob_Amp,Glob_Amp_Std] = Tools.bin_wiggles(disfid,gasfid,RBC2Bar,TR,write_path);
+    [Glob_Amp,Glob_Amp_Std] = Tools.bin_wiggles(Dis_Fid,Gas_Fid,RBC2Bar,TR,write_path);
     load(fullfile(write_path,'Wiggle_Binning.mat'));
 %end
 
@@ -65,11 +65,21 @@ H1_im = Tools.canonical2matlab(H1_im);
 %end
 
 %% Now, need to divide Dissolved fids by Gas k0 to detrend data
-Gask0 = abs(gasfid(1,:));
-dis2gasfid = disfid;
-for i = 1:size(disfid,2)
-    dis2gasfid(:,i) = disfid(:,i)/Gask0(i);
+Gask0 = abs(Gas_Fid(1,:));
+dis2gasfid = Dis_Fid;
+
+disk0 = abs(Dis_Fid(1,:));
+t = 0:TR:((length(disk0)-1)*TR);
+myfit = fit(t',disk0','exp2');
+
+for i = 1:size(Dis_Fid,2)
+    dis2gasfid(:,i) = Dis_Fid(:,i)/myfit(t(i));
 end
+figure('Name','debug detrend')
+subplot(1,2,1)
+plot(t,disk0,t,myfit(t));
+subplot(1,2,2)
+plot(t,abs(dis2gasfid(1,:)))
 
 %% Next, create keyhole. 
 % Following my paper, use radius at which the keyhole is at least 50%
@@ -77,22 +87,22 @@ end
 % arm, let's figure out keyhole radius as a percentage of k-space. Then, I
 % can select a k-space radius (in pixel units) as the keyhole radius, which
 % should be more robust than number of points.
-radpts = 1:0.1:ceil(size(disfid,1)/2);
-NHigh = length(High_Indx);
-Full_Samp = 4*pi*radpts.^2;
+% radpts = 1:0.1:ceil(size(Dis_Fid,1)/2);
+% NHigh = length(High_Indx);
+% Full_Samp = 4*pi*radpts.^2;
 
-Samp = NHigh./Full_Samp*100;
+% Samp = NHigh./Full_Samp*100;
 
-Key_Rad_Pts = find(Samp > 100.0,1,'last');
+% Key_Rad_Pts = find(Samp > 100.0,1,'last');
 % Per Junlan's recommendation, set key radius always to 9
 Key_Rad = 9;%radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
 
-%Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
-Traj_Rad = squeeze(sqrt(traj(1,:,:).^2+traj(2,:,:).^2+traj(3,:,:).^2));
-num_k0 = length(find(Traj_Rad(:,1)==0));
-
-Pts = find(Traj_Rad(:,1)<Key_Rad,1,'last');
-Key_Rad = Pts;
+% %Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
+% Traj_Rad = squeeze(sqrt(Dis_Traj(1,:,:).^2+Dis_Traj(2,:,:).^2+Dis_Traj(3,:,:).^2));
+% num_k0 = length(find(Traj_Rad(:,1)==0));
+% 
+% Pts = find(Traj_Rad(:,1)<Key_Rad,1,'last');
+% Key_Rad = Pts;
 
 %Data is doubly sampled along radial arm - we get two points for every one
 %that was calculated
@@ -118,30 +128,29 @@ end
 High_Key(1:Key_Rad,High_Indx) = dis2gasfid(1:Key_Rad,High_Indx);
 Low_Key(1:Key_Rad,Low_Indx) = dis2gasfid(1:Key_Rad,Low_Indx);
 
+if ~isfolder(fullfile(write_path,'cs_raw'))
+    mkdir(fullfile(write_path,'cs_raw'))
+end
+save_for_cs(High_Key,Dis_Traj,fullfile(write_path,'cs_raw','High_Key_Raw.mat'));
+save_for_cs(Low_Key,Dis_Traj,fullfile(write_path,'cs_raw','Low_Key_Raw.mat'));
+figure('Name','Debug Keys')
+subplot(1,2,1)
+imagesc(abs(High_Key))
+title('High Key')
+subplot(1,2,2)
+imagesc(abs(Low_Key))
+title('Low Key')
+
 %% Keyhole Alternative Binning
-radpts = 1:0.1:ceil(size(disfid,1)/2);
-NHigh = length(Alt_Bin);
-Full_Samp = 4*pi*radpts.^2;
-
-Samp = NHigh./Full_Samp*100;
-
-Key_Rad_Pts = find(Samp > 100.0,1,'last');
-
 %Same thing - set keyrad to be 9 points always
 Key_Rad = 9;%radpts(Key_Rad_Pts)/(size(disfid,1)/2)*0.5;
-
-%Now, we just need to pick out all the points of the trajectories with radius less than Key_Rad 
-Traj_Rad = squeeze(sqrt(traj(1,:,:).^2+traj(2,:,:).^2+traj(3,:,:).^2));
-num_k0 = length(find(Traj_Rad(:,1)==0));
-
-Pts = find(Traj_Rad(:,1)<Key_Rad,1,'last');
-Key_Rad = Pts;
 
 Keyhole = dis2gasfid;
 Keyhole(1:Key_Rad,:) = NaN;
 
 %I should scale the keyhole!
 Alt_Keys = zeros([size(dis2gasfid) size(Alt_Bin,1)]);
+figure('Name','Debug Alternative Binning')
 for i = 1:size(Alt_Bin,1)
     Alt_Keys(:,:,i) = Keyhole;
     mean_key = mean(abs(dis2gasfid(1,Alt_Bin(i,:))));
@@ -149,22 +158,24 @@ for i = 1:size(Alt_Bin,1)
         Alt_Keys(:,j,i) = Alt_Keys(:,j,i)*mean_key/abs(dis2gasfid(1,j));
     end
     Alt_Keys(1:Key_Rad,Alt_Bin(i,:),i) = dis2gasfid(1:Key_Rad,Alt_Bin(i,:));
-    
+    subplot(2,5,i)
+    imagesc(squeeze(abs(Alt_Keys(:,:,i))));
     %For debugging, let's look at the trajectories in each key
     %Tools.disp_traj(traj(:,:,Alt_Bin(i,:))); It really looks pretty good.
     
+    save_for_cs(squeeze(Alt_Keys(:,:,i)),Dis_Traj,fullfile(write_path,'cs_raw',['Alt_bin_key' num2str(i) '.mat']));
 end
 
 %% Now, need to reconstruct High, Low, and Unaltered Data
-trajx = reshape(traj(1,:,:),1,[])';
-trajy = reshape(traj(2,:,:),1,[])';
-trajz = reshape(traj(3,:,:),1,[])';
+trajx = reshape(Dis_Traj(1,:,:),1,[])';
+trajy = reshape(Dis_Traj(2,:,:),1,[])';
+trajz = reshape(Dis_Traj(3,:,:),1,[])';
 
 traj_r = [trajx trajy trajz];
 
-gastrajx = reshape(gastraj(1,:,:),1,[])';
-gastrajy = reshape(gastraj(2,:,:),1,[])';
-gastrajz = reshape(gastraj(3,:,:),1,[])';
+gastrajx = reshape(Gas_Traj(1,:,:),1,[])';
+gastrajy = reshape(Gas_Traj(2,:,:),1,[])';
+gastrajz = reshape(Gas_Traj(3,:,:),1,[])';
 
 gastraj_r = [gastrajx gastrajy gastrajz];
 %orientation issue!
@@ -177,7 +188,7 @@ gastraj_r(:,3) = gastraj_hold(:,2);
 dis_data_r = reshape(dis2gasfid,1,[])';
 high_data_r = reshape(High_Key,1,[])';
 low_data_r = reshape(Low_Key,1,[])';
-gas_data_r = reshape(gasfid,1,[])';
+gas_data_r = reshape(Gas_Fid,1,[])';
 
 %Remove NaNs
 all_nan = isnan(dis_data_r);
@@ -213,14 +224,14 @@ for i = 1:size(Alt_Bin,1)
 end
 
 %% Separate RBC and Barrier Images
-[All_Bar,All_RBC, ~, ~] = Tools.SinglePointDixon_V2(All_Dis,-RBC2Bar,Gas_Image,H1_Mask);
-[High_Bar,High_RBC, ~, ~] = Tools.SinglePointDixon_V2(High_Dis,-High_RBC2Bar,Gas_Image,H1_Mask);
-[Low_Bar,Low_RBC, ~, ~] = Tools.SinglePointDixon_V2(Low_Dis,-Low_RBC2Bar,Gas_Image,H1_Mask);
+[All_Bar,All_RBC, ~, ~] = Tools.SinglePointDixon_V2(All_Dis,-RBC2Bar,LoRes_Gas_Image,Proton_Mask);
+[High_Bar,High_RBC, ~, ~] = Tools.SinglePointDixon_V2(High_Dis,-High_RBC2Bar,LoRes_Gas_Image,Proton_Mask);
+[Low_Bar,Low_RBC, ~, ~] = Tools.SinglePointDixon_V2(Low_Dis,-Low_RBC2Bar,LoRes_Gas_Image,Proton_Mask);
 
 Alt_RBC = zeros(ImSize,ImSize,ImSize,size(Alt_Bin,1));
 Alt_Bar = zeros(ImSize,ImSize,ImSize,size(Alt_Bin,1));
 for i = 1:size(Alt_Bin,1)
-    [Alt_Bar(:,:,:,i),Alt_RBC(:,:,:,i),~,~] = Tools.SinglePointDixon_V2(squeeze(Alt_Images(:,:,:,i)),-Alt_RBC2Bar(i),Gas_Image,H1_Mask);
+    [Alt_Bar(:,:,:,i),Alt_RBC(:,:,:,i),~,~] = Tools.SinglePointDixon_V2(squeeze(Alt_Images(:,:,:,i)),-Alt_RBC2Bar(i),LoRes_Gas_Image,Proton_Mask);
 end
 Alt_RBC = abs(Alt_RBC);
 All_RBC = abs(All_RBC);
@@ -235,8 +246,8 @@ mean_Bar = zeros(1,size(Alt_Bin,1));
 for i = 1:size(Alt_Bin,1)
     thisRBC = squeeze(Alt_RBC(:,:,:,i));
     thisBar = squeeze(Alt_Bar(:,:,:,i));
-    mean_RBC(i) = mean(thisRBC(H1_Mask(:)));
-    mean_Bar(i) = mean(thisBar(H1_Mask(:)));
+    mean_RBC(i) = mean(thisRBC(Proton_Mask(:)));
+    mean_Bar(i) = mean(thisBar(Proton_Mask(:)));
 end
 figure('Name','Mean RBC and Bar')
 plot(mean_RBC)
@@ -318,11 +329,11 @@ Amp = Amp*100;
 save(fullfile(write_path,'Alternative_Binning.mat'),'Amp','Phase');
 
 %% Get SNR
-NoiseMask = imerode(~H1_Mask,strel('sphere',7));%avoid edges/artifacts/partialvolume
-HighRBC_SNR = (mean(High_RBC(Vent_Mask(:)))- mean(High_RBC(NoiseMask(:))))/std(High_RBC(NoiseMask(:)));
-LowRBC_SNR = (mean(Low_RBC(Vent_Mask(:)))- mean(Low_RBC(NoiseMask(:))))/std(Low_RBC(NoiseMask(:)));
-HighBar_SNR = (mean(High_Bar(Vent_Mask(:)))- mean(High_Bar(NoiseMask(:))))/std(High_Bar(NoiseMask(:)));
-LowBar_SNR = (mean(Low_Bar(Vent_Mask(:)))- mean(Low_Bar(NoiseMask(:))))/std(Low_Bar(NoiseMask(:)));
+NoiseMask = imerode(~Proton_Mask,strel('sphere',7));%avoid edges/artifacts/partialvolume
+HighRBC_SNR = (mean(High_RBC(VentBinMask(:)))- mean(High_RBC(NoiseMask(:))))/std(High_RBC(NoiseMask(:)));
+LowRBC_SNR = (mean(Low_RBC(VentBinMask(:)))- mean(Low_RBC(NoiseMask(:))))/std(Low_RBC(NoiseMask(:)));
+HighBar_SNR = (mean(High_Bar(VentBinMask(:)))- mean(High_Bar(NoiseMask(:))))/std(High_Bar(NoiseMask(:)));
+LowBar_SNR = (mean(Low_Bar(VentBinMask(:)))- mean(Low_Bar(NoiseMask(:))))/std(Low_Bar(NoiseMask(:)));
 %We don't need to correct for T2* or anything like that, because that will
 %be a constant offset that will just cancel out when we get the oscillation
 %amplitude.
@@ -336,7 +347,7 @@ LowBar_SNR = (mean(Low_Bar(Vent_Mask(:)))- mean(Low_Bar(NoiseMask(:))))/std(Low_
 RBC_Osc = (High_RBC - Low_RBC)./mean(All_RBC(RBC_Mask(:)))*100.*RBC_Mask;
 
 % I've looked at gas in the past, but maybe time to revisit
-RBC_Osc_Gas = (High_RBC - Low_RBC)./abs(Gas_Image).*RBC_Mask;
+RBC_Osc_Gas = (High_RBC - Low_RBC)./abs(LoRes_Gas_Image).*RBC_Mask;
 
 %And let's look at dissolved as well
 RBC_Osc_Dis = (High_RBC - Low_RBC)./abs(All_Dis)*100.*RBC_Mask;
@@ -360,7 +371,7 @@ Bar_Osc(~RBC_Mask) = -1000;
 Bar_Osc_Dis = (High_Bar - Low_Bar)./abs(All_Dis)*100.*RBC_Mask;
 Bar_Osc_Dis(~RBC_Mask) = -1000;
 
-Bar_Osc_Gas = (High_Bar - Low_Bar)./abs(Gas_Image).*RBC_Mask;
+Bar_Osc_Gas = (High_Bar - Low_Bar)./abs(LoRes_Gas_Image).*RBC_Mask;
 Bar_Osc_Gas(~RBC_Mask) = -1000;
 
 %Get mean and standard deviation of oscillations
@@ -388,14 +399,14 @@ OscBinMap2 = Tools.BinImages(Amp, RBCOscThresh2);
 OscBinMap = OscBinMap.*RBC_Mask;%Mask to ventilated volume
 OscBinMap2 = OscBinMap2.*RBC_Mask;
 %% Now summary figures
-[~,firstslice,lastslice] = Tools.getimcenter(H1_Mask);
-ProtonMax = max(H1_im(:));
+[~,firstslice,lastslice] = Tools.getimcenter(Proton_Mask);
+ProtonMax = max(H1_Image_Dis(:));
 Phase(RBC_Mask==0) = -1000;
 Bar_Label = {'Defect','Low','Healthy','Healthy','Elevated','Elevated','High','High'};
 Phase_Label = {'Max Out Phase',' ',' ',' ','In Phase'};
 try
-    Anat_tiled1 = Tools.tile_image(H1_im(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3);
-    Anat_tiled = Tools.tile_image(H1_im(:,:,(firstslice-2):(lastslice+2)),3);
+    Anat_tiled1 = Tools.tile_image(H1_Image_Dis(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3);
+    Anat_tiled = Tools.tile_image(H1_Image_Dis(:,:,(firstslice-2):(lastslice+2)),3);
     RBCHigh_tiled = abs(Tools.tile_image(High_RBC(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3));
     RBCLow_tiled = abs(Tools.tile_image(Low_RBC(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3));
     BarHigh_tiled = abs(Tools.tile_image(High_Bar(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3));
@@ -411,10 +422,10 @@ try
     Amp_tiled = Tools.tile_image(Amp(:,:,(firstslice-2):(lastslice+2)),3);
     Phase_tiled = Tools.tile_image(Phase(:,:,(firstslice-2):(lastslice+2)),3);
 catch
-    Anat_tiled1 = Tools.tile_image(H1_im,3,'nRows',3);
+    Anat_tiled1 = Tools.tile_image(H1_Image_Dis,3,'nRows',3);
     BarHigh_tiled = abs(Tools.tile_image(High_Bar,3,'nRows',3));
     BarLow_tiled = abs(Tools.tile_image(Low_Bar,3,'nRows',3));
-    Anat_tiled = Tools.tile_image(H1_im,3);
+    Anat_tiled = Tools.tile_image(H1_Image_Dis,3);
     RBCOsc_tiled = Tools.tile_image(RBC_Osc,3);
     RBCOscGas_tiled = Tools.tile_image(RBC_Osc_Gas,3);
     RBCOscDis_tiled = Tools.tile_image(RBC_Osc_Dis,3);
@@ -825,7 +836,7 @@ title('Alternative Binning Phase');
 saveas(Hist_Fig,fullfile(write_path,'Wiggle_Histograms.png'));
 
 %% Save Workspace
-save(fullfile(write_path,'Wiggle_Workspace.mat'),'RBC_Osc','RBC_Mask','High_RBC','Low_RBC','H1_im','RBC_Osc_Mean','RBC_Osc_Std','All_RBC');
+save(fullfile(write_path,'Wiggle_Workspace.mat'),'RBC_Osc','RBC_Mask','High_RBC','Low_RBC','H1_Image_Dis','RBC_Osc_Mean','RBC_Osc_Std','All_RBC','Alt_Images','All_Dis','High_Dis','Low_Dis');
 
 
 %% Write to excel

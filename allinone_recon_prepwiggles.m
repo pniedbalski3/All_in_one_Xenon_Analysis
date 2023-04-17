@@ -1,4 +1,4 @@
-function allinone_recon_wiggle_only(mypath,force_recon)
+function allinone_recon_prepwiggles(mypath,force_recon)
 %% Identify Image files - done in kind of a lazy way
 if nargin < 1
     mypath = uigetdir([],'Select folder containing xenon data');
