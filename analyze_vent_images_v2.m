@@ -2,10 +2,8 @@ function analyze_vent_images_v2(write_path,Vent,Mask,scandate,Params)
 
 Vent = abs(Vent);
 
-vent_nii_name = 'Vent';
-mask_nii_name = 'Mask';
-%vent_nii_name = 'Vent_Image';
-%mask_nii_name = 'HiRes_Anatomic_Mask';
+vent_nii_name = 'Ventilation';
+mask_nii_name = 'HiRes_Anatomic_Mask';
 
 parent_path = which('analyze_vent_images_v2');
 idcs = strfind(parent_path,filesep);%determine location of file separators
@@ -53,21 +51,21 @@ end
 %Atropos analysis
 %% Atropos, Fuzzy CMeans, El Bicho
 try
-    AllinOne_Tools.atropos_analysis(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
+    AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
     if ~ispc
-        Vent_BF = niftiread(fullfile(write_path,[vent_nii_name 'Segmentation0N4.nii.gz']));
-        nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
-        niftiwrite(double(Vent_BF),fullfile(write_path,[vent_nii_name 'Vent_ImageSegmentation0N4']),nifti_info,'Compressed',true)
+        Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
+        %nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
+        %niftiwrite(double(Vent_BF),fullfile(write_path,[vent_nii_name 'Vent_ImageSegmentation0N4']),nifti_info,'Compressed',true)
     end
 catch
     disp('Cannot Run atropos Analysis')
 end
 
 try
-    atropos_seg = niftiread(fullfile(write_path,[vent_nii_name 'Segmentation.nii.gz']));
+    atropos_seg = niftiread(fullfile(write_path,[vent_nii_name '_atropos.nii.gz']));
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
+    %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
     Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
     Atropos_Output = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg);
@@ -78,10 +76,24 @@ catch
 end
 
 try
+    atropos_seg_N4 = niftiread(fullfile(write_path,[vent_nii_name '_atropos_N4.nii.gz']));
+    %Write this right back out to get the correct orientation
+    %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
+   % Vent = Tools.canonical2matlab(Vent);
+    atropos_seg_N4 = Tools.canonical2matlab(atropos_seg_N4);
+    Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg_N4);
+    AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,['Subject_' Subject '_Atropos_N4_VDP'],Subject)
+catch
+    disp('No N4 atropos Segmentation Found')
+    
+end
+
+try
     cmeans_seg = niftiread(fullfile(write_path,[vent_nii_name '_cmeans.nii.gz']));
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(cmeans_seg,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(cmeans_seg),fullfile(write_path,[vent_nii_name '_cmeans']),nifti_info,'Compressed',true)
+    %nifti_info = AllinOne_Tools.nifti_metadata(cmeans_seg,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(cmeans_seg),fullfile(write_path,[vent_nii_name '_cmeans']),nifti_info,'Compressed',true)
     cmeans_seg = Tools.canonical2matlab(cmeans_seg);
     CMeans_Output = AllinOne_Tools.generic_label_analysis(Vent,cmeans_seg);
     AllinOne_Tools.create_vent_report(write_path,Vent,CMeans_Output,SNR,['Subject_' Subject '_CMeans_VDP'],Subject)
@@ -90,10 +102,10 @@ catch
 end
 
 try
-    cmeans_seg_BF = niftiread(fullfile(write_path,[vent_nii_name '_cmeans_BF.nii.gz']));
+    cmeans_seg_BF = niftiread(fullfile(write_path,[vent_nii_name '_cmeans_N4.nii.gz']));
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(cmeans_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(cmeans_seg_BF),fullfile(write_path,[vent_nii_name '_cmeans_BF']),nifti_info,'Compressed',true)
+    %nifti_info = AllinOne_Tools.nifti_metadata(cmeans_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(cmeans_seg_BF),fullfile(write_path,[vent_nii_name '_cmeans_BF']),nifti_info,'Compressed',true)
     cmeans_seg_BF = Tools.canonical2matlab(cmeans_seg_BF);
     CMeans_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,cmeans_seg_BF);
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,CMeans_BF_Output,SNR,['Subject_' Subject '_N4_CMeans_VDP'],Subject)
@@ -104,8 +116,8 @@ end
 try
     elbicho_seg = niftiread(fullfile(write_path,[vent_nii_name '_elbicho.nii.gz']));
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(elbicho_seg,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(elbicho_seg),fullfile(write_path,[vent_nii_name '_elbicho']),nifti_info,'Compressed',true)
+    %nifti_info = AllinOne_Tools.nifti_metadata(elbicho_seg,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(elbicho_seg),fullfile(write_path,[vent_nii_name '_elbicho']),nifti_info,'Compressed',true)
     elbicho_seg = Tools.canonical2matlab(elbicho_seg);
     ElBicho_Output = AllinOne_Tools.generic_label_analysis(Vent,elbicho_seg);
     AllinOne_Tools.create_vent_report(write_path,Vent,ElBicho_Output,SNR,['Subject_' Subject '_ElBicho_VDP'],Subject)
@@ -114,10 +126,10 @@ catch
 end
 
 try
-    elbicho_seg_BF = niftiread(fullfile(write_path,[vent_nii_name '_elbicho_BF.nii.gz']));
+    elbicho_seg_BF = niftiread(fullfile(write_path,[vent_nii_name '_elbicho_N4.nii.gz']));
     %Write this right back out to get the correct orientation
-    nifti_info = AllinOne_Tools.nifti_metadata(elbicho_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(double(elbicho_seg_BF),fullfile(write_path,[vent_nii_name '_elbicho_BF']),nifti_info,'Compressed',true)
+    %nifti_info = AllinOne_Tools.nifti_metadata(elbicho_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
+    %niftiwrite(double(elbicho_seg_BF),fullfile(write_path,[vent_nii_name '_elbicho_BF']),nifti_info,'Compressed',true)
     elbicho_seg_BF = Tools.canonical2matlab(elbicho_seg_BF);
     ElBicho_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,elbicho_seg_BF);
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,ElBicho_BF_Output,SNR,['Subject_' Subject '_N4_ElBicho_VDP'],Subject)

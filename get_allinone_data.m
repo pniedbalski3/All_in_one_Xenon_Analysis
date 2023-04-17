@@ -1,5 +1,8 @@
 function [Dis_Fid,Dis_Traj,Gas_Fid,Gas_Traj] = get_allinone_data(file)
 
+parent_path = which('get_allinone_data');
+idcs = strfind(parent_path,filesep);%determine location of file separators
+parent_path = parent_path(1:idcs(end)-1);%remove file
 %Function to read in all_in_one data
 %%
 
@@ -113,7 +116,7 @@ Dis_Traj = hold_traj;
 
 %Dis_Traj = rotate_radial(k_loc,NPts,NPro);
 %% Get Gas Traj:
-traj_file = '//home/antsbox/All_in_one_Xenon_Analysis/Traj_Files/Vent_GasExchange_20210819_Traj.dat';
+traj_file = [parent_path '/Traj_Files/Vent_GasExchange_20210819_Traj.dat'];
 traj_twix = AllinOne_DataImport.mapVBVD(traj_file);
 
 Gas_Traj = Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
