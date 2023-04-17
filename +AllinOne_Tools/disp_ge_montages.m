@@ -1,17 +1,17 @@
-function [Anatomic_Fig,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,BarrierMontage,VentBinMontage,DissolvedBinMontage,RBCBinMontage,BarrierBinMontage,RBCBarBinMontage] = disp_ge_montages(H1_Image_Dis,Proton_Mask,ScaledVentImage,LoRes_Gas_Image,Dis_Image,Bar_Image,RBC_Image,RBC2BarIm,VentBinMap,DissolvedBinMap,BarrierBinMap,RBCBinMap,RBCBarrierBinMap,SNRS);
+function [Anatomic_Fig,Mask_Fig,VentMontage,GasMontage,DissolvedMontage,RBCMontage,MembraneMontage,VentBinMontage,DissolvedBinMontage,RBCBinMontage,MembraneBinMontage,RBCBarBinMontage] = disp_ge_montages(H1_Image_Dis,Proton_Mask,ScaledVentImage,LoRes_Gas_Image,Dis_Image,Bar_Image,RBC_Image,RBC2BarIm,VentBinMap,DissolvedBinMap,MembraneBinMap,RBCBinMap,RBCMembraneBinMap,SNRS);
 
 ProtonMax = prctile(abs(H1_Image_Dis(:)),99.99);
 
 VentSNR = SNRS.VentSNR;
 GasSNR = SNRS.GasSNR;
 DissolvedSNR = SNRS.DissolvedSNR;
-BarrierSNR = SNRS.BarrierSNR;
+MembraneSNR = SNRS.MembraneSNR;
 RBCSNR = SNRS.RBCSNR;
-RBC2Bar = SNRS.RBC2Bar;
+RBC2Mem = SNRS.RBC2Mem;
 
 SixBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 0 0.57 0.71; 0 0 1]; %Used for Vent and RBC
-EightBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 184/255 226/255 145/255; 243/255 205/255 213/255; 225/255 129/255 162/255; 197/255 27/255 125/255]; %Used for barrier
-SixBinRBCBarMap = [ 197/255 27/255 125/255; 225/255 129/255 162/255; 0.4 0.7 0.4; 0 1 0; 1 0.7143 0; 1 0 0]; %Used for RBC/Barrier ratio
+EightBinMap = [1 0 0; 1 0.7143 0; 0.4 0.7 0.4; 0 1 0; 184/255 226/255 145/255; 243/255 205/255 213/255; 225/255 129/255 162/255; 197/255 27/255 125/255]; %Used for Membrane
+SixBinRBCBarMap = [ 197/255 27/255 125/255; 225/255 129/255 162/255; 0.4 0.7 0.4; 0 1 0; 1 0.7143 0; 1 0 0]; %Used for RBC/Membrane ratio
 
 %% Display all the images - Do this in a better way than just using montage
 Vent_Dis_RBC_Label = {'Defect','Low','Healthy','Healthy','High','High'};
@@ -26,30 +26,30 @@ try
     Vent_tiled = AllinOne_Tools.tile_image(ScaledVentImage(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3);
     Gas_tiled = AllinOne_Tools.tile_image(LoRes_Gas_Image(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3);
     Dissolved_tiled = AllinOne_Tools.tile_image(Dis_Image(:,:,(firstslice-2):(lastslice+2)),3,'nRows',3);
-    Barrier_tiled = AllinOne_Tools.tile_image(abs(Bar_Image(:,:,(firstslice-2):(lastslice+2))),3,'nRows',3);
+    Membrane_tiled = AllinOne_Tools.tile_image(abs(Bar_Image(:,:,(firstslice-2):(lastslice+2))),3,'nRows',3);
     RBC_tiled = AllinOne_Tools.tile_image(abs(RBC_Image(:,:,(firstslice-2):(lastslice+2))),3,'nRows',3);
     Anat_tiled = AllinOne_Tools.tile_image(H1_Image_Dis(:,:,(firstslice-2):(lastslice+2)),3);
     RBCBar_tiled = AllinOne_Tools.tile_image(RBC2BarIm(:,:,(firstslice-2):(lastslice+2)),3);
     VentBin_tiled = AllinOne_Tools.tile_image(VentBinMap(:,:,(firstslice-2):(lastslice+2)),3);
     DissolvedBin_tiled = AllinOne_Tools.tile_image(DissolvedBinMap(:,:,(firstslice-2):(lastslice+2)),3);
-    BarrierBin_tiled = AllinOne_Tools.tile_image(BarrierBinMap(:,:,(firstslice-2):(lastslice+2)),3);
+    MembraneBin_tiled = AllinOne_Tools.tile_image(MembraneBinMap(:,:,(firstslice-2):(lastslice+2)),3);
     RBCBin_tiled = AllinOne_Tools.tile_image(RBCBinMap(:,:,(firstslice-2):(lastslice+2)),3);
-    RBCBarBin_tiled = AllinOne_Tools.tile_image(RBCBarrierBinMap(:,:,(firstslice-2):(lastslice+2)),3);
+    RBCBarBin_tiled = AllinOne_Tools.tile_image(RBCMembraneBinMap(:,:,(firstslice-2):(lastslice+2)),3);
 catch
     Anat_tiled1 = AllinOne_Tools.tile_image(H1_Image_Dis,3,'nRows',3);
     Mask_tiled = AllinOne_Tools.tile_image(Mask,3,'nRows',3);
     Vent_tiled = AllinOne_Tools.tile_image(ScaledVentImage,3,'nRows',3);
     Gas_tiled = AllinOne_Tools.tile_image(LoRes_Gas_Image,3,'nRows',3);
     Dissolved_tiled = AllinOne_Tools.tile_image(Dis_Image,3,'nRows',3);
-    Barrier_tiled = AllinOne_Tools.tile_image(Bar_Image,3,'nRows',3);
+    Membrane_tiled = AllinOne_Tools.tile_image(Bar_Image,3,'nRows',3);
     RBC_tiled = AllinOne_Tools.tile_image(RBC_Image,3,'nRows',3);
     Anat_tiled = AllinOne_Tools.tile_image(H1_Image_Dis,3);
     RBCBar_tiled = AllinOne_Tools.tile_image(RBC2BarIm,3);
     VentBin_tiled = AllinOne_Tools.tile_image(VentBinMap,3);
     DissolvedBin_tiled = AllinOne_Tools.tile_image(DissolvedBinMap,3);
-    BarrierBin_tiled = AllinOne_Tools.tile_image(BarrierBinMap,3);
+    MembraneBin_tiled = AllinOne_Tools.tile_image(MembraneBinMap,3);
     RBCBin_tiled = AllinOne_Tools.tile_image(RBCBinMap,3);
-    RBCBarBin_tiled = AllinOne_Tools.tile_image(RBCBarrierBinMap,3);
+    RBCBarBin_tiled = AllinOne_Tools.tile_image(RBCMembraneBinMap,3);
 end
 
 Anatomic_Fig = figure('Name','All Anatomic','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
@@ -138,18 +138,18 @@ set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(RBCMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(RBCSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
 set(RBCMontage,'WindowState','minimized');
 
-BarrierMontage = figure('Name','Barrier','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
-set(BarrierMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
-%set(BarrierMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
+MembraneMontage = figure('Name','Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+set(MembraneMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
+%set(MembraneMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
-[~,~] = AllinOne_Tools.imoverlay(Anat_tiled1,Barrier_tiled,[0 max(abs(Barrier_tiled(:)))],[0 max(abs(Barrier_tiled(:)))],gray,1,gca);
+[~,~] = AllinOne_Tools.imoverlay(Anat_tiled1,Membrane_tiled,[0 max(abs(Membrane_tiled(:)))],[0 max(abs(Membrane_tiled(:)))],gray,1,gca);
 axis off
 colormap(gray);
-title('Barrier Image','FontSize',16)
+title('Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-annotation(BarrierMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(BarrierSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(BarrierMontage,'WindowState','minimized');
+annotation(MembraneMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(MembraneSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+set(MembraneMontage,'WindowState','minimized');
 
 % Now Binned Montages
 VentBinMontage = figure('Name','Binned Ventilation','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
@@ -211,11 +211,11 @@ set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(RBCBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(RBCSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
 set(RBCBinMontage,'WindowState','minimized');
 
-BarrierBinMontage = figure('Name','Barrier','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
-%set(BarrierBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
-set(BarrierBinMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
+MembraneBinMontage = figure('Name','Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+%set(MembraneBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
+set(MembraneBinMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
-[~,~] = AllinOne_Tools.imoverlay(Anat_tiled,BarrierBin_tiled,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
+[~,~] = AllinOne_Tools.imoverlay(Anat_tiled,MembraneBin_tiled,[1,8],[0,0.99*ProtonMax],EightBinMap,1,gca);
 axis off
 colormap(gca,EightBinMap)
 cbar = colorbar(gca','Location','southoutside','Ticks',[]);
@@ -225,13 +225,13 @@ try
     AllinOne_Tools.binning_colorbar(cbar,8,Bar_Label);
 catch
 end
-title('Binned Barrier Image','FontSize',16)
+title('Binned Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-annotation(BarrierBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(BarrierSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(BarrierBinMontage,'WindowState','minimized');
+annotation(MembraneBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(MembraneSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+set(MembraneBinMontage,'WindowState','minimized');
 
-RBCBarBinMontage = figure('Name','RBC to Barrier','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
+RBCBarBinMontage = figure('Name','RBC to Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 %set(RBCBarBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
 set(RBCBarBinMontage,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
@@ -245,9 +245,9 @@ try
     AllinOne_Tools.binning_colorbar(cbar,6,RBCBar_Label);
 catch
 end
-title('Binned RBC/Barrier Image','FontSize',16)
+title('Binned RBC/Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-annotation(RBCBarBinMontage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC/Barrier = ' num2str(RBC2Bar,'%.2f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
+annotation(RBCBarBinMontage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC/Membrane = ' num2str(RBC2Mem,'%.2f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
 set(RBCBarBinMontage,'WindowState','minimized');
 

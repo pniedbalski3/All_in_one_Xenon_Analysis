@@ -1,5 +1,12 @@
 function Output_Struct = generic_label_analysis(Vent,Segmentation)
 
+%Let's make this structure the maximum length always.
+Output_Struct(1).BinPct = 0;
+Output_Struct(2).BinPct = 0;
+Output_Struct(3).BinPct = 0;
+Output_Struct(4).BinPct = 0;
+Output_Struct(5).BinPct = 0;
+Output_Struct(6).BinPct = 0;
 for i = 1:(length(unique(Segmentation))-1)
     Output_Struct(i).BinPct = nnz(Segmentation(:)==i)/nnz(Segmentation(:))*100;
 end
@@ -40,7 +47,7 @@ Defects_tiled = Tools.tile_image(Segmentation(:,:,firstslice:lastslice),3);
 
 %Label = {'Defect','Low','Normal','High'};
 
-[~,~] = Tools.imoverlay(Vent_tiled,Defects_tiled,[1,4],[0,0.99*VentMax],CMap,0.25,gca);
+[~,~] = Tools.imoverlay(Vent_tiled,Defects_tiled,[1,(length(unique(Segmentation))-1)],[0,0.99*VentMax],CMap,0.25,gca);
 colormap(gca,CMap)
 cbar = colorbar(gca','Location','southoutside','Ticks',[]);
 %pos = abs(cbar.Position);

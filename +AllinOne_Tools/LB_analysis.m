@@ -4,7 +4,7 @@ function VentBinMap= LB_analysis(Vent,Mask,BFtrue)
 %telling whether images are bias corrected or not.
 
 
-parent_path = which('Xe_Analysis.LB_analysis');
+parent_path = which('AllinOne_Tools.LB_analysis');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end-1)-1);%remove file
 %I need to know whether I'm doing Spiral, or CTC. Spiral should always have

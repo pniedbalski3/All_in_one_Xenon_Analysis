@@ -28,5 +28,5 @@ info.raw.quatern_d = 1;
 info.MultiplicativeScaling = 1;
 info.SpatialDimension = 0;
 
-info.TransformName = 'Qform';
-info.Transform.T = [-Vox_Size 0 0 0;0 -Vox_Size 0 0;0 0 Vox_Size 0; -FOV/2 -FOV/2 -FOV/2 1];
+%info.TransformName = 'Qform';
+%info.Transform.T = [-Vox_Size 0 0 0;0 -Vox_Size 0 0;0 0 Vox_Size 0; -FOV/2 -FOV/2 -FOV/2 1];

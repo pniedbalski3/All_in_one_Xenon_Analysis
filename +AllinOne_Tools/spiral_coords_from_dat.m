@@ -22,7 +22,7 @@ end
 Alpha = im_twix.hdr.MeasYaps.sWipMemBlock.adFree{Alpha_Loc};
 Hubs = im_twix.hdr.MeasYaps.sWipMemBlock.alFree{Hubs_Loc};
 NPro = im_twix.image.NLin;
-if mod(length(im_twix.image.Lin),im_twix.image.NLin) ~= 0
+if mod(length(im_twix.image.Lin),im_twix.image.NLin) ~= 0 & im_twix.image.NPar ~= 4
     NPro = length(im_twix.image.Lin);
 end
 
