@@ -108,7 +108,7 @@ DisMask = logical(DisMask);
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
+analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
 
 %% Wiggle Analysis
 analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
