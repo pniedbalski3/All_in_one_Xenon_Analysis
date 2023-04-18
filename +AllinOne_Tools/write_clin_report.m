@@ -6,11 +6,7 @@ try
     subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
     if contains(subject_tmp,'_')
         uscore = strfind(subject_tmp,'_');
-        if length(uscore) == 1 && (length(subject_tmp)-uscore(1)) < 3
-            subject_tmp(1:uscore(1)) = [];
-        else
-            subject_tmp(1:uscore(1)) = [];
-        end
+        subject_tmp(1:uscore(1)) = [];
     end
     Subject = subject_tmp;
 catch

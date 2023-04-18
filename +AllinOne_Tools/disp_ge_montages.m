@@ -37,7 +37,7 @@ try
     RBCBarBin_tiled = AllinOne_Tools.tile_image(RBCMembraneBinMap(:,:,(firstslice-2):(lastslice+2)),3);
 catch
     Anat_tiled1 = AllinOne_Tools.tile_image(H1_Image_Dis,3,'nRows',3);
-    Mask_tiled = AllinOne_Tools.tile_image(Mask,3,'nRows',3);
+    Mask_tiled = AllinOne_Tools.tile_image(Proton_Mask,3,'nRows',3);
     Vent_tiled = AllinOne_Tools.tile_image(ScaledVentImage,3,'nRows',3);
     Gas_tiled = AllinOne_Tools.tile_image(LoRes_Gas_Image,3,'nRows',3);
     Dissolved_tiled = AllinOne_Tools.tile_image(Dis_Image,3,'nRows',3);

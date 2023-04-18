@@ -2,18 +2,12 @@ function write_full_report(write_path,scanDateStr,HealthyDistPresent,HealthyData
 
 idcs = strfind(write_path,filesep);%determine location of file separators
 try
-    sub_ind = strfind(write_path,'Xe-');
-    sub_end = find(idcs>sub_ind,1,'first');
-    sub_end = idcs(sub_end);
-    move = true;
-    while move
-        if write_path(sub_ind-1) ~= '_'
-            sub_ind = sub_ind - 1;
-        else
-            move = false;
-        end
+   subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
+    if contains(subject_tmp,'_')
+        uscore = strfind(subject_tmp,'_');
+        subject_tmp(1:uscore(1)) = []; 
     end
-    Subject = write_path(sub_ind:(sub_end-1));
+    Subject = subject_tmp; 
 catch
     Subject = 'Unknown';
 end

@@ -45,17 +45,16 @@ colormap(gray);
 title('Anatomic Image')
 
 idcs = strfind(path,filesep);%determine location of file separators
-sub_ind = strfind(path,'Xe-');
-move = true;
-while move
-    if path(sub_ind-1) ~= '_'
-        sub_ind = sub_ind - 1;
-    else
-        move = false;
+try
+   subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
+    if contains(subject_tmp,'_')
+        uscore = strfind(subject_tmp,'_');
+        subject_tmp(1:uscore(1)) = [];
     end
+    Subject = subject_tmp; 
+catch
+    Subject = 'Unknown'
 end
-Subject = write_path(sub_ind:(idcs(end)-1));
-
 
 Rpttitle = [Subject '_VDP_Report_All'];
 rpt = Report(fullfile(path,'Analysis_Reports',Rpttitle),'pdf');
