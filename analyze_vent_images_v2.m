@@ -4,6 +4,9 @@ Vent = abs(Vent);
 
 vent_nii_name = 'Ventilation';
 mask_nii_name = 'HiRes_Anatomic_Mask';
+anat_nii_name = 'HiRes_Anatomic';
+
+Anat_Image = Tools.canonical2matlab(niftiread(fullfile(write_path,[anat_nii_name '.nii.gz'])));
 
 parent_path = which('analyze_vent_images_v2');
 idcs = strfind(parent_path,filesep);%determine location of file separators
@@ -53,6 +56,7 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 try
     AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
     Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
+    Vent_BF = Tools.canonical2matlab(Vent_BF);
 catch
     disp('Cannot Run atropos Analysis')
 end
@@ -81,7 +85,7 @@ try
     %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
    % Vent = Tools.canonical2matlab(Vent);
     atropos_seg_N4 = Tools.canonical2matlab(atropos_seg_N4);
-    Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg_N4);
+    Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent_BF,atropos_seg_N4);
     AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,[Subject '_Atropos_N4_VDP'],Subject)
 catch
     disp('No N4 atropos Segmentation Found')
@@ -111,7 +115,7 @@ try
     %nifti_info = AllinOne_Tools.nifti_metadata(cmeans_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
     %niftiwrite(double(cmeans_seg_BF),fullfile(write_path,[vent_nii_name '_cmeans_BF']),nifti_info,'Compressed',true)
     cmeans_seg_BF = Tools.canonical2matlab(cmeans_seg_BF);
-    CMeans_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,cmeans_seg_BF);
+    CMeans_BF_Output = AllinOne_Tools.generic_label_analysis(Vent_BF,cmeans_seg_BF);
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,CMeans_BF_Output,SNR,[Subject '_N4_CMeans_VDP'],Subject)
 catch
     disp('No cmeans Segmentation Found')
@@ -141,7 +145,7 @@ try
     %nifti_info = AllinOne_Tools.nifti_metadata(elbicho_seg_BF,Params.Vent_Voxel,Params.GE_FOV);
     %niftiwrite(double(elbicho_seg_BF),fullfile(write_path,[vent_nii_name '_elbicho_BF']),nifti_info,'Compressed',true)
     elbicho_seg_BF = Tools.canonical2matlab(elbicho_seg_BF);
-    ElBicho_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,elbicho_seg_BF);
+    ElBicho_BF_Output = AllinOne_Tools.generic_label_analysis(Vent_BF,elbicho_seg_BF);
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,ElBicho_BF_Output,SNR,[Subject '_N4_ElBicho_VDP'],Subject)
 catch
     disp('No el bicho Segmentation Found')
@@ -153,7 +157,7 @@ end
 %After this point, there's no more going to and from nifti, so we can put
 %everything in the shape we need for properly oriented images - Vent is
 %already there...
-Vent_BF = Tools.canonical2matlab(Vent_BF);
+%Vent_BF = Tools.canonical2matlab(Vent_BF);
 %Anat_Image = Tools.canonical2matlab(Anat_Image);
 Mask = Tools.canonical2matlab(Mask);
 
@@ -252,7 +256,6 @@ try
 catch
     save(fullfile(write_path,'Vent_Analysis_Segmentations.mat'),'Vent','Vent_BF','MALB_Segmentation','MALB_BF_Segmentation','LB_Segmentation','LB_BF_Segmentation','KMeans_Segmentation','KMeans_BF_Segmentation');
 end
-%workspace_path = fullfile(write_path,'Vent_Analysis_Workspace.mat');
 
 %% Get Ventilation Heterogeneity
 [H_Map_BF,H_Index_BF] = xe_vent_heterogeneity(Vent_BF,Mask,5);
@@ -261,6 +264,9 @@ save(fullfile(write_path,'Ventilation_Heterogeneity.mat'),'H_Map','H_Index','H_M
 Mask = logical(Mask);
 CV = std(Vent(Mask(:)))/mean(Vent(Mask(:)));
 CV_BF = std(Vent_BF(Mask(:)))/mean(Vent(Mask(:)));
+
+%workspace_path = fullfile(write_path,'Vent_Analysis_Workspace.mat');
+
 
 %% Write to Excel
 matfile = 'All_in_One_Ventilation_V2.mat';
@@ -412,7 +418,8 @@ writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 % end
 % 
 try
-    AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
+   % AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
+    AllinOne_Tools.vdp_qc_report(path,Vent,Mask,Vent_BF,Anat_Image,SNR);
 catch
     disp('No Full Report Written')
 end
