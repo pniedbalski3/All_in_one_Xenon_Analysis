@@ -49,7 +49,7 @@ H1_traj_file = fullfile(parent_path,'Traj_Files','Vent_GasEx_Anatomic_20210819_T
 
 H1_Traj = AllinOne_DataImport.spiral_coords_from_dat(H1_traj_file,H1_Ordering,H1_Dim,H1_Alpha,H1_Hubs,H1_Pro);
 %% Calibration
-if contains(cal_file,'20210819')
+if contains(xe_file,'20210819')
     Cal_Dat_twix = AllinOne_DataImport.mapVBVD(cal_file);
     nFids = Cal_Dat_twix.hdr.Config.NRepMeas;
     te = Cal_Dat_twix.hdr.Phoenix.alTE{1}; 
