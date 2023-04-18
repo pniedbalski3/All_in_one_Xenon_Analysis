@@ -169,7 +169,7 @@ try
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - non bias corrected image')
     for i = 1:6
-        MALB_Output(i).BinPct = nan;
+        ElBicho_Output(i).BinPct = nan;
     end
 end
 %Now Bias Corrected
@@ -181,9 +181,6 @@ try
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,MALB_BF_Output,SNR,[Subject '_N4_60PctThreshold_VDP'],Subject)
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image')
-    for i = 1:6
-        MALB_BF_Output(i).BinPct = nan;
-    end
 end
 
 %% Next, we'll do Linear Binning Method (a la Duke)
@@ -196,9 +193,6 @@ try
     AllinOne_Tools.create_vent_report(write_path,Vent,LB_Output,SNR,[Subject '_LinearBinning_VDP'],Subject)
 catch
     disp('Linear Binning Analysis Failed - non bias corrected image')
-    for i = 1:6
-        LB_Output(i).BinPct = nan;
-    end
 end
 %Then Bias Corrected
 try 
@@ -209,9 +203,6 @@ try
     AllinOne_Tools.create_vent_report(write_path,Vent_BF,LB_BF_Output,SNR,[Subject '_N4_LinearBinning_VDP'],Subject)
 catch
     disp('Linear Binning Analysis Failed - bias corrected image')
-    for i = 1:6
-        LB_BF_Output(i).BinPct = nan;
-    end
 end
 
 %% Kmeans clustering
@@ -226,9 +217,6 @@ try
     end
 catch
     disp('K Means Clustering Analysis Failed - bias corrected image');
-    for i = 1:6
-        KMeans_Output(i).BinPct = nan;
-    end
 end
 
 try
@@ -242,9 +230,6 @@ try
     end
 catch
     disp('K Means Clustering Analysis Failed - bias corrected image');
-    for i = 1:6
-        KMeans_BF_Output(i).BinPct = nan;
-    end
 end
 %% Save the segmentations
 try
