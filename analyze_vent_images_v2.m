@@ -419,7 +419,7 @@ writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 % 
 try
    % AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
-    AllinOne_Tools.vdp_qc_report(path,Vent,Mask,Vent_BF,Anat_Image,SNR);
+    AllinOne_Tools.vdp_qc_report(write_path,Vent,Mask,Vent_BF,Anat_Image,SNR);
 catch
     disp('No Full Report Written')
 end
