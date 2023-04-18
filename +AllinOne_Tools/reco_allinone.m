@@ -80,7 +80,7 @@ gas_traj(rm_recogas,:) = [];
 reco_gas(rm_recogas) = [];
 
 ImSize = 96;
-Vent_Im = AllinOne_Recon.base_floret_recon(ImSize,reco_gas,gas_traj); %Don't want to Hardcode image size, but palatable for now
+Vent_Im = AllinOne_Recon.base_floret_recon(round(ImSize),reco_gas,gas_traj); %Don't want to Hardcode image size, but palatable for now
 
 % Dissolved Image - Also Easy
 reco_dis = reshape(Dis_Fid,1,[])';
