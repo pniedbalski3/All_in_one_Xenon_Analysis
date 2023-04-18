@@ -35,46 +35,15 @@ mapping = ['-v ' Code_Path ':/mnt/mycode -v ' ImPath ':/mnt/mydata'];
 
 dockercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/funct_seg.py /mnt/mydata/' ImName ' /mnt/mydata/' MskName];
 
-%systemCommand = ['python ' fullfile(parent_path,'Python_Code','funct_seg.py') ' ' Image_Path ' ' Mask_Path];
-
-status = system(dockercommand);
-
-%If on a PC, sending images through the docker from a local drive, so need
-%to move back to P drive.
 if ispc
     N4_Name = strrep(ImName,'.nii.gz','_N4.nii.gz');
     Atropos_Name = strrep(ImName,'.nii.gz','_atropos.nii.gz');
     AtroposN4_Name = strrep(ImName,'.nii.gz','_atropos_N4.nii.gz');
     cmeans_Name = strrep(ImName,'.nii.gz','_cmeans.nii.gz');
     cmeansN4_Name = strrep(ImName,'.nii.gz','_cmeans_N4.nii.gz');
-    elbicho_Name = strrep(ImName,'.nii.gz','_elbicho.nii.gz');
-    elbichoN4_Name = strrep(ImName,'.nii.gz','_elbicho_N4.nii.gz');
-    try
-        copyfile(fullfile(local_path,N4_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,Atropos_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,AtroposN4_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,cmeans_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,cmeansN4_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,elbicho_Name),Orig_ImPath);
-    catch
-    end
-    try
-        copyfile(fullfile(local_path,elbichoN4_Name),Orig_ImPath);
-    catch
-    end
+    copyfile(fullfile(local_path,Mask_name),Orig_ImPath);
 end
+
+%systemCommand = ['python ' fullfile(parent_path,'Python_Code','funct_seg.py') ' ' Image_Path ' ' Mask_Path];
+
+status = system(dockercommand);

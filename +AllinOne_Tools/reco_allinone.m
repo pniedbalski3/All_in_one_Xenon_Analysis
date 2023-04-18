@@ -79,7 +79,8 @@ gas_traj= [-traj_x -traj_z traj_y];
 gas_traj(rm_recogas,:) = [];
 reco_gas(rm_recogas) = [];
 
-Vent_Im = AllinOne_Recon.base_floret_recon(96,reco_gas,gas_traj); %Don't want to Hardcode image size, but palatable for now
+ImSize = 96;
+Vent_Im = AllinOne_Recon.base_floret_recon(ImSize,reco_gas,gas_traj); %Don't want to Hardcode image size, but palatable for now
 
 % Dissolved Image - Also Easy
 reco_dis = reshape(Dis_Fid,1,[])';
@@ -95,7 +96,8 @@ dis_traj= [-traj_x -traj_y traj_z];
 dis_traj(rm_recodis,:) = [];
 reco_dis(rm_recodis) = [];
 
-Dis_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(64,reco_dis,dis_traj); %Don't want to Hardcode image size, but palatable for now
+ImSize = 64;
+Dis_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(ImSize,reco_dis,dis_traj); %Don't want to Hardcode image size, but palatable for now
 
 %Now, need to scale k-space to get lo-res gas image:
 gas_traj2 = gas_traj*1.5;
@@ -108,8 +110,8 @@ rad = sqrt(gas_traj2(:,1).^2+gas_traj2(:,2).^2+gas_traj2(:,3).^2);
 toobig = find(rad>0.5);
 reco_gas(toobig) = [];
 gas_traj2(toobig,:) = [];
-LoRes_Gas_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(64,reco_gas,gas_traj2); %Don't want to Hardcode image size, but palatable for now
-HiRes_Gas_Image = AllinOne_Recon.Dissolved_HighResRecon(64,reco_gas,gas_traj2); %Don't want to Hardcode image size, but palatable for now
+LoRes_Gas_Image = AllinOne_Recon.Dissolved_Phase_LowResRecon(ImSize,reco_gas,gas_traj2); %Don't want to Hardcode image size, but palatable for now
+HiRes_Gas_Image = AllinOne_Recon.Dissolved_HighResRecon(ImSize,reco_gas,gas_traj2); %Don't want to Hardcode image size, but palatable for now
 %%
 ImSize = Params.imsize;
 NPro = size(Dis_Fid,2);

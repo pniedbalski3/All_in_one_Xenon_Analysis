@@ -541,7 +541,7 @@ try
     add(newsect,table);
 
     fig = Figure(Atropos_Output.HistFig);
-    fig.Snapshot.Caption = 'Histogram of Ventilation Values within Masked Volume using Mean Anchored Linear Binning Approach';
+    fig.Snapshot.Caption = 'Histogram of Ventilation Values within Masked Volume using Atropos';
     add(newsect,fig);
 
     add(chap1,newsect);

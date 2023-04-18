@@ -44,19 +44,15 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 
 %% Now, need to do some bias correction 
 %On a PC, use Matt's code
-if ispc
-    [Vent_BF,~] = AllinOne_Tools.Vent_BiasCorrection(Vent,Mask);
-end
+% if ispc
+%     [Vent_BF,~] = AllinOne_Tools.Vent_BiasCorrection(Vent,Mask);
+% end
 %If not a PC, we should be able to get Bias Corrected Image from the
 %Atropos analysis
 %% Atropos, Fuzzy CMeans, El Bicho
 try
     AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
-    if ~ispc
-        Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
-        %nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
-        %niftiwrite(double(Vent_BF),fullfile(write_path,[vent_nii_name 'Vent_ImageSegmentation0N4']),nifti_info,'Compressed',true)
-    end
+    Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
 catch
     disp('Cannot Run atropos Analysis')
 end
@@ -69,7 +65,7 @@ try
     Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
     Atropos_Output = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg);
-    AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output,SNR,['Subject_' Subject '_Atropos_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output,SNR,[Subject '_Atropos_VDP'],Subject)
 catch
     disp('No atropos Segmentation Found')
     Vent = Tools.canonical2matlab(Vent);
@@ -83,7 +79,7 @@ try
    % Vent = Tools.canonical2matlab(Vent);
     atropos_seg_N4 = Tools.canonical2matlab(atropos_seg_N4);
     Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg_N4);
-    AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,['Subject_' Subject '_Atropos_N4_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,[Subject '_Atropos_N4_VDP'],Subject)
 catch
     disp('No N4 atropos Segmentation Found')
     
@@ -96,7 +92,7 @@ try
     %niftiwrite(double(cmeans_seg),fullfile(write_path,[vent_nii_name '_cmeans']),nifti_info,'Compressed',true)
     cmeans_seg = Tools.canonical2matlab(cmeans_seg);
     CMeans_Output = AllinOne_Tools.generic_label_analysis(Vent,cmeans_seg);
-    AllinOne_Tools.create_vent_report(write_path,Vent,CMeans_Output,SNR,['Subject_' Subject '_CMeans_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,CMeans_Output,SNR,[Subject '_CMeans_VDP'],Subject)
 catch
     disp('No cmeans Segmentation Found')
 end
@@ -108,7 +104,7 @@ try
     %niftiwrite(double(cmeans_seg_BF),fullfile(write_path,[vent_nii_name '_cmeans_BF']),nifti_info,'Compressed',true)
     cmeans_seg_BF = Tools.canonical2matlab(cmeans_seg_BF);
     CMeans_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,cmeans_seg_BF);
-    AllinOne_Tools.create_vent_report(write_path,Vent_BF,CMeans_BF_Output,SNR,['Subject_' Subject '_N4_CMeans_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent_BF,CMeans_BF_Output,SNR,[Subject '_N4_CMeans_VDP'],Subject)
 catch
     disp('No cmeans Segmentation Found')
 end
@@ -120,7 +116,7 @@ try
     %niftiwrite(double(elbicho_seg),fullfile(write_path,[vent_nii_name '_elbicho']),nifti_info,'Compressed',true)
     elbicho_seg = Tools.canonical2matlab(elbicho_seg);
     ElBicho_Output = AllinOne_Tools.generic_label_analysis(Vent,elbicho_seg);
-    AllinOne_Tools.create_vent_report(write_path,Vent,ElBicho_Output,SNR,['Subject_' Subject '_ElBicho_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,ElBicho_Output,SNR,[Subject '_ElBicho_VDP'],Subject)
 catch
     disp('No el bicho Segmentation Found')
 end
@@ -132,7 +128,7 @@ try
     %niftiwrite(double(elbicho_seg_BF),fullfile(write_path,[vent_nii_name '_elbicho_BF']),nifti_info,'Compressed',true)
     elbicho_seg_BF = Tools.canonical2matlab(elbicho_seg_BF);
     ElBicho_BF_Output = AllinOne_Tools.generic_label_analysis(Vent,elbicho_seg_BF);
-    AllinOne_Tools.create_vent_report(write_path,Vent_BF,ElBicho_BF_Output,SNR,['Subject_' Subject '_N4_ElBicho_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent_BF,ElBicho_BF_Output,SNR,[Subject '_N4_ElBicho_VDP'],Subject)
 catch
     disp('No el bicho Segmentation Found')
 end
@@ -152,7 +148,7 @@ try
     MALB_Output = AllinOne_Tools.generic_label_analysis(Vent,MALB_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(MALB_Segmentation),fullfile(write_path,'MALB_Ventilation_Labeled'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent,MALB_Output,SNR,['Subject_' Subject '_60PctThreshold_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,MALB_Output,SNR,[Subject '_60PctThreshold_VDP'],Subject)
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - non bias corrected image')
 end
@@ -162,7 +158,7 @@ try
     MALB_BF_Output = AllinOne_Tools.generic_label_analysis(Vent_BF,MALB_BF_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(MALB_BF_Segmentation),fullfile(write_path,'MALB_Ventilation_Labeled_N4'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent_BF,MALB_BF_Output,SNR,['Subject_' Subject '_N4_60PctThreshold_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent_BF,MALB_BF_Output,SNR,[Subject '_N4_60PctThreshold_VDP'],Subject)
 catch
     disp('Mean Anchored Linear Binning Analysis Failed - bias corrected image')
 end
@@ -174,7 +170,7 @@ try
     LB_Output = AllinOne_Tools.generic_label_analysis(Vent,LB_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(LB_Segmentation),fullfile(write_path,'LB_Ventilation_Labeled'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent,LB_Output,SNR,['Subject_' Subject '_LinearBinning_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,LB_Output,SNR,[Subject '_LinearBinning_VDP'],Subject)
 catch
     disp('Linear Binning Analysis Failed - non bias corrected image')
 end
@@ -184,7 +180,7 @@ try
     LB_BF_Output = AllinOne_Tools.generic_label_analysis(Vent_BF,LB_BF_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(LB_BF_Segmentation),fullfile(write_path,'LB_Ventilation_Labeled_N4'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent_BF,LB_BF_Output,SNR,['Subject_' Subject '_N4_LinearBinning_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent_BF,LB_BF_Output,SNR,[Subject '_N4_LinearBinning_VDP'],Subject)
 catch
     disp('Linear Binning Analysis Failed - bias corrected image')
 end
@@ -195,7 +191,7 @@ try
     KMeans_Output = AllinOne_Tools.generic_label_analysis(Vent,KMeans_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(KMeans_Segmentation),fullfile(write_path,'KMeans_Ventilation_Labeled'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent,KMeans_Output,SNR,['Subject_' Subject '_KMeans_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent,KMeans_Output,SNR,[Subject '_KMeans_VDP'],Subject)
     if length(KMeans_Output)<5
         KMeans_Output(5).BinPct = 0;
     end
@@ -380,8 +376,8 @@ writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 % 
 % end
 % 
-% try
-%     AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
-% catch
-%     disp('No Full Report Written')
-% end
+try
+    AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
+catch
+    disp('No Full Report Written')
+end
