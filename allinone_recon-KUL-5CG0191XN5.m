@@ -1,4 +1,4 @@
-function allinone_recon(mypath,force_recon)
+function allinone_recon(mypath,force_recon,force_mask)
 %% Identify Image files - done in kind of a lazy way
 if nargin < 1
     mypath = uigetdir([],'Select folder containing xenon data');
@@ -6,6 +6,9 @@ if nargin < 1
 end
 if nargin < 2
     force_recon = true;
+end
+if nargin < 3
+    force_mask = false;
 end
 
 %% Read Data
@@ -30,7 +33,7 @@ try
     try
         cal_file = file_names{find(contains(file_names,calprot),1,'last')};
     catch
-        cal_file = file_names{find(contains(file_names,'fid_xe_calibration'),1,'last')};
+        cal_file = file_names{find(contains(file_names,'fid_xe_calibration_2202'),1,'last')};
     end
     xe_file = fullfile(mypath,'Raw',xe_file);
     anat_file = fullfile(mypath,'Raw',anat_file);
@@ -60,20 +63,20 @@ if force_recon
     %% Rotate Images
     %We need Matlab and NIFTI to line up, so make sure all the images are
     %properly oriented. We'll have to change orientation in images
-%     Dis_Image = AllinOne_Tools.all_in_one_canonical_orientation(Dis_Image);
-%     LoRes_Gas_Image = AllinOne_Tools.all_in_one_canonical_orientation(LoRes_Gas_Image);
-%     HiRes_Gas_Image = AllinOne_Tools.all_in_one_canonical_orientation(HiRes_Gas_Image);
-%     Vent_Im = AllinOne_Tools.all_in_one_canonical_orientation(Vent_Im);
-%     H1_Image_Vent = AllinOne_Tools.all_in_one_canonical_orientation(H1_Image_Vent);
-%     H1_Image_Dis = AllinOne_Tools.all_in_one_canonical_orientation(H1_Image_Dis);
+    Dis_Image = AllinOne_Tools.all_in_one_canonical_orientation(Dis_Image);
+    LoRes_Gas_Image = AllinOne_Tools.all_in_one_canonical_orientation(LoRes_Gas_Image);
+    HiRes_Gas_Image = AllinOne_Tools.all_in_one_canonical_orientation(HiRes_Gas_Image);
+    Vent_Im = AllinOne_Tools.all_in_one_canonical_orientation(Vent_Im);
+    H1_Image_Vent = AllinOne_Tools.all_in_one_canonical_orientation(H1_Image_Vent);
+    H1_Image_Dis = AllinOne_Tools.all_in_one_canonical_orientation(H1_Image_Dis);
 
     %% Images are reconstructed - Write out:
     Dis_info = AllinOne_Tools.nifti_metadata(Dis_Image,Params.GE_Voxel,Params.GE_FOV);
-    niftiwrite(abs(Dis_Image),fullfile(write_path,'Dissolved'),Dis_info,'Compressed',true);
+    niftiwrite(abs(Dis_Image),fullfile(write_path,'Dissolved_Image'),Dis_info,'Compressed',true);
     Gas_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
     niftiwrite(abs(LoRes_Gas_Image),fullfile(write_path,'LoRes_Gas_Image'),Gas_info,'Compressed',true);
     Vent_info = AllinOne_Tools.nifti_metadata(Vent_Im,Params.Vent_Voxel,Params.GE_FOV);
-    niftiwrite(abs(Vent_Im),fullfile(write_path,'Ventilation'),Vent_info,'Compressed',true);
+    niftiwrite(abs(Vent_Im),fullfile(write_path,'Vent_Image'),Vent_info,'Compressed',true);
     H1_Vent_info = AllinOne_Tools.nifti_metadata(H1_Image_Vent,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(abs(H1_Image_Vent),fullfile(write_path,'HiRes_Anatomic'),H1_Vent_info,'Compressed',true);
     H1_GE_info = AllinOne_Tools.nifti_metadata(LoRes_Gas_Image,Params.GE_Voxel,Params.GE_FOV);
@@ -84,8 +87,15 @@ else
     load(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 end
 %% Masking
-[VentMask,DisMask] = all_in_one_masking(write_path);
-
+if force_Mask
+    [VentMask,DisMask] = all_in_one_masking(write_path);
+else
+    try
+        VentMask = niftiread(
+    catch
+        [VentMask,DisMask] = all_in_one_masking(write_path);
+    end
+end
 if isnan(VentMask)
     VentMask = AllinOne_Tools.erode_dilate(Vent_Im,1,5);
 end
@@ -95,11 +105,10 @@ end
 
 %Now, let's re-write the mask so that it has the correct orientation and
 %dimensions in the nifti file:
-%I think these will no longer be necessary
-% GE_mask_info = AllinOne_Tools.nifti_metadata(DisMask,Params.GE_Voxel,Params.GE_FOV);
-% niftiwrite(double(DisMask),fullfile(write_path,'LoRes_Anatomic_mask'),GE_mask_info,'Compressed',true);
-% Vent_mask_info = AllinOne_Tools.nifti_metadata(VentMask,Params.Vent_Voxel,Params.GE_FOV);
-% niftiwrite(double(VentMask),fullfile(write_path,'HiRes_Anatomic_mask'),Vent_mask_info,'Compressed',true);
+GE_mask_info = AllinOne_Tools.nifti_metadata(DisMask,Params.GE_Voxel,Params.GE_FOV);
+niftiwrite(double(DisMask),fullfile(write_path,'LoRes_Anatomic_mask'),GE_mask_info,'Compressed',true);
+Vent_mask_info = AllinOne_Tools.nifti_metadata(VentMask,Params.Vent_Voxel,Params.GE_FOV);
+niftiwrite(double(VentMask),fullfile(write_path,'HiRes_Anatomic_mask'),Vent_mask_info,'Compressed',true);
 
 VentMask = logical(VentMask);
 DisMask = logical(DisMask);
@@ -108,10 +117,10 @@ DisMask = logical(DisMask);
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
+analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
 
 %% Wiggle Analysis
-%analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
+analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
 
 %% Clean up
 close all;

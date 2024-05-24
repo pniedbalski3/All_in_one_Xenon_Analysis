@@ -12,20 +12,15 @@ sub1 = 'All_in_One_Analysis';
 
 %% Load in ventilation data
 vent_nii = 'Vent_Image.nii.gz';
-vent_nii2 = 'Ventilation.nii.gz';
 %vent_nii = 'Vent_ImageSegmentation0N4.nii.gz';
 vent_anat_nii = 'HiRes_Anatomic.nii.gz';
 vent_mask_nii = 'HiRes_Anatomic_mask.nii.gz';
-try
-    vent = double(niftiread(fullfile(infolder,sub1,vent_nii)));
-    vent = flip(fliplr(Tools.canonical2matlab(vent)),3);
-catch
-    vent = double(niftiread(fullfile(infolder,sub1,vent_nii2)));
-    vent = Tools.canonical2matlab(vent);
-end
+
+vent = double(niftiread(fullfile(infolder,sub1,vent_nii)));
 vent_anat = double(niftiread(fullfile(infolder,sub1,vent_anat_nii)));
 vent_mask = double(niftiread(fullfile(infolder,sub1,vent_mask_nii)));
 
+vent = Tools.canonical2matlab(vent);
 vent_anat = Tools.canonical2matlab(vent_anat);
 vent_mask = Tools.canonical2matlab(vent_mask);
 
@@ -88,53 +83,21 @@ vent_lab_nii = 'Vent_Labeled.nii.gz';
 rbc_lab_nii = 'RBC_Labeled.nii.gz';
 mem_lab_nii ='Barrier_Labeled.nii.gz';
 
-try
-    anat = double(niftiread(fullfile(infolder,sub1,anat_nii)));
-    mask = double(niftiread(fullfile(infolder,sub1,mask_nii)));
-    rbc = double(niftiread(fullfile(infolder,sub1,rbc_nii)));
-    mem = double(niftiread(fullfile(infolder,sub1,mem_nii)));
-    vl = double(niftiread(fullfile(infolder,sub1,vent_lab_nii)));
-    rbcl = double(niftiread(fullfile(infolder,sub1,rbc_lab_nii)));
-    meml = double(niftiread(fullfile(infolder,sub1,mem_lab_nii)));
+anat = double(niftiread(fullfile(infolder,sub1,anat_nii)));
+mask = double(niftiread(fullfile(infolder,sub1,mask_nii)));
+rbc = double(niftiread(fullfile(infolder,sub1,rbc_nii)));
+mem = double(niftiread(fullfile(infolder,sub1,mem_nii)));
+vl = double(niftiread(fullfile(infolder,sub1,vent_lab_nii)));
+rbcl = double(niftiread(fullfile(infolder,sub1,rbc_lab_nii)));
+meml = double(niftiread(fullfile(infolder,sub1,mem_lab_nii)));
 
-    anat = Tools.canonical2matlab(anat);
-    mask = Tools.canonical2matlab(mask);
-    rbc = flip(fliplr(Tools.canonical2matlab(rbc)),3);
-    mem = flip(fliplr(Tools.canonical2matlab(mem)),3);
-    vl = flip(fliplr(Tools.canonical2matlab(vl)),3);
-    rbcl = flip(fliplr(Tools.canonical2matlab(rbcl)),3);
-    meml = flip(fliplr(Tools.canonical2matlab(meml)),3);
-catch
-    anat_nii = 'LoRes_Anatomic.nii.gz';
-    mask_nii = 'LoRes_Anatomic_mask.nii.gz';
-    rbc_nii = fullfile('Gas_Exchange_Outputs','RBC_to_Gas.nii.gz');
-    mem_nii = fullfile('Gas_Exchange_Outputs','Membrane_to_Gas.nii.gz');
-    vent_lab_nii = fullfile('Gas_Exchange_Outputs','LoResVent_Labeled.nii.gz');
-    rbc_lab_nii = fullfile('Gas_Exchange_Outputs','RBC_Labeled.nii.gz');
-    mem_lab_nii = fullfile('Gas_Exchange_Outputs','Membrane_Labeled.nii.gz');
-   
-
-    anat = double(niftiread(fullfile(infolder,sub1,anat_nii)));
-    mask = double(niftiread(fullfile(infolder,sub1,mask_nii)));
-    rbc = double(niftiread(fullfile(infolder,sub1,rbc_nii)));
-    mem = double(niftiread(fullfile(infolder,sub1,mem_nii)));
-    vl = double(niftiread(fullfile(infolder,sub1,vent_lab_nii)));
-    rbcl = double(niftiread(fullfile(infolder,sub1,rbc_lab_nii)));
-    meml = double(niftiread(fullfile(infolder,sub1,mem_lab_nii)));
-
-    anat = Tools.canonical2matlab(anat);
-    mask = Tools.canonical2matlab(mask);
-    rbc = Tools.canonical2matlab(rbc);
-    mem = Tools.canonical2matlab(mem);
-    vl = Tools.canonical2matlab(vl);
-    rbcl = Tools.canonical2matlab(rbcl);
-    meml = Tools.canonical2matlab(meml);
-
-end
-
-
-
-
+anat = Tools.canonical2matlab(anat);
+mask = Tools.canonical2matlab(mask);
+rbc = Tools.canonical2matlab(rbc);
+mem = Tools.canonical2matlab(mem);
+vl = Tools.canonical2matlab(vl);
+rbcl = Tools.canonical2matlab(rbcl);
+meml = Tools.canonical2matlab(meml);
 
 if isnan(slice_GE)
     [slice_GE,~,~] = AllinOne_Tools.getimcenter(mask);

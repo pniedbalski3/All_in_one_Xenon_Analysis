@@ -26,7 +26,7 @@ output_image_size = ImageSize*[1 1 1];
 nDcfIter = 15;
 deapodizeImage = false();%true();
 cropOvergriddedImage = true();
-verbose = true();
+verbose = false();
 if exist('PixelShift','var')==0%if not passed, set to 0's
     PixelShift = [0, 0, 0];
 end

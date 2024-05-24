@@ -11,7 +11,7 @@ end
 sub1 = 'All_in_One_Analysis';
 
 %% Load in ventilation data
-vent_nii = 'Ventilation.nii.gz';
+vent_nii = 'Vent_Image.nii.gz';
 vent_anat_nii = 'HiRes_Anatomic.nii.gz';
 vent_mask_nii = 'HiRes_Anatomic_mask.nii.gz';
 
@@ -35,10 +35,6 @@ my_slice_vent = rot90(squeeze(vent(slice_vent,:,:)));
 my_slice_anat = rot90(squeeze(vent_anat(slice_vent,:,:)));
 my_slice_mask = rot90(squeeze(vent_mask(slice_vent,:,:)));
 
-my_slice_vent = imresize(my_slice_vent,8);
-my_slice_anat = imresize(my_slice_anat,8);
-my_slice_mask = imresize(my_slice_mask,8);
-
 CMap = [linspace(0,0,256)',linspace(0,1,256)',linspace(0,1,256)'];
 
 figure('Name','Representative Axial Slice of Vent Image');
@@ -48,17 +44,17 @@ colormap(gca,CMap);
 %% Load Gas Exchange Data
 anat_nii = 'LoRes_Anatomic.nii.gz';
 mask_nii = 'LoRes_Anatomic_mask.nii.gz';
-rbc_nii = fullfile('Gas_Exchange_Outputs','RBC_to_Gas.nii.gz');
-mem_nii = fullfile('Gas_Exchange_Outputs','Membrane_to_Gas.nii.gz');
+rbc_nii = 'RBC_to_Gas.nii.gz';
+mem_nii = 'Barrier_to_Gas.nii.gz';
 vent_lab_nii = 'Vent_Labeled.nii.gz';
-rbc_lab_nii = fullfile('Gas_Exchange_Outputs','RBC_Labeled.nii.gz');
-mem_lab_nii =fullfile('Gas_Exchange_Outputs','Membrane_Labeled.nii.gz');
+rbc_lab_nii = 'RBC_Labeled.nii.gz';
+mem_lab_nii ='Barrier_Labeled.nii.gz';
 
 anat = double(niftiread(fullfile(infolder,sub1,anat_nii)));
 mask = double(niftiread(fullfile(infolder,sub1,mask_nii)));
 rbc = double(niftiread(fullfile(infolder,sub1,rbc_nii)));
 mem = double(niftiread(fullfile(infolder,sub1,mem_nii)));
-%vl = double(niftiread(fullfile(infolder,sub1,vent_lab_nii)));
+vl = double(niftiread(fullfile(infolder,sub1,vent_lab_nii)));
 rbcl = double(niftiread(fullfile(infolder,sub1,rbc_lab_nii)));
 meml = double(niftiread(fullfile(infolder,sub1,mem_lab_nii)));
 
@@ -66,7 +62,7 @@ anat = Tools.canonical2matlab(anat);
 mask = Tools.canonical2matlab(mask);
 rbc = Tools.canonical2matlab(rbc);
 mem = Tools.canonical2matlab(mem);
-%vl = Tools.canonical2matlab(vl);
+vl = Tools.canonical2matlab(vl);
 rbcl = Tools.canonical2matlab(rbcl);
 meml = Tools.canonical2matlab(meml);
 
@@ -76,16 +72,16 @@ end
 ProtonMax = max(anat(:));
 
 %% Display the slice I want:
-vMask = mask;
-%vMask(vl<2) = 0;
-%vMask(vl>1) = 1;
+vMask = vl;
+vMask(vl<2) = 0;
+vMask(vl>1) = 1;
 
-my_slice_rbc = fliplr(rot90(squeeze(rbc(slice_GE,:,:)),-1));
-my_slice_mem = fliplr(rot90(squeeze(mem(slice_GE,:,:)),-1));
-my_slice_rbcl = fliplr(rot90(squeeze(rbcl(slice_GE,:,:)),-1));
-my_slice_meml = fliplr(rot90(squeeze(meml(slice_GE,:,:)),-1));
-my_slice_anat = fliplr(rot90(squeeze(anat(slice_GE,:,:)),-1));
-my_slice_mask = fliplr(rot90(squeeze(vMask(slice_GE,:,:)),-1));
+my_slice_rbc = rot90(squeeze(rbc(slice_GE,:,:)));
+my_slice_mem = rot90(squeeze(mem(slice_GE,:,:)));
+my_slice_rbcl = rot90(squeeze(rbcl(slice_GE,:,:)));
+my_slice_meml = rot90(squeeze(meml(slice_GE,:,:)));
+my_slice_anat = rot90(squeeze(anat(slice_GE,:,:)));
+my_slice_mask = rot90(squeeze(vMask(slice_GE,:,:)));
 
 RBCMap = [linspace(0,1,256)',linspace(0,0,256)',linspace(0,0,256)'];
 MemMap = [linspace(0,185/256,256)',linspace(0,58/256,256)',linspace(0,206/256,256)'];
