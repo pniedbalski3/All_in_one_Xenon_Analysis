@@ -52,15 +52,16 @@ mapping = ['-v ' Code_Path ':/mnt/mycode -v ' ImPath ':/mnt/mydata'];
 dockermaskcommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/segment_lungs.py /mnt/mydata/' ImName];
 status = system(dockermaskcommand);
 
+ImName2 = strrep(ImName,'.nii.gz','_mask.nii.gz');
 %Register Mask to CT
 dockerregistercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/register_xenon_CT.py /mnt/mydata/' ImName ' /mnt/mydata/' maskName];
 status = system(dockerregistercommand);
 
 for i = 1:length(varargin)
     if contains(varargin{i},'Ventilation.nii.gz') || contains(varargin{i},'Membrane.nii.gz') || contains(varargin{i},'RBC.nii.gz') || contains(varargin{i},'Membrane_to_Gas.nii.gz') || contains(varargin{i},'RBC_to_Gas.nii.gz') 
-        dockerregistercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/warp_linear.py /mnt/mydata/' ImName ' /mnt/mydata/' maskName ' /mnt/mydata/' XeImName{i}];
+        dockerregistercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/warp_linear.py /mnt/mydata/' ImName2 ' /mnt/mydata/' maskName ' /mnt/mydata/' XeImName{i}];
     else
-        dockerregistercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/warp_label.py /mnt/mydata/' ImName ' /mnt/mydata/' maskName ' /mnt/mydata/' XeImName{i}];
+        dockerregistercommand = ['docker run ' mapping ' noelmni/antspynet python /mnt/mycode/Analysis_Pipeline/Python_Code/warp_label.py /mnt/mydata/' ImName2 ' /mnt/mydata/' maskName ' /mnt/mydata/' XeImName{i}];
     end
     status = system(dockerregistercommand);
 end
