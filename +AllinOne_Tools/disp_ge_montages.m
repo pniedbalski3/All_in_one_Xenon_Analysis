@@ -74,7 +74,7 @@ colormap(gca,Mask_Map)
 title('Anatomic Image Masked','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
-set(Mask_Fig,'WindowState','minimized');
+%set(Mask_Fig,'WindowState','minimized');
 
 Scaled_Vent_tile = Vent_tiled/(max(Vent_tiled(Mask_tiled==1)));
 %Plot Ventilation with Mask outlines
@@ -97,7 +97,7 @@ title('Ventilation Image with Mask Boundaries','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(VentMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(VentSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(VentMontage,'WindowState','minimized');
+%set(VentMontage,'WindowState','minimized');
 
 GasMontage = figure('Name','Low Resolution Gas','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(GasMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -110,7 +110,7 @@ title('Low Resolution Gas Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(GasMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(GasSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(GasMontage,'WindowState','minimized');
+%set(GasMontage,'WindowState','minimized');
 
 DissolvedMontage = figure('Name','Dissolved','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(DissolvedMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -123,7 +123,7 @@ title('Dissolved Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(DissolvedMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(DissolvedSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(DissolvedMontage,'WindowState','minimized');
+%set(DissolvedMontage,'WindowState','minimized');
 
 RBCMontage = figure('Name','RBC','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(RBCMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -136,7 +136,7 @@ title('RBC Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(RBCMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(RBCSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(RBCMontage,'WindowState','minimized');
+%set(RBCMontage,'WindowState','minimized');
 
 MembraneMontage = figure('Name','Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(MembraneMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -149,7 +149,7 @@ title('Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(MembraneMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(MembraneSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(MembraneMontage,'WindowState','minimized');
+%set(MembraneMontage,'WindowState','minimized');
 
 % Now Binned Montages
 VentBinMontage = figure('Name','Binned Ventilation','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
@@ -169,7 +169,7 @@ title('Binned Ventilation Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(VentBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(VentSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(VentBinMontage,'WindowState','minimized');
+%set(VentBinMontage,'WindowState','minimized');
 
 DissolvedBinMontage = figure('Name','Dissolved','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 %set(DissolvedBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -189,7 +189,7 @@ title('Binned Dissolved Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(DissolvedBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(DissolvedSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(DissolvedBinMontage,'WindowState','minimized');
+%set(DissolvedBinMontage,'WindowState','minimized');
 
 RBCBinMontage = figure('Name','RBC','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 %set(RBCBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -209,7 +209,7 @@ title('Binned RBC Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(RBCBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(RBCSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(RBCBinMontage,'WindowState','minimized');
+%set(RBCBinMontage,'WindowState','minimized');
 
 MembraneBinMontage = figure('Name','Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 %set(MembraneBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -229,7 +229,7 @@ title('Binned Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(MembraneBinMontage,'textbox',[0.8 0.08 0.2 0.05],'Color',[1 1 1],'String',['SNR = ' num2str(MembraneSNR,'%.1f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(MembraneBinMontage,'WindowState','minimized');
+%set(MembraneBinMontage,'WindowState','minimized');
 
 RBCBarBinMontage = figure('Name','RBC to Membrane','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 %set(RBCBarBinMontage,'color','white','Units','inches','Position',[1 1 10 3.3])
@@ -249,5 +249,5 @@ title('Binned RBC/Membrane Image','FontSize',16)
 InSet = get(gca, 'TightInset');
 set(gca, 'Position', [InSet(1:2), 1-InSet(1)-InSet(3), 1-InSet(2)-InSet(4)-.01])
 annotation(RBCBarBinMontage,'textbox',[0.7 0.08 0.2 0.05],'Color',[1 1 1],'String',['RBC/Membrane = ' num2str(RBC2Mem,'%.2f')],'FontSize',14,'FontName','Arial','FitBoxToText','on','BackgroundColor',[0 0 0],'VerticalAlignment','middle','HorizontalAlignment','center');
-set(RBCBarBinMontage,'WindowState','minimized');
+%set(RBCBarBinMontage,'WindowState','minimized');
 

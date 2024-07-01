@@ -467,3 +467,8 @@ AllSubjectSummary = sortrows(AllSubjectSummary);
 
 save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
+
+%% save variable need for the reduced excel sheet that has the more important values in it.
+
+save(fullfile(write_path,'Reduced_Excel_Variable'),'Lung_Volume','RBC2Mem',...
+            'MemBins','RBCBins');
