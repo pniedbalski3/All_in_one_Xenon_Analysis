@@ -37,7 +37,6 @@ else
     end
 end
 
-
 sub_ind = strfind(path,'Xe-');
 Subject = path(sub_ind:end);
 %  Rpttitle = ['Subject_' Subject '_Ventilation_Summary_MALB'];

@@ -36,20 +36,32 @@ axis off
 colormap(gray);
 title('Anatomic Image')
 
-idcs = strfind(write_path,filesep);%determine location of file separators
-sub_ind = strfind(write_path,'Xe-');
-if ~isempty(sub_ind)
-    move = true;
-    while move
-        if write_path(sub_ind-1) ~= '_'
-            sub_ind = sub_ind - 1;
-        else
-            move = false;
-        end
+% idcs = strfind(write_path,filesep);%determine location of file separators
+% sub_ind = strfind(write_path,'Xe-');
+% if ~isempty(sub_ind)
+%     move = true;
+%     while move
+%         if write_path(sub_ind-1) ~= '_'
+%             sub_ind = sub_ind - 1;
+%         else
+%             move = false;
+%         end
+%     end
+%     Subject = write_path(sub_ind:(idcs(end)-1));
+% else
+%     Subject = write_path((end-10):end);
+% end
+
+idcs = strfind(write_path,filesep); %determine location of file separators
+try
+    subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
+    if contains(subject_tmp,'_')
+        uscore = strfind(subject_tmp,'_');
+        subject_tmp(1:uscore(1)) = [];
     end
-    Subject = write_path(sub_ind:(idcs(end)-1));
-else
-    Subject = write_path((end-10):end);
+    Subject = subject_tmp;
+catch
+    Subject = 'Unknown';
 end
 
 

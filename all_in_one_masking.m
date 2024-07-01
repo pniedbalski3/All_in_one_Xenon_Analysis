@@ -19,7 +19,7 @@ else
     end
 end
 if isfile(fullfile(write_path,'Manual_Vent_Mask.nii.gz'))
-    DisMask = niftiread(fullfile(write_path,'Manual_Vent_Mask.nii.gz'));
+    VentMask = niftiread(fullfile(write_path,'Manual_Vent_Mask.nii.gz'));
 else
     try
         AllinOne_Seg.CNN_Seg_RHEL(fullfile(write_path,'HiRes_Anatomic.nii.gz'));
