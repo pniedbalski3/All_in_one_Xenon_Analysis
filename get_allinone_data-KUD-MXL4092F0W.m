@@ -116,14 +116,10 @@ Dis_Traj = hold_traj;
 
 %Dis_Traj = rotate_radial(k_loc,NPts,NPro);
 %% Get Gas Traj:
-
 traj_file = [parent_path '/Traj_Files/Vent_GasExchange_20210819_Traj.dat'];
-
-%traj_file = 'C:\Users\pniedbalski\OneDrive - University of Kansas Medical Center\Documents\GitHub\All_in_one_Xenon_Analysis\Traj_Files\Vent_GasEx_Anatomic_20210819_Traj.dat';
-
 traj_twix = AllinOne_DataImport.mapVBVD(traj_file);
 
-Gas_Traj = AllinOne_Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
+Gas_Traj = Tools.spiral_coords_from_dat(traj_twix,Xe_Dat_twix);
 
 hold_traj = Gas_Traj;
 hold_traj(1,:,:) = Gas_Traj(2,:,:);

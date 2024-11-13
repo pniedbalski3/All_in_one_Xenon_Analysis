@@ -1,14 +1,19 @@
-function analyze_vent_images_v2(write_path,Vent,Mask,scandate,Params)
+function retro_vent_analysis(write_path)
+scandate = 'XXXXXXXX';
+Params.Vent_Voxel = 400/96;
+Params.GE_FOV = 400;
 
-Vent = abs(Vent);
+
+write_path = fullfile(write_path,'All_in_One_Analysis');
 
 vent_nii_name = 'Ventilation';
 mask_nii_name = 'HiRes_Anatomic_Mask';
-anat_nii_name = 'HiRes_Anatomic';
+%anat_nii_name = 'HiRes_Anatomic';
 
-Anat_Image = Tools.canonical2matlab(niftiread(fullfile(write_path,[anat_nii_name '.nii.gz'])));
-
-parent_path = which('analyze_vent_images_v2');
+%Anat_Image = Tools.canonical2matlab(niftiread(fullfile(write_path,[anat_nii_name '.nii.gz'])));
+Vent = Tools.canonical2matlab(double(niftiread(fullfile(write_path,[vent_nii_name '.nii.gz']))));
+Mask = Tools.canonical2matlab(double(niftiread(fullfile(write_path,[mask_nii_name '.nii.gz']))));
+parent_path = which('retro_vent_analysis');
 idcs = strfind(parent_path,filesep);%determine location of file separators
 parent_path = parent_path(1:idcs(end)-1);%remove file
 
@@ -51,28 +56,24 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 %% Atropos, Fuzzy CMeans, El Bicho
 try
     AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
-    Vent_BF = niftiread(write_path,[vent_nii_name '_N4.nii.gz']);
+    Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
     Vent_BF = Tools.canonical2matlab(Vent_BF);
 catch
     disp('Cannot Run atropos Analysis')
 end
-
-Vent_BF = Seg.strong_N4(Vent,double(Mask));
-info = niftiinfo(fullfile(write_path,[vent_nii_name '.nii.gz']));
-niftiwrite(ReadData.mat2canon(double(Vent_BF)),fullfile(write_path,[vent_nii_name '_N4']),info,'Compressed',true);
 
 try
     atropos_seg = niftiread(fullfile(write_path,[vent_nii_name '_atropos.nii.gz']));
     %Write this right back out to get the correct orientation
     %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
     %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
-    Vent = Tools.canonical2matlab(Vent);
+    %Vent = Tools.canonical2matlab(Vent);
     atropos_seg = Tools.canonical2matlab(atropos_seg);
     Atropos_Output = AllinOne_Tools.generic_label_analysis(Vent,atropos_seg);
     AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output,SNR,[Subject '_Atropos_VDP'],Subject)
 catch
     disp('No atropos Segmentation Found')
-    Vent = Tools.canonical2matlab(Vent);
+    %Vent = Tools.canonical2matlab(Vent);
     for i = 1:6
         Atropos_Output(i).BinPct = nan;
     end
@@ -83,7 +84,7 @@ try
     %Write this right back out to get the correct orientation
     %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
     %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
-    Vent = Tools.canonical2matlab(Vent);
+    %Vent = Tools.canonical2matlab(Vent);
     atropos_seg_N4 = Tools.canonical2matlab(atropos_seg_N4);
     Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent_BF,atropos_seg_N4);
     AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,[Subject '_Atropos_N4_VDP'],Subject)
@@ -159,7 +160,7 @@ end
 %already there...
 %Vent_BF = Tools.canonical2matlab(Vent_BF);
 %Anat_Image = Tools.canonical2matlab(Anat_Image);
-Mask = Tools.canonical2matlab(Mask);
+% Mask = Tools.canonical2matlab(Mask);
 
 
 %% Start with CCHMC Method (Mean Anchored Linear Binning)
@@ -258,26 +259,25 @@ catch
 end
 
 %% Save Outputs
-try
-    save(fullfile(write_path,'Vent_Outputs.mat'),'Atropos_Output','CMeans_Output','ElBicho_Output','MALB_Output','LB_Output','KMeans_Output');
-catch
-    save(fullfile(write_path,'Vent_Outputs.mat'),'MALB_Output','LB_Output','KMeans_Output');
-end
+% try
+%     save(fullfile(write_path,'Vent_Outputs.mat'),'Atropos_Output','CMeans_Output','ElBicho_Output','MALB_Output','LB_Output','KMeans_Output');
+% catch
+%     save(fullfile(write_path,'Vent_Outputs.mat'),'MALB_Output','LB_Output','KMeans_Output');
+% end
 %% Get Ventilation Heterogeneity
-[H_Map_BF,H_Index_BF] = xe_vent_heterogeneity(Vent_BF,Mask,5);
-[H_Map,H_Index] = xe_vent_heterogeneity(Vent,Mask,5);
-save(fullfile(write_path,'Ventilation_Heterogeneity.mat'),'H_Map','H_Index','H_Map_BF','H_Index_BF');
-Mask = logical(Mask);
-CV = std(Vent(Mask(:)))/mean(Vent(Mask(:)));
-CV_BF = std(Vent_BF(Mask(:)))/mean(Vent(Mask(:)));
+% [H_Map_BF,H_Index_BF] = xe_vent_heterogeneity(Vent_BF,Mask,5);
+% [H_Map,H_Index] = xe_vent_heterogeneity(Vent,Mask,5);
+% save(fullfile(write_path,'Ventilation_Heterogeneity.mat'),'H_Map','H_Index','H_Map_BF','H_Index_BF');
+% Mask = logical(Mask);
+% CV = std(Vent(Mask(:)))/mean(Vent(Mask(:)));
+% CV_BF = std(Vent_BF(Mask(:)))/mean(Vent(Mask(:)));
 
 %workspace_path = fullfile(write_path,'Vent_Analysis_Workspace.mat');
 
 
 %% Write to Excel
-matfile = 'All_in_One_Ventilation_V2.mat';
-excel_summary_file = fullfile(parent_path,'AncillaryFiles','AllinOne_Ventilation_Summary_V2.xlsx');
-
+matfile = 'Ventilation_Label_Percents.mat';
+excel_summary_file = fullfile(parent_path,'AncillaryFiles','Ventilation_Label_Percents.xlsx');
 
 SubjectMatch = [];
 try 
@@ -292,14 +292,14 @@ catch
                 'BF_MALB_Defect','BF_MALB_Low','BF_MALB_Normal','BF_MALB_Hyper','BF_MALB_VDP'...
                 'LB_Bin1','LB_Bin2','LB_Bin3','LB_Bin4','LB_Bin5','LB_Bin6',...
                 'BF_LB_Bin1','BF_LB_Bin2','BF_LB_Bin3','BF_LB_Bin4','BF_LB_Bin5','BF_LB_Bin6',...
-                'ATROPOS_Cluster1','ATROPOS_Cluster2','ATROPOS_Cluster3','ATROPOS_Cluster4',...
+                'ATROPOS_Cluster1','ATROPOS_Cluster2','ATROPOS_Cluster3','ATROPOS_Cluster4','ATROPOS_Cluster5','ATROPOS_Cluster6',...
+                'ATROPOS_BF_Cluster1','ATROPOS_BF_Cluster2','ATROPOS_BF_Cluster3','ATROPOS_BF_Cluster4','ATROPOS_BF_Cluster5','ATROPOS_BF_Cluster6',...
                 'KMeans_Cluster1','KMeans_Cluster2','KMeans_Cluster3','KMeans_Cluster4','KMeans_Cluster5',...
                 'KMeans_BF_Cluster1','KMeans_BF_Cluster2','KMeans_BF_Cluster3','KMeans_BF_Cluster4','KMeans_BF_Cluster5',...
                 'CMeans_Cluster1','CMeans_Cluster2','CMeans_Cluster3','CMeans_Cluster4',...
                 'CMeans_BF_Cluster1','CMeans_BF_Cluster2','CMeans_BF_Cluster3','CMeans_BF_Cluster4',...
                 'ElBicho_Cluster1','ElBicho_Cluster2','ElBicho_Cluster3','ElBicho_Cluster4',...
-                'ElBicho_BF_Cluster1','ElBicho_BF_Cluster2','ElBicho_BF_Cluster3','ElBicho_BF_Cluster4',...
-                'H_Index','H_Index_BF','CV','CV_BF'};
+                'ElBicho_BF_Cluster1','ElBicho_BF_Cluster2','ElBicho_BF_Cluster3','ElBicho_BF_Cluster4'};
     AllSubjectSummary = cell2table(cell(0,size(headers,2)));
     AllSubjectSummary.Properties.VariableNames = headers;
 end
@@ -310,14 +310,14 @@ NewData = {Subject,Pipeline_Version,scandate,...
             MALB_BF_Output(1).BinPct,MALB_BF_Output(2).BinPct,MALB_BF_Output(3).BinPct,MALB_BF_Output(4).BinPct,MALB_BF_Output(1).BinPct+MALB_BF_Output(2).BinPct,...
             LB_Output(1).BinPct,LB_Output(2).BinPct,LB_Output(3).BinPct,LB_Output(4).BinPct,LB_Output(5).BinPct,LB_Output(6).BinPct,...
             LB_BF_Output(1).BinPct,LB_BF_Output(2).BinPct,LB_BF_Output(3).BinPct,LB_BF_Output(4).BinPct,LB_BF_Output(5).BinPct,LB_BF_Output(6).BinPct,...
-            Atropos_Output(1).BinPct,Atropos_Output(2).BinPct,Atropos_Output(3).BinPct,Atropos_Output(4).BinPct,...
+            Atropos_Output(1).BinPct,Atropos_Output(2).BinPct,Atropos_Output(3).BinPct,Atropos_Output(4).BinPct,Atropos_Output(5).BinPct,Atropos_Output(6).BinPct,...
+            Atropos_Output_N4(1).BinPct,Atropos_Output_N4(2).BinPct,Atropos_Output_N4(3).BinPct,Atropos_Output_N4(4).BinPct,Atropos_Output_N4(5).BinPct,Atropos_Output_N4(6).BinPct,...
             KMeans_Output(1).BinPct,KMeans_Output(2).BinPct,KMeans_Output(3).BinPct,KMeans_Output(4).BinPct,KMeans_Output(5).BinPct,...
             KMeans_BF_Output(1).BinPct,KMeans_BF_Output(2).BinPct,KMeans_BF_Output(3).BinPct,KMeans_BF_Output(4).BinPct,KMeans_BF_Output(5).BinPct,...
             CMeans_Output(1).BinPct,CMeans_Output(2).BinPct,CMeans_Output(3).BinPct,CMeans_Output(4).BinPct,...
             CMeans_BF_Output(1).BinPct,CMeans_BF_Output(2).BinPct,CMeans_BF_Output(3).BinPct,CMeans_BF_Output(4).BinPct,...
             ElBicho_Output(1).BinPct,ElBicho_Output(2).BinPct,ElBicho_Output(3).BinPct,ElBicho_Output(4).BinPct,...
-            ElBicho_BF_Output(1).BinPct,ElBicho_BF_Output(2).BinPct,ElBicho_BF_Output(3).BinPct,ElBicho_BF_Output(4).BinPct,...
-            H_Index,H_Index_BF,CV,CV_BF};
+            ElBicho_BF_Output(1).BinPct,ElBicho_BF_Output(2).BinPct,ElBicho_BF_Output(3).BinPct,ElBicho_BF_Output(4).BinPct};
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
 else
@@ -328,8 +328,8 @@ save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 
 %% Write to Excel - VDP only
-matfile = 'VDP_6ways.mat';
-excel_summary_file = fullfile(parent_path,'AncillaryFiles','VDP_6ways.xlsx');
+matfile = 'VDP_All_Participants.mat';
+excel_summary_file = fullfile(parent_path,'AncillaryFiles','VDP_All_Participants.xlsx');
 
 SubjectMatch = [];
 try 
@@ -425,13 +425,13 @@ writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 % 
 % end
 % 
-try
-   % AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
-    AllinOne_Tools.vdp_qc_report(write_path,Vent,Mask,Vent_BF,Anat_Image,SNR);
-catch
-    disp('No Full Report Written')
-end
+% try
+%    % AllinOne_Tools.create_full_ventilation_report(write_path,workspace_path);
+%     AllinOne_Tools.vdp_qc_report(write_path,Vent,Mask,Vent_BF,Anat_Image,SNR);
+% catch
+%     disp('No Full Report Written')
+% end
 
 %% save variable need for the reduced excel sheet that has the more important values in it.
 
-save(fullfile(write_path,'Reduced_Excel_Variable'),'ElBicho_BF_Output','-append');
+%save(fullfile(write_path,'Reduced_Excel_Variable'),'ElBicho_BF_Output','-append');

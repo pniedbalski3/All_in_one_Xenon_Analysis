@@ -1,4 +1,4 @@
-function allinone_recon(mypath,force_recon)
+function allinone_recon_ventonly(mypath,force_recon)
 %% Identify Image files - done in kind of a lazy way
 if nargin < 1
     mypath = uigetdir([],'Select folder containing xenon data');
@@ -85,7 +85,7 @@ if force_recon
 
     save(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 else
-    load(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
+    load(fullfile(write_path,'Post_Recon_Images.mat'),'HiRes_Gas_Image','Vent_Im','Params');
 end
 %% Masking
 try
@@ -116,14 +116,14 @@ VentMask = logical(VentMask);
 DisMask = logical(DisMask);
 
 %% Gas Exchange Analysis
-analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
+%analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
 VDP = vdp_analysis_v3(write_path,Vent_Im,Params,0);
 %analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
 % analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
 %% Create reduced Excel File
-Create_Reduced_Excel(write_path,Params.scandatestr);
+%Create_Reduced_Excel(write_path,Params.scandatestr);
 
 %% Wiggle Analysis
 %analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);

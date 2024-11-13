@@ -42,8 +42,13 @@ VentMax = max(Vent(Segmentation>0));
 Output_Struct(1).AllFig = figure('Name','All Slice Summary','units','normalized','outerposition',[.2 .2 1 4/3]);%set(ClinFig,'WindowState','minimized');
 set(Output_Struct(1).AllFig,'color','white','Units','inches','Position',[1 1 8 7.2])
 axes('Units', 'normalized', 'Position', [0 0 1 1])
-Vent_tiled = Tools.tile_image(Vent(:,:,firstslice:lastslice),3);
-Defects_tiled = Tools.tile_image(Segmentation(:,:,firstslice:lastslice),3);
+try
+    Vent_tiled = Tools.tile_image(Vent(:,:,firstslice:lastslice),3);
+    Defects_tiled = Tools.tile_image(Segmentation(:,:,firstslice:lastslice),3);
+catch
+    Vent_tiled = imtile(Vent);
+    Defects_tiled = imtile(Segmentation);
+end
 
 %Label = {'Defect','Low','Normal','High'};
 

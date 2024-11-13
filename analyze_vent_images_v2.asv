@@ -51,15 +51,15 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 %% Atropos, Fuzzy CMeans, El Bicho
 try
     AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
-    Vent_BF = niftiread(write_path,[vent_nii_name '_N4.nii.gz']);
+    Vent_BF = niftiread(write_path,[vent_nii_name '_N4.nii.gz']));
     Vent_BF = Tools.canonical2matlab(Vent_BF);
 catch
     disp('Cannot Run atropos Analysis')
 end
 
-Vent_BF = Seg.strong_N4(Vent,double(Mask));
-info = niftiinfo(fullfile(write_path,[vent_nii_name '.nii.gz']));
-niftiwrite(ReadData.mat2canon(double(Vent_BF)),fullfile(write_path,[vent_nii_name '_N4']),info,'Compressed',true);
+Vent_BF = Seg.strong_N4(Vent,Mask);
+info = niftiinfo(write_path,[vent_nii_name '.nii.gz'vent_nii_name)
+niftiwrite(ReadData.mat2canon(Vent_BF),fullfile(write_path,[vent_nii_name '_N4']));
 
 try
     atropos_seg = niftiread(fullfile(write_path,[vent_nii_name '_atropos.nii.gz']));

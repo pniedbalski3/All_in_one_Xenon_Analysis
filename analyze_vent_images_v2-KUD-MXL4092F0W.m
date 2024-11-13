@@ -23,7 +23,11 @@ catch
         subject_tmp = write_path((idcs(end-1)+1):(idcs(end)-1));
         if contains(subject_tmp,'_')
             uscore = strfind(subject_tmp,'_');
-            subject_tmp(1:uscore(1)) = [];
+            if length(uscore) == 1 && (length(subject_tmp)-uscore(1)) < 3
+                subject_tmp(1:uscore(1)) = [];
+            else
+                subject_tmp(1:uscore(1)) = [];
+            end
         end
         Subject = subject_tmp;
     catch
@@ -51,15 +55,11 @@ SNR = (mean(Vent(Mask==1))-mean(Vent(NoiseMask==1)))/std(Vent(NoiseMask==1));
 %% Atropos, Fuzzy CMeans, El Bicho
 try
     AllinOne_Tools.atropos_analysis_docker(fullfile(write_path,[vent_nii_name '.nii.gz']),fullfile(write_path,[mask_nii_name '.nii.gz']));
-    Vent_BF = niftiread(write_path,[vent_nii_name '_N4.nii.gz']);
+    Vent_BF = niftiread(fullfile(write_path,[vent_nii_name '_N4.nii.gz']));
     Vent_BF = Tools.canonical2matlab(Vent_BF);
 catch
     disp('Cannot Run atropos Analysis')
 end
-
-Vent_BF = Seg.strong_N4(Vent,double(Mask));
-info = niftiinfo(fullfile(write_path,[vent_nii_name '.nii.gz']));
-niftiwrite(ReadData.mat2canon(double(Vent_BF)),fullfile(write_path,[vent_nii_name '_N4']),info,'Compressed',true);
 
 try
     atropos_seg = niftiread(fullfile(write_path,[vent_nii_name '_atropos.nii.gz']));
@@ -83,7 +83,7 @@ try
     %Write this right back out to get the correct orientation
     %nifti_info = AllinOne_Tools.nifti_metadata(atropos_seg,Params.Vent_Voxel,Params.GE_FOV);
     %niftiwrite(double(atropos_seg),fullfile(write_path,[vent_nii_name 'Segmentation']),nifti_info,'Compressed',true)
-    Vent = Tools.canonical2matlab(Vent);
+   % Vent = Tools.canonical2matlab(Vent);
     atropos_seg_N4 = Tools.canonical2matlab(atropos_seg_N4);
     Atropos_Output_N4 = AllinOne_Tools.generic_label_analysis(Vent_BF,atropos_seg_N4);
     AllinOne_Tools.create_vent_report(write_path,Vent,Atropos_Output_N4,SNR,[Subject '_Atropos_N4_VDP'],Subject)
@@ -240,7 +240,7 @@ try
     KMeans_BF_Output = AllinOne_Tools.generic_label_analysis(Vent_BF,KMeans_BF_Segmentation);
     nifti_info = AllinOne_Tools.nifti_metadata(Vent_BF,Params.Vent_Voxel,Params.GE_FOV);
     niftiwrite(AllinOne_Tools.all_in_one_canonical_orientation(KMeans_BF_Segmentation),fullfile(write_path,'KMeans_Ventilation_Labeled_N4'),nifti_info,'Compressed',true)
-    AllinOne_Tools.create_vent_report(write_path,Vent_BF,KMeans_BF_Output,SNR,[Subject '_N4_KMeans_VDP'],Subject)
+    AllinOne_Tools.create_vent_report(write_path,Vent_BF,KMeans_BF_Output,SNR,['Subject_' Subject '_N4_KMeans_VDP'],Subject)
     if length(KMeans_BF_Output)<5
         KMeans_BF_Output(5).BinPct = 0;
     end
@@ -252,17 +252,11 @@ catch
 end
 %% Save the segmentations
 try
-    save(fullfile(write_path,'Vent_Analysis_Segmentations.mat'),'Vent','Vent_BF','Mask','atropos_seg','cmeans_seg','elbicho_seg','cmeans_seg_BF','elbicho_seg_BF','MALB_Segmentation','MALB_BF_Segmentation','LB_Segmentation','LB_BF_Segmentation','KMeans_Segmentation','KMeans_BF_Segmentation');
+    save(fullfile(write_path,'Vent_Analysis_Segmentations.mat'),'Vent','Vent_BF','atropos_seg','cmeans_seg','elbicho_seg','cmeans_seg_BF','elbicho_seg_BF','MALB_Segmentation','MALB_BF_Segmentation','LB_Segmentation','LB_BF_Segmentation','KMeans_Segmentation','KMeans_BF_Segmentation');
 catch
-    save(fullfile(write_path,'Vent_Analysis_Segmentations.mat'),'Vent','Vent_BF','Mask','MALB_Segmentation','MALB_BF_Segmentation','LB_Segmentation','LB_BF_Segmentation','KMeans_Segmentation','KMeans_BF_Segmentation');
+    save(fullfile(write_path,'Vent_Analysis_Segmentations.mat'),'Vent','Vent_BF','MALB_Segmentation','MALB_BF_Segmentation','LB_Segmentation','LB_BF_Segmentation','KMeans_Segmentation','KMeans_BF_Segmentation');
 end
 
-%% Save Outputs
-try
-    save(fullfile(write_path,'Vent_Outputs.mat'),'Atropos_Output','CMeans_Output','ElBicho_Output','MALB_Output','LB_Output','KMeans_Output');
-catch
-    save(fullfile(write_path,'Vent_Outputs.mat'),'MALB_Output','LB_Output','KMeans_Output');
-end
 %% Get Ventilation Heterogeneity
 [H_Map_BF,H_Index_BF] = xe_vent_heterogeneity(Vent_BF,Mask,5);
 [H_Map,H_Index] = xe_vent_heterogeneity(Vent,Mask,5);
@@ -323,7 +317,6 @@ if (isempty(SubjectMatch))%if no match
 else
     AllSubjectSummary(SubjectMatch,:) = NewData;%overwrite
 end
-AllSubjectSummary = sortrows(AllSubjectSummary);
 save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 
@@ -370,7 +363,6 @@ if (isempty(SubjectMatch))%if no match
 else
     AllSubjectSummary(SubjectMatch,:) = NewData;%overwrite
 end
-AllSubjectSummary = sortrows(AllSubjectSummary);
 save(fullfile(parent_path,'AncillaryFiles',matfile),'AllSubjectSummary')
 writetable(AllSubjectSummary,excel_summary_file,'Sheet',1)
 
@@ -431,7 +423,3 @@ try
 catch
     disp('No Full Report Written')
 end
-
-%% save variable need for the reduced excel sheet that has the more important values in it.
-
-save(fullfile(write_path,'Reduced_Excel_Variable'),'ElBicho_BF_Output','-append');

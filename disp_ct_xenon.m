@@ -22,17 +22,20 @@ clear membrane
 
 %% Membrane Labeled
 membrane_labeled = double(niftiread(fullfile(mypath,'CT_Registrations','Membrane_Labeled_warped.nii.gz')));
-ct_tiff_write(CT_Image,membrane_labeled,EightBinMap,[0.01 8],0.75,'Binned_Membrane',mypath)
+%ct_tiff_write(CT_Image,membrane_labeled,EightBinMap,[0.01 8],0.75,'Binned_Membrane',mypath)
+ct_overlay(CT_Image,membrane_labeled,EightBinMap,[0.01 8],0.75,'Binned_Membrane',72)
 clear membrane_labeled
 
 %% RBC/Gas
-RBC = double(niftiread(fullfile(mypath,'CT_Registrations','RBC_warped.nii.gz')));
-ct_tiff_write(CT_Image,RBC,RBCMap,[0.01 0.75],0.75,'RBC_to_Gas',mypath)
-clear RBC
+% RBC = double(niftiread(fullfile(mypath,'CT_Registrations','RBC_warped.nii.gz')));
+% ct_tiff_write(CT_Image,RBC,RBCMap,[0.01 0.75],0.75,'RBC_to_Gas',mypath)
+% clear RBC
 
 %% RBC Labeled
 RBC_labeled = double(niftiread(fullfile(mypath,'CT_Registrations','RBC_Labeled_warped.nii.gz')));
-ct_tiff_write(CT_Image,RBC_labeled,SixBinMap,[0.01 6],0.75,'Binned_RBC',mypath)
+%ct_tiff_write(CT_Image,RBC_labeled,SixBinMap,[0.01 6],0.75,'Binned_RBC',mypath)
+ct_overlay(CT_Image,RBC_labeled,EightBinMap,[0.01 8],0.75,'Binned_RBC',72)
+
 clear RBC_labeled
 
 %% RBC/Membrane Labeled
@@ -49,7 +52,8 @@ catch
 end
 Vent = Vent/prctile(Vent(:),97);
 Vent = Vent.*Vent_Mask;
-ct_tiff_write(CT_Image,Vent,VentMap,[0.01 1],0.75,'Ventilation',mypath)
+%ct_tiff_write(CT_Image,Vent,VentMap,[0.01 1],0.75,'Ventilation',mypath)
+ct_overlay(CT_Image,Vent,VentMap,[0.01 1],0.75,'Ventilation',72)
 clear Vent
 %% Ventilation Labeled Mask
 MALB = double(niftiread(fullfile(mypath,'CT_Registrations','Ventilation_elbicho_warped.nii.gz')));

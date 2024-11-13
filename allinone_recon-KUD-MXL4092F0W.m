@@ -7,9 +7,6 @@ end
 if nargin < 2
     force_recon = true;
 end
-% if nargin < 3
-%     force_mask = false;
-% end
 
 %% Read Data
 try 
@@ -33,8 +30,7 @@ try
     try
         cal_file = file_names{find(contains(file_names,calprot),1,'last')};
     catch
-    %    cal_file = file_names{find(contains(file_names,'fid_xe_calibration'),1,'last')};
-        cal_file = file_names{find(contains(file_names,'fid_xe_calibration_'),1,'last')};
+        cal_file = file_names{find(contains(file_names,'fid_xe_calibration'),1,'last')};
     end
     xe_file = fullfile(mypath,'Raw',xe_file);
     anat_file = fullfile(mypath,'Raw',anat_file);
@@ -88,14 +84,7 @@ else
     load(fullfile(write_path,'Post_Recon_Images.mat'),'Dis_Image','LoRes_Gas_Image','HiRes_Gas_Image','Vent_Im','H1_Image_Vent','H1_Image_Dis','Cal_Raw','Dis_Fid','Gas_Fid','Params','Dis_Traj','Gas_Traj');
 end
 %% Masking
-try
-    VentMask = niftiread(fullfile(write_path,'HiRes_Anatomic_mask.nii.gz'));
-    DisMask = niftiread(fullfile(write_path,'LoRes_Anatomic_mask.nii.gz'));
-catch
-    disp('Masks do not exist')
-    [VentMask,DisMask] = all_in_one_masking(write_path);
-end
-
+[VentMask,DisMask] = all_in_one_masking(write_path);
 
 if isnan(VentMask)
     VentMask = AllinOne_Tools.erode_dilate(Vent_Im,1,5);
@@ -119,11 +108,7 @@ DisMask = logical(DisMask);
 analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-VDP = vdp_analysis_v3(write_path,Vent_Im,Params,0);
-%analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
-% analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
-%% Create reduced Excel File
-Create_Reduced_Excel(write_path,Params.scandatestr);
+analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
 
 %% Wiggle Analysis
 %analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
