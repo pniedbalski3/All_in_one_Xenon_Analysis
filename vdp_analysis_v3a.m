@@ -1,4 +1,4 @@
-function VDP_N4 = vdp_analysis_v3(write_path,Vent,Params,checkmask)
+function VDP_N4 = vdp_analysis_v3a(write_path,Vent,Params,checkmask)
 %% Get folder if none is provided
 %% Load in Images
 
@@ -143,9 +143,9 @@ segsn4(:,:,:,6) = double(niftiread(fullfile(analysis_fold,strrep([ventname,vente
 save(fullfile(analysis_fold,'VDP_Segmentations.mat'),'segs','segsn4');
 
 %% Write to excel
-write_path = which('Reduced_Excel_Variable');
+%write_path = which('Reduced_Excel_Variable');
 idcs = strfind(write_path,filesep);%determine location of file separators
-base_path = write_path(1:idcs(2)-1) %%EXTRACT THE BASE DIRECTORY UP TO THE SECOND DIRECTORY LEVEL(IRB folder)
+base_path = write_path(1:idcs(2)-1); %%EXTRACT THE BASE DIRECTORY UP TO THE SECOND DIRECTORY LEVEL(IRB folder)
 matfile = fullfile(base_path,'Summary_excels','Vent_summary.mat');
 excel_file = fullfile(base_path,'Summary_excels','Vent_summary.xlsx');
 
@@ -242,4 +242,5 @@ catch
 end
 
 
+save(fullfile(write_path,'Reduced_Excel_Variable'),'VDP_N4','-append');
 

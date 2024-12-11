@@ -1,5 +1,5 @@
 %Updated 12/04/2024  
-function Create_Reduced_Excel(write_path,scandate)
+function Create_Reduced_Excel_V2(write_path,scandate)
 % Creates an additional excel file that contains the important values.
 % Makes it so you don;t have to search for these values in the other two
 % excel sheets.
@@ -15,7 +15,7 @@ base_path = write_path(1:idcs(2)-1); % extracting upto the second file separator
 
 %SPECIFY THE EXCEL FILE PATH IN THE 'Summary_excels' FOLDER
 excel_summary_file = fullfile(base_path,'Summary_excels', 'Xe_Summary.xlsx');
-
+matfile = 'Xe_Summary.mat';
 %CHECK IF THE 'Summary_excel_files' directory EXISTS; IF NOT, CREATE IT
 if ~exist(fullfile(base_path,'Summary_excels'), 'dir')
     mkdir(fullfile(base_path,'Summary_excels')); 
@@ -46,7 +46,7 @@ catch
                 'RBC_Transfer_Mean','RBC_Transfer_Std_Dev',...%Quantitative Distributions 
                 'Barrier_Uptake_Bin1_Percent','Barrier_Uptake_Bin2_Percent','Barrier_Uptake_Bin6_Percent','Barrier_Uptake_Bin7_Percent','Barrier_Uptake_Bin8_Percent',...%Binning Results - Membrane
                 'RBC_Transfer_Bin1_Percent','RBC_Transfer_Bin2_Percent','RBC_Transfer_Bin5_Percent','RBC_Transfer_Bin6_Percent',...%Binning Results - RBC
-                'ElBicho_VDP'};
+                'VDP_MALB_N4'};
     AllSubjectSummary = cell2table(cell(0,size(headers,2)));
     AllSubjectSummary.Properties.VariableNames = headers;
 end
@@ -57,7 +57,7 @@ NewData = {Subject,scandate,...
             RBCBins.RBCTransferMean, RBCBins.RBCTransferStd,...%Quantitative Distributions - RBC
             MemBins.MembraneUptakeBin1Percent, MemBins.MembraneUptakeBin2Percent, MemBins.MembraneUptakeBin6Percent, MemBins.MembraneUptakeBin7Percent, MemBins.MembraneUptakeBin8Percent,...%Binning Results - Membrane
             RBCBins.RBCTransferBin1Percent, RBCBins.RBCTransferBin2Percent, RBCBins.RBCTransferBin5Percent, RBCBins.RBCTransferBin6Percent,...%Binning Results - RBC
-            ElBicho_BF_Output(1).BinPct};
+            VDP_N4};
 if (isempty(SubjectMatch))%if no match
     AllSubjectSummary = [AllSubjectSummary;NewData];%append
 else

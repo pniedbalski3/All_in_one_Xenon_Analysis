@@ -1,4 +1,4 @@
-function analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj,negr2b)
+function analyze_ge_images_V2(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,Proton_Mask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj,negr2b)
 
 parent_path = which('analyze_ge_images');
 idcs = strfind(parent_path,filesep);%determine location of file separators
@@ -395,11 +395,11 @@ catch
     disp('No Technical Report Written')
 end
 %% Write to Excel
-write_path = which('Reduced_Excel_Variable');
+%write_path = which('Reduced_Excel_Variable');
 idcs = strfind(write_path,filesep);%determine location of file separators
-base_path = write_path(1:idcs(2)-1) %%EXTRACT THE BASE DIRECTORY UP TO THE SECOND DIRECTORY LEVEL(IRB folder)
-matfile = fullfile(base_path,'Summary_excels','GasExchange_summary.mat');
-excel_file = fullfile(base_path,'Summary_excels','GasExchange_summary.xlsx');
+base_path = write_path(1:idcs(2)-1); %%EXTRACT THE BASE DIRECTORY UP TO THE SECOND DIRECTORY LEVEL(IRB folder)
+matfile = 'GasExchange_summary.mat';
+excel_summary_file = fullfile(base_path,'Summary_excels','GasExchange_summary.xlsx');
 
 %CHECK IF THE 'Summary_excel_files' directory EXISTS; IF NOT, CREATE IT
 if ~exist(fullfile(base_path,'Summary_excels'), 'dir')
