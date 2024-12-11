@@ -104,6 +104,8 @@ if isnan(DisMask)
     DisMask = AllinOne_Tools.erode_dilate(HiRes_Gas_Image,1,5);
 end
 
+
+
 %Now, let's re-write the mask so that it has the correct orientation and
 %dimensions in the nifti file:
 %I think these will no longer be necessary
@@ -116,14 +118,14 @@ VentMask = logical(VentMask);
 DisMask = logical(DisMask);
 
 %% Gas Exchange Analysis
-analyze_ge_images(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
+analyze_ge_images_V2(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj)
 
 %% Ventilation Analysis
-VDP = vdp_analysis_v3(write_path,Vent_Im,Params,0);
+VDP = vdp_analysis_v3a(write_path,Vent_Im,Params,0);
 %analyze_vent_images_v2(write_path,Vent_Im,VentMask,Params.scandatestr,Params)
 % analyze_vent_images(write_path,Vent_Im,H1_Image_Vent,VentMask,Params.scandatestr,Params)
 %% Create reduced Excel File
-Create_Reduced_Excel(write_path,Params.scandatestr);
+Create_Reduced_Excel_V2(write_path,Params.scandatestr);
 
 %% Wiggle Analysis
 %analyze_wiggles(Dis_Image,LoRes_Gas_Image,HiRes_Gas_Image,H1_Image_Dis,Cal_Raw,DisMask,write_path,Dis_Fid,Gas_Fid,Params,Dis_Traj,Gas_Traj);
